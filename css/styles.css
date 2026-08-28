@@ -315,6 +315,15 @@ h2 {
   margin-bottom: 8px;
 }
 .visit-details dd { color: var(--text-dim); font-size: 0.95rem; }
+.visit-details .booth {
+  display: block;
+  font-family: var(--font-head);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.visit-copy strong { color: var(--text); font-weight: 600; }
 
 .map-embed {
   height: 340px;
