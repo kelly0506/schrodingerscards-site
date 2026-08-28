@@ -394,6 +394,15 @@ h2 {
   border-color: var(--accent);
 }
 .contact-form button { margin-top: 8px; }
+.contact-form .hp-field {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+}
 
 /* ---------- Footer ---------- */
 .site-footer {
