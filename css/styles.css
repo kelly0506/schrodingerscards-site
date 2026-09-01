@@ -494,3 +494,6 @@ h2 {
   border-bottom: 1px solid rgba(125, 216, 255, 0.4);
 }
 .contact-guide-nudge a:hover { border-bottom-color: var(--accent); }
+
+/* Current page in the main nav */
+.main-nav a[aria-current="page"] { color: var(--accent); }

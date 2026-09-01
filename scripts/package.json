@@ -1,0 +1,10 @@
+{
+  "name": "schrodingers-gallery-sync",
+  "private": true,
+  "type": "module",
+  "description": "Pulls gallery photos from a public Google Drive folder into the site.",
+  "dependencies": {
+    "sharp": "0.33.5",
+    "heic-convert": "2.1.0"
+  }
+}

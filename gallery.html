@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery | Schrödinger's Cards</title>
+<meta name="description" content="Photos from the Schrödinger's Cards booth at Treasure Cove Mall in Jacksonville, Texas — the display, the cases, and what's new on the shelves right now.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="css/styles.css?v=3">
+<link rel="stylesheet" href="css/gallery.css?v=1">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header" id="site-header">
+  <div class="wrap header-inner">
+    <a href="index.html#top" class="logo">
+      <span class="logo-mark" aria-hidden="true">
+        <img src="assets/favicon.svg" width="34" height="34" alt="">
+      </span>
+      <span class="logo-text">Schrödinger's<em>Cards</em></span>
+    </a>
+
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html#story">Our Story</a>
+      <a href="index.html#carry">What We Carry</a>
+      <a href="gallery.html" aria-current="page">Gallery</a>
+      <a href="index.html#visit">Visit Us</a>
+      <a href="guide.html">Collection Guide</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+
+    <div class="header-actions">
+      <a class="btn btn-ghost" href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">Shop on eBay</a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="main-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="gallery-main">
+  <div class="wrap">
+
+    <div class="gallery-intro">
+      <p class="eyebrow">The Booth</p>
+      <h1>Come have a look around.</h1>
+      <p class="gallery-lede">Photos from Booth 151 inside Treasure Cove Mall — the cases, the displays, and whatever has just landed on the shelves. If you see something you want held, message us and we'll set it aside.</p>
+    </div>
+
+    <div id="gallery-status" class="gallery-status" role="status">Loading photos&hellip;</div>
+
+    <section class="gallery-section" id="section-now" hidden>
+      <div class="gallery-section-head">
+        <h2>Just in</h2>
+        <p>Recently added to the booth. These come down after a week, so what you see here is current.</p>
+      </div>
+      <div class="photo-grid" id="grid-now"></div>
+    </section>
+
+    <section class="gallery-section" id="section-evergreen" hidden>
+      <div class="gallery-section-head">
+        <h2>Around the booth</h2>
+        <p>The setup itself — what to look for when you find us.</p>
+      </div>
+      <div class="photo-grid" id="grid-evergreen"></div>
+    </section>
+
+    <div class="gallery-cta">
+      <h2>Looking for something specific?</h2>
+      <p>We're at Booth 151, Tuesday to Saturday, 10am to 5pm. If you want something set aside before you drive out, just ask.</p>
+      <a class="btn btn-primary" href="index.html#contact">Get in touch</a>
+    </div>
+
+  </div>
+</main>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <button class="lb-close" id="lb-close" type="button" aria-label="Close">&times;</button>
+  <button class="lb-nav lb-prev" id="lb-prev" type="button" aria-label="Previous photo">&#8249;</button>
+  <button class="lb-nav lb-next" id="lb-next" type="button" aria-label="Next photo">&#8250;</button>
+  <figure class="lb-stage">
+    <img id="lb-img" alt="">
+    <figcaption id="lb-caption"></figcaption>
+  </figure>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p>&copy; <span id="year"></span> Schrödinger's Cards LLC. Jacksonville, Texas.</p>
+    <div class="footer-links">
+      <a href="gallery.html">Gallery</a>
+      <a href="guide.html">Collection Guide</a>
+      <a href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">eBay</a>
+      <a href="https://www.facebook.com/profile.php?id=61594026205359" target="_blank" rel="noopener">Facebook</a>
+      <a href="mailto:booth151.jtx@gmail.com">Email</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/script.js?v=3"></script>
+<script src="js/gallery.js?v=1"></script>
+</body>
+</html>

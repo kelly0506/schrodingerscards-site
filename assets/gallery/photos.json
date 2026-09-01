@@ -1,0 +1,46 @@
+{
+  "generated": "2026-09-01T22:34:50.647Z",
+  "expiryDays": 7,
+  "photos": [
+    {
+      "id": "16QHf45cmTIIPthotqYFNF0SZtXfaRTq_",
+      "lane": "evergreen",
+      "published": "2026-09-01T22:34:46.754Z",
+      "full": "assets/gallery/evergreen/16QHf45cmTIIPthotqYFNF0SZtXfaRTq_.webp",
+      "thumb": "assets/gallery/evergreen/16QHf45cmTIIPthotqYFNF0SZtXfaRTq_-thumb.webp",
+      "w": 1600,
+      "h": 1200,
+      "caption": ""
+    },
+    {
+      "id": "1-vH9gf7P2Gn8HMwZucQMH8itRpzMroIN",
+      "lane": "evergreen",
+      "published": "2026-09-01T22:34:47.932Z",
+      "full": "assets/gallery/evergreen/1-vH9gf7P2Gn8HMwZucQMH8itRpzMroIN.webp",
+      "thumb": "assets/gallery/evergreen/1-vH9gf7P2Gn8HMwZucQMH8itRpzMroIN-thumb.webp",
+      "w": 1600,
+      "h": 1200,
+      "caption": ""
+    },
+    {
+      "id": "1zEDSFUWmYv7aTVDlAhSXz1qwG1tJJY6u",
+      "lane": "evergreen",
+      "published": "2026-09-01T22:34:49.302Z",
+      "full": "assets/gallery/evergreen/1zEDSFUWmYv7aTVDlAhSXz1qwG1tJJY6u.webp",
+      "thumb": "assets/gallery/evergreen/1zEDSFUWmYv7aTVDlAhSXz1qwG1tJJY6u-thumb.webp",
+      "w": 1600,
+      "h": 1200,
+      "caption": ""
+    },
+    {
+      "id": "1bpgUGwFXXPIOgi8ah0a-9VBOmeDzJyEg",
+      "lane": "evergreen",
+      "published": "2026-09-01T22:34:50.647Z",
+      "full": "assets/gallery/evergreen/1bpgUGwFXXPIOgi8ah0a-9VBOmeDzJyEg.webp",
+      "thumb": "assets/gallery/evergreen/1bpgUGwFXXPIOgi8ah0a-9VBOmeDzJyEg-thumb.webp",
+      "w": 1600,
+      "h": 1200,
+      "caption": ""
+    }
+  ]
+}

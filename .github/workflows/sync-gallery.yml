@@ -1,0 +1,63 @@
+name: Sync gallery from Google Drive
+
+on:
+  schedule:
+    # Every 15 minutes, deliberately offset off the hour — scheduled runs
+    # queue behind everyone else's on-the-hour jobs and get delayed.
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:        # the "Run now" button
+
+concurrency:
+  group: sync-gallery
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install image tooling
+        if: steps.creds.outputs.ready == 'true'
+        run: npm install --prefix scripts --no-audit --no-fund
+
+      # Skip quietly until the API key exists, rather than failing every
+      # 15 minutes and mailing a red X each time.
+      - name: Check for credentials
+        id: creds
+        env:
+          GDRIVE_API_KEY: ${{ secrets.GDRIVE_API_KEY }}
+        run: |
+          if [ -z "$GDRIVE_API_KEY" ]; then
+            echo "No GDRIVE_API_KEY set yet — skipping sync."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Pull photos from Drive
+        if: steps.creds.outputs.ready == 'true'
+        env:
+          GDRIVE_API_KEY: ${{ secrets.GDRIVE_API_KEY }}
+          GDRIVE_FOLDER_ID: ${{ vars.GDRIVE_FOLDER_ID }}
+        run: node scripts/sync-gallery.mjs
+
+      - name: Commit any changes
+        if: steps.creds.outputs.ready == 'true'
+        run: |
+          if [ -z "$(git status --porcelain assets/gallery)" ]; then
+            echo "No gallery changes."
+            exit 0
+          fi
+          git config user.name  "gallery-sync"
+          git config user.email "gallery-sync@users.noreply.github.com"
+          git add assets/gallery
+          git commit -m "Update gallery photos from Drive"
+          git push
