@@ -57,7 +57,11 @@
   overflow: hidden;
   background: var(--surface);
   cursor: zoom-in;
-  aspect-ratio: 4 / 3;
+  /* Uniform square tiles. The booth photos are a mix of portrait and
+     landscape, and letting each tile take its own aspect ratio made the
+     rows ragged and looked like a bug. Cropping to a square in the grid
+     keeps it orderly; the lightbox shows the full uncropped photo. */
+  aspect-ratio: 1 / 1;
   transition: border-color 0.15s ease, transform 0.15s ease;
 }
 .photo-tile:hover { border-color: var(--accent); transform: translateY(-2px); }

@@ -31,14 +31,12 @@ function tile(photo, i) {
   const btn = document.createElement('button');
   btn.type = 'button';
   btn.className = 'photo-tile';
-  btn.style.aspectRatio = photo.w && photo.h ? `${photo.w} / ${photo.h}` : '4 / 3';
 
   const img = document.createElement('img');
   img.src = photo.thumb;
   img.alt = altFor(photo, i);
   img.loading = 'lazy';
   img.decoding = 'async';
-  if (photo.w && photo.h) { img.width = photo.w; img.height = photo.h; }
   img.addEventListener('load', () => img.classList.add('loaded'));
   /* If it is already cached the load event may have fired before we listened. */
   if (img.complete) img.classList.add('loaded');
