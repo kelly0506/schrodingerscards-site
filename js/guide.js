@@ -95,34 +95,8 @@ const CONFIG = {
 
   /* ---- Below this confidence (0-100) we stop showing dollar
      figures and steer harder toward "get it evaluated". ---- */
-  confidenceFloor: 62,
-
-  /* ---- The collapsed "Testing view" at the bottom of the results,
-     showing the raw scores and which rules fired. Useful while tuning
-     the numbers above, but not something customers should see.
-
-     'auto'  -> shown when opened locally (localhost or a file:// path),
-                hidden on the live site. This is the default: you keep the
-                panel while testing without having to remember to switch
-                it off before deploying.
-     true    -> always shown, live site included.
-     false   -> never shown, anywhere. ---- */
-  showTestingPanel: 'auto'
+  confidenceFloor: 62
 };
-
-/* Is this a local copy rather than the live site? */
-function isLocalPreview() {
-  const h = location.hostname;
-  return location.protocol === 'file:' ||
-         h === 'localhost' || h === '127.0.0.1' || h === '::1' ||
-         h === '' || h.endsWith('.local');
-}
-
-function showTestingPanel() {
-  return CONFIG.showTestingPanel === 'auto'
-    ? isLocalPreview()
-    : Boolean(CONFIG.showTestingPanel);
-}
 
 /* ---------- Score tables ---------- */
 
@@ -1100,28 +1074,6 @@ function renderResults(state) {
     <button type="button" class="btn btn-outline" id="restart-btn">Start over</button>
     <a class="btn btn-ghost" href="index.html">Back to the site</a>
   </div>`;
-
-  /* ---- Testing panel ---- */
-  if (showTestingPanel()) {
-  html += `<details class="debug"><summary>Testing view — how this was scored</summary>
-    <div class="debug-body">
-      <h4>Answers</h4><pre>${JSON.stringify(state, null, 2)}</pre>
-      <h4>Factors</h4><pre>${JSON.stringify({
-        value: Math.round(f.V), condition: Math.round(f.C), desirability: Math.round(f.D),
-        patience: f.T, effort: f.E, confidence: f.confidence,
-        condSingles: f.cSingles, condSealed: f.cSealed,
-        desSingles: f.dSingles, desSealed: f.dSealed,
-        unknowns: f.unknowns
-      }, null, 2)}</pre>
-      <h4>Path scores</h4><pre>${p.ranked.map((r) => r.key.padEnd(12) + r.score).join('\n')}</pre>
-      <h4>Grading gate: ${p.gate.passed ? 'PASSED' : 'FAILED'}</h4>
-      <pre>${Object.entries(p.gate.checks).map(([k, c]) => (c.ok ? '  ok  ' : ' FAIL ') + k).join('\n')}</pre>
-      <h4>Rules that fired</h4>
-      <ol>${p.rules.map((r) => `<li>${r}</li>`).join('') || '<li>None</li>'}</ol>
-      ${f.notes.length ? `<h4>Engine notes</h4><ol>${f.notes.map((n) => `<li>${n}</li>`).join('')}</ol>` : ''}
-    </div>
-  </details>`;
-  }
 
   const host = document.getElementById('guide-results');
   host.innerHTML = html;
