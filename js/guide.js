@@ -98,11 +98,31 @@ const CONFIG = {
   confidenceFloor: 62,
 
   /* ---- The collapsed "Testing view" at the bottom of the results,
-     showing the raw scores and which rules fired. Useful while you are
-     tuning the numbers above. Set to false before this goes public if
-     you would rather customers not see the scoring. ---- */
-  showTestingPanel: true
+     showing the raw scores and which rules fired. Useful while tuning
+     the numbers above, but not something customers should see.
+
+     'auto'  -> shown when opened locally (localhost or a file:// path),
+                hidden on the live site. This is the default: you keep the
+                panel while testing without having to remember to switch
+                it off before deploying.
+     true    -> always shown, live site included.
+     false   -> never shown, anywhere. ---- */
+  showTestingPanel: 'auto'
 };
+
+/* Is this a local copy rather than the live site? */
+function isLocalPreview() {
+  const h = location.hostname;
+  return location.protocol === 'file:' ||
+         h === 'localhost' || h === '127.0.0.1' || h === '::1' ||
+         h === '' || h.endsWith('.local');
+}
+
+function showTestingPanel() {
+  return CONFIG.showTestingPanel === 'auto'
+    ? isLocalPreview()
+    : Boolean(CONFIG.showTestingPanel);
+}
 
 /* ---------- Score tables ---------- */
 
@@ -1082,7 +1102,7 @@ function renderResults(state) {
   </div>`;
 
   /* ---- Testing panel ---- */
-  if (CONFIG.showTestingPanel) {
+  if (showTestingPanel()) {
   html += `<details class="debug"><summary>Testing view — how this was scored</summary>
     <div class="debug-body">
       <h4>Answers</h4><pre>${JSON.stringify(state, null, 2)}</pre>
