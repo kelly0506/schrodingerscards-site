@@ -21,6 +21,7 @@
 
   <path d="M4 32a28 28 0 0 1 56 0z" fill="url(#vwTop)"/>
   <g clip-path="url(#vwTopHalf)" fill="#0d1124" opacity=".62">
+    <rect x="0" y="12" width="64" height="1.2"/>
     <rect x="0" y="16.5" width="64" height="1.7"/>
     <rect x="0" y="21" width="64" height="2.3"/>
     <rect x="0" y="25.6" width="64" height="3"/>
