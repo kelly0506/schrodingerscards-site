@@ -13,19 +13,6 @@
 
 const CONFIG = {
 
-  /* ---- What a reseller realistically pays, as a share of
-     tracked "market" value (Collectr / TCGplayer style). The
-     owner's rule of thumb is ~50% at Near Mint, scaling down
-     hard with condition. VERIFY against your own buy rates. ---- */
-  resellerPayout: {
-    nm: [0.45, 0.55],
-    lp: [0.35, 0.45],
-    mp: [0.22, 0.32],
-    hp: [0.10, 0.20],
-    mixed: [0.28, 0.42],
-    dk: [0.20, 0.50]
-  },
-
   /* ---- Grading economics. Checked September 2026.
      IMPORTANT: PSA paused its Value, Value Bulk, Value Plus and Value Max
      tiers on 2 June 2026 to work down a backlog that peaked around 14M
@@ -430,7 +417,6 @@ const SCREENS = [
 const clamp = (n, lo = 0, hi = 100) => Math.max(lo, Math.min(hi, n));
 const has = (arr, v) => Array.isArray(arr) && arr.includes(v);
 
-const VALUE_MID = { u100: 60, v100_500: 300, v500_1k: 750, v1k_5k: 3000, v5k_10k: 7500, v10k: 12000 };
 const HIGH_TIER_TYPES = ['sir_sar', 'serialized', 'first_ed', 'vintage', 'chase'];
 
 function computeFactors(state) {
@@ -655,34 +641,19 @@ const PATH_META = {
   evaluate:   { label: 'Evaluate and hold',       short: 'Understand what you have before committing to anything.' }
 };
 
-function resellerEstimate(state, f) {
-  if (f.confidence < CONFIG.confidenceFloor) return null;
-  if (state.value === 'dk') return null;
-  let mid = VALUE_MID[state.value];
-  if (!mid) return null;
-  if (state.valueSource === 'collectr') mid *= (1 - CONFIG.collectrHaircut);
-  const condKey = hasSingles(state) ? (state.condSingles || 'dk') : (state.condSealed === 'factory' ? 'nm' : state.condSealed === 'minor' ? 'lp' : state.condSealed === 'noticeable' ? 'mp' : state.condSealed === 'damaged' ? 'hp' : state.condSealed || 'dk');
-  const band = CONFIG.resellerPayout[condKey] || CONFIG.resellerPayout.dk;
-  return { lo: mid * band[0], hi: mid * band[1], plus: state.value === 'v10k' };
-}
-
 function primaryCopy(state, f, p) {
   const key = p.ranked[0].key;
-  const est = resellerEstimate(state, f);
   const both = state.holdings === 'both';
 
   /* Sealed-only collections get their own voice — the singles copy talks about
      photographing and grading cards, which is nonsense for a stack of boxes. */
-  if (state.holdings === 'sealed' && key !== 'evaluate') return sealedPrimary(state, f, key, est);
+  if (state.holdings === 'sealed' && key !== 'evaluate') return sealedPrimary(state, f, key);
 
   if (key === 'reseller') {
     const paras = [];
     paras.push('Given how quickly you want this done and how much work you want to put in, selling the collection as a lot is the honest answer. You will not get top dollar — nobody selling this way does — but you will get a single number, one transaction, and no listings to manage.');
-    if (est) {
-      paras.push('Expect somewhere around <strong>' + money(est.lo) + ' – ' + money(est.hi) + (est.plus ? '+' : '') + '</strong>. That reflects roughly half of tracked market value at Near Mint, scaled down for the condition you described. A buyer has to resell everything you hand them, absorb the pieces that do not move, and carry that inventory in the meantime.');
-    } else {
-      paras.push('As a rule of thumb, a reseller pays around half of tracked market value for Near Mint material, and meaningfully less as condition drops. We are not putting a number on yours because too much of what you told us was a guess — that is worth fixing before you sell.');
-    }
+    paras.push('As a rule of thumb, expect a reseller to offer somewhere around half of a collection\'s tracked market value for Near Mint material, and meaningfully less as condition drops. A buyer has to resell everything you hand them, absorb the pieces that do not move, and carry that inventory in the meantime.');
+    paras.push('<strong>We are deliberately not putting a dollar figure on yours.</strong> A handful of questions cannot tell us what you actually have, and any number we produced from them would look far more precise than it deserves to. Getting a real one means somebody looking at the cards.');
     if (f.C < 55) paras.push('Condition is doing most of the damage here. Played cards are not a small discount off Near Mint — they are frequently worth a fraction of it, and that gap is why the offer will feel low.');
     paras.push('One thing worth doing first: pull out anything you suspect is genuinely valuable and price those separately. Bulk pricing on a collection that quietly contains a $400 card is how people lose the most money on this path.');
     paras.push('For what it is worth, the gap between this and selling it yourself is smaller than it looks. Online marketplaces take ' + CONFIG.fees.rangeLow + '–' + CONFIG.fees.rangeHigh + '% of every sale before shipping, and the cards that never sell still cost you the time you spent listing them.');
@@ -724,7 +695,7 @@ function primaryCopy(state, f, p) {
   return { title: 'Get it evaluated before you decide anything', paras };
 }
 
-function sealedPrimary(state, f, key, est) {
+function sealedPrimary(state, f, key) {
   const desirable = state.sealedOutOfPrint === 'yes' || state.sealedScarce === 'yes';
   const goodCond = (f.cSealed ?? 50) >= 70;
   const sealedIntact = state.sealedFactory === 'yes';
@@ -732,9 +703,7 @@ function sealedPrimary(state, f, key, est) {
   if (key === 'reseller') {
     const paras = [];
     paras.push('You want this handled quickly and with minimal fuss, and sealed product is straightforward to move as a lot. One transaction, one number, done.');
-    if (est) {
-      paras.push('Expect roughly <strong>' + money(est.lo) + ' – ' + money(est.hi) + (est.plus ? '+' : '') + '</strong>. Sealed usually earns a better share of market value than loose cards do, because a buyer can resell it without sorting, grading or describing anything — but it is still a wholesale number, not a retail one.');
-    }
+    paras.push('Sealed usually earns a better share of market value than loose cards do, because a buyer can resell it without sorting, grading or describing anything — but it is still a wholesale number, not a retail one. We are not going to guess at a figure for yours; that needs someone to actually see the product.');
     if (!sealedIntact) {
       paras.push('Be upfront about anything that has been opened or resealed. Buyers check, and a collection that gets returned costs you far more than the honest price would have.');
     }
@@ -975,7 +944,7 @@ function renderResults(state) {
              <em>total</em>, meaning the item price, the shipping you charged, and the sales tax the buyer paid. There is one useful exception:
              singles that sell for ${money(fe.ebayHighValueThreshold)} or more get 50% off that fee, which meaningfully changes the math on your best cards.</p>
           <p><strong>TCGplayer</strong> lands in the same place by a different route — 10.75% commission plus 2.5% and ${money2(0.30)} for payment processing, so about ${fe.tcgplayerPct}% all-in.</p>
-          <p>On a ${money(100)} sale, after fees and a plain shipped envelope, you keep roughly <strong>${money(net100)}</strong>. Then subtract your time.</p>
+          <p>As a worked example: on a hypothetical ${money(100)} sale, after fees and a plain shipped envelope, you would keep roughly <strong>${money(net100)}</strong>. Then subtract your time.</p>
         </div>
         <div class="rec-card">
           <h3>Why this changes the comparison</h3>
