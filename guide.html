@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Should I Do With My Cards? | Schrödinger's Cards</title>
+<meta name="description" content="Answer a few questions about your card collection and get a personalized recommendation: sell to a reseller, sell individually, grade selectively, or hold and evaluate.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/guide.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header" id="site-header">
+  <div class="wrap header-inner">
+    <a href="index.html#top" class="logo">
+      <span class="logo-mark" aria-hidden="true">
+        <img src="assets/favicon.svg" width="34" height="34" alt="">
+      </span>
+      <span class="logo-text">Schrödinger's<em>Cards</em></span>
+    </a>
+
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html#story">Our Story</a>
+      <a href="index.html#carry">What We Carry</a>
+      <a href="index.html#visit">Visit Us</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+
+    <div class="header-actions">
+      <a class="btn btn-ghost" href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">Shop on eBay</a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="main-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="guide-main">
+  <div class="wrap">
+
+    <div class="guide-intro" id="guide-intro">
+      <p class="eyebrow">Collection Guide</p>
+      <h1>What should I do with my cards?</h1>
+      <p class="guide-lede">There is no single right answer — it depends on what you have, what condition it's in, how fast you want the money, and how much work you're willing to do. Answer a few questions and we'll walk you through your realistic options.</p>
+      <p class="guide-note">Takes about two minutes. Nothing is sent to us, and nothing is saved unless you choose to contact us at the end. Every question has an <strong>"I'm not sure"</strong> option — you don't need to be an expert to use this.</p>
+
+      <div class="scope-note">
+        <h2>Built for Pokémon</h2>
+        <p>Pokémon TCG is what we specialise in, so the set references, price ranges and grading maths behind this tool are tuned to that market. If your collection is mostly <strong>Magic: The Gathering, sports or another game</strong>, the four strategies and the questions still apply — but treat the specific numbers as rough, and get in touch if you'd like a proper look at it.</p>
+      </div>
+      <button class="btn btn-primary" id="start-btn" type="button">Start</button>
+    </div>
+
+    <!-- Question flow -->
+    <div class="guide-app" id="guide-app" hidden>
+      <div class="progress-shell" aria-hidden="true">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <p class="progress-label" id="progress-label" aria-live="polite"></p>
+
+      <form id="screen-form" novalidate>
+        <div id="screen-host"></div>
+
+        <div class="screen-actions">
+          <button type="button" class="btn btn-outline" id="back-btn">Back</button>
+          <button type="submit" class="btn btn-primary" id="next-btn">Continue</button>
+        </div>
+        <p class="validation-msg" id="validation-msg" role="alert" hidden></p>
+      </form>
+
+      <aside class="help-rail" id="help-rail" hidden>
+        <h2>Not sure about condition?</h2>
+        <p>It's the single biggest factor in what your cards are worth, and it's the one most people get wrong — usually by being too generous. If you'd rather not guess, we can look at it with you.</p>
+        <div class="help-actions">
+          <button type="button" class="btn btn-outline btn-sm" id="condition-help-btn">How to judge condition</button>
+          <a class="btn btn-ghost btn-sm" href="index.html#contact">I'd rather have help</a>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Results -->
+    <div class="guide-results" id="guide-results" hidden></div>
+
+  </div>
+</main>
+
+<!-- Condition guidance drawer -->
+<div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
+<aside class="drawer" id="condition-drawer" hidden aria-label="How to judge card condition" role="dialog" aria-modal="true">
+  <div class="drawer-inner">
+    <button class="drawer-close" id="drawer-close" type="button" aria-label="Close">&times;</button>
+    <p class="eyebrow">Grading yourself, honestly</p>
+    <h2>How to judge condition</h2>
+    <p class="drawer-lede">Take the card out of the sleeve, hold it under a bright light, and tilt it. Most damage only shows at an angle. Check the front, the back, and all four corners.</p>
+
+    <div class="cond-tier">
+      <h3>Near Mint / Mint</h3>
+      <p>Looks like it just came out of the pack. Sharp corners, clean edges with no white showing, no surface scratches or print lines, and centering that looks even. A tiny factory flaw is still Near Mint.</p>
+    </div>
+    <div class="cond-tier">
+      <h3>Lightly Played</h3>
+      <p>Minor wear you have to look for. Slight edge whitening, a small corner softness, or very light surface scuffing. Still looks good in a sleeve.</p>
+    </div>
+    <div class="cond-tier">
+      <h3>Moderately Played</h3>
+      <p>Obvious wear at a glance. Noticeable edge whitening, rounded corners, light scratching, or minor creasing that doesn't break the card's surface.</p>
+    </div>
+    <div class="cond-tier">
+      <h3>Heavily Played / Damaged</h3>
+      <p>Heavy whitening, real creases, bends, water damage, writing, or tears. Still sells, but as a "player" copy — a fraction of Near Mint prices.</p>
+    </div>
+
+    <div class="drawer-callout">
+      <h3>Two things people miss</h3>
+      <p><strong>Centering.</strong> If the borders are noticeably wider on one side, that alone can cap a grade — even on a card with no wear at all.</p>
+      <p><strong>Sealed isn't automatically mint.</strong> Crushed corners, dented boxes, torn or resealed shrink wrap, and sun-faded packaging all matter. Judge the box the same way you'd judge a card.</p>
+    </div>
+
+    <div class="drawer-callout drawer-callout-accent">
+      <h3>Still not sure?</h3>
+      <p>That's normal, and it's the part we're happy to help with. Collection assessments are arranged individually — reach out and tell us roughly what you have.</p>
+      <a class="btn btn-primary btn-sm" href="index.html#contact">Contact us</a>
+    </div>
+  </div>
+</aside>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p>&copy; <span id="year"></span> Schrödinger's Cards LLC. Jacksonville, Texas.</p>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">eBay</a>
+      <a href="https://www.facebook.com/profile.php?id=61594026205359" target="_blank" rel="noopener">Facebook</a>
+      <a href="mailto:booth151.jtx@gmail.com">Email</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/script.js"></script>
+<script src="js/guide.js"></script>
+</body>
+</html>
