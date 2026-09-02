@@ -6,6 +6,14 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const rand=(a,b)=>a+Math.random()*(b-a);
 const TAU=Math.PI*2;
 const G=1500, AIR=0.9985, REST=0.34, FLOOR_F=0.80;
+/* The gentlest contact that is allowed to do damage in free play, in px/s.
+   A body resting on another one is handed a fresh G*dt of downward speed
+   every frame — 25px/s at 60fps — and the body-body pass below cashed that in
+   as a hit with no floor under it, so anything fragile touching a neighbour
+   shattered in the first frames with the player nowhere near it. The perch
+   pass has always had this guard at the same number; the pair pass never did.
+   Far below anything a player can produce: a dropped item lands at 400+. */
+const REST_SEP=60;
 
 /* Domino, the temperament that won: cats wake at the slightest thing and stay
    up a long time, so the room comes apart gradually, one perch at a time. */
@@ -231,7 +239,14 @@ function resize(){
   ctx.setTransform(dpr,0,0,dpr,0,0);
   w.S=Math.min(w.W/620,w.H/413);
   layout();
-  for(const b of w.bodies){ b.x=b.fx*w.W; b.y=b.fy*w.H; b.r=b.fr*w.S; }
+  /* home is a pixel anchor and the pixels have just changed underneath it.
+     Without moving it too, every item reads as displaced from where it started
+     and the damage figure climbs on its own — 14% of a free play room the
+     instant a phone drops its address bar, with nothing broken and nobody
+     touching anything. The bodies themselves are put back on their fractions
+     here, so their home is exactly where they now are. */
+  for(const b of w.bodies){ b.x=b.fx*w.W; b.y=b.fy*w.H; b.r=b.fr*w.S;
+    if(b.home){ b.home.x=b.x; b.home.y=b.y; } }
 }
 addEventListener('resize',resize);
 
@@ -380,13 +395,25 @@ function buildLevel(i,seed){
   }
   /* How long the room is allowed to shake itself down before the damage is
      wiped and play starts. 220 frames is what the five scored levels were
-     tuned against and they keep it. Free play needs far longer: it holds
-     three times the clutter, and a room still jostling itself apart when the
-     player arrives takes away the thing they came for — the mess should be
-     theirs. Swept against how much breaks with nobody touching it. */
+     tuned against and they keep it exactly.
+
+     Free play is held to a stricter standard: the promise is that the room is
+     still until the player touches it, and 220 frames does not get this room
+     there — it holds three times the clutter. Anything still drifting when the
+     pass ended had its velocity wiped where it stood, in mid air, and dropped
+     the moment play started: a cat sliding off a shelf, a pot rolling along
+     the floor, all of it before the player had done anything. So free play is
+     not settled for a fixed count, it is settled until it is actually quiet.
+     Hanging bodies are excluded — a chandelier is a pendulum and never comes
+     fully to rest, and it is reset onto its chain below anyway. The cap is a
+     guard against a room that never converges, not an expected outcome. */
   w.settling=true;
   const settleFrames=w.L.settle||220;
   for(let k=0;k<settleFrames;k++) step(1/60,true);
+  if(w.L.free){
+    const stirring=()=>w.bodies.some(b=>!b.hang&&Math.hypot(b.vx,b.vy)>1.5*w.S);
+    for(let k=0;k<300&&stirring();k++) step(1/60,true);
+  }
   w.settling=false;
   for(const b of w.bodies){
     b.vx=b.vy=b.vr=0; b.rot=b.kind==='cat'?0:b.rot*0.2;
@@ -400,6 +427,7 @@ function buildLevel(i,seed){
     ch.home={x:ch.x,y:ch.y}; ch.lit=true;
   }
   w.shards=[]; w.puffs=[]; w.started=false; w.over=false; w.elapsed=0; w.quiet=0; w.shake=0;
+  w.touched=false;
 }
 function spazz(c,byHand){
   c.state='spaz'; c.spazT=P.spazT*rand(0.85,1.18)*(c.special?1.0:1); c.woken=true;
@@ -544,6 +572,19 @@ function step(dt,settling){
       for(let i=0;i<5;i++)
         b.tail[i]=Math.sin(w.elapsed*(drive?17:2.1)-i*0.85+b.seed)*(drive?0.9*drive:0.16);
     }
+    /* Free play does not run its physics at all until the player has taken
+       hold of a cat. Settling a room this full to a genuine standstill is not
+       something a fixed number of frames can promise — a pot balanced on the
+       lip of a shelf will creep for as long as you leave it — and the promise
+       here is stronger than "nearly still": nothing moves until you move it.
+       The animation above still runs, so the cats breathe and flick their
+       tails; it is the world that is held. One grab releases it for good.
+
+       The settle pass is exempt — it runs before w.touched is cleared, and
+       holding it too meant the room was never settled at all: it was built
+       from raw spawn positions and then frozen there, so the first grab
+       dropped the whole room at once and took the floor out with it. */
+    if(w.free&&!w.touched&&!b.grabbed&&!settling) continue;
     /* the chandelier swings on its chain until the chain is no longer there */
     if(b.hang){
       const dx=b.x-b.hang.x, dy=b.y-b.hang.y, d=Math.hypot(dx,dy)||1;
@@ -615,7 +656,7 @@ function step(dt,settling){
       }
     }
   }
-  for(let i=0;i<w.bodies.length;i++) for(let j=i+1;j<w.bodies.length;j++){
+  if(settling||!(w.free&&!w.touched)) for(let i=0;i<w.bodies.length;i++) for(let j=i+1;j<w.bodies.length;j++){
     const a=w.bodies[i], b=w.bodies[j];
     const dx=b.x-a.x, dy=b.y-a.y, d=Math.hypot(dx,dy), min=a.r+b.r;
     if(d>=min||d===0) continue;
@@ -634,7 +675,13 @@ function step(dt,settling){
     const spazzing=(a.kind==='cat'&&(a.state==='spaz'||a.grabbed))||(b.kind==='cat'&&(b.state==='spaz'||b.grabbed));
     const force=Math.abs(sep)*Math.min(a.mass,b.mass)*0.9+(spazzing?P.force:0);
     const at={x:a.x+nx*a.r,y:a.y+ny*a.r};
-    hit(a,force,at,b); hit(b,force,at,a);
+    /* Scored levels keep taking damage from a nudge this small — all five are
+       balanced around the room helping itself along. Free play is the opposite
+       promise: the mess is yours, so the room holds still until you touch it.
+       See REST_SEP. */
+    if(!(w.free&&!spazzing&&Math.abs(sep)<REST_SEP)){
+      hit(a,force,at,b); hit(b,force,at,a);
+    }
   }
   for(const s of w.shards){ s.age+=dt; s.vy+=G*0.7*dt; s.x+=s.vx*dt; s.y+=s.vy*dt; s.rot+=s.vr*dt;
     if(s.y>w.floorY){ s.y=w.floorY; s.vy*=-0.28; s.vx*=0.72; } }
@@ -1312,6 +1359,7 @@ cv.addEventListener('pointerdown',e=>{
     try { cv.setPointerCapture?.(e.pointerId); } catch {}
     release();
     c.grabbed=true; c.woken=true;
+    w.touched=true;                 // the room is live from here on
     w.grab={ b:c, px:x, py:y, id:e.pointerId };
     document.body.classList.add('dragging');
     return;
@@ -1340,20 +1388,36 @@ $('go').onclick=newGame;
 $('free-reset').onclick=freePlay;
 $('free-exit').onclick=exitFree;
 
-let last=performance.now();
+/* The simulation runs at a fixed 1/60 whatever the display is doing.
+   buildLevel settles the room at 1/60, and equilibrium is dt-dependent: step
+   the same settled room at 30fps and every resting body is handed twice the
+   gravity per frame, which the contact pass reads as twice the impact. A fifth
+   of free play used to shatter on its own in the first half second on anything
+   that was not a 60Hz screen. Real time is accumulated and spent in whole
+   steps, so a slow display runs the same simulation in bigger gulps — capped
+   at four steps a frame so a stalled tab cannot spiral trying to catch up. */
+const FIXED=1/60, MAX_STEPS=4;
+let last=performance.now(), acc=0;
 function frame(now){
-  const dt=clamp((now-last)/1000,0,0.033); last=now;
+  const dt=clamp((now-last)/1000,0,0.25); last=now;
   const t=now/1000;
+  /* Time only accumulates while something is actually being simulated, so
+     sitting on the overlay does not bank a burst for the next level. */
+  const live=!w.over&&(w.free||w.started);
+  acc=live?Math.min(acc+dt,FIXED*MAX_STEPS):0;
   ctx.save();
   if(w.shake>0.4) ctx.translate(rand(-w.shake,w.shake),rand(-w.shake,w.shake));
   drawRoom();
   if(w.free){
-    if(!w.over){ step(dt,false); w.elapsed+=dt; hud(); }
-  } else if(w.started&&!w.over){
-    step(dt,false); w.elapsed+=dt;
-    if(w.nuke){ w.nuke.age+=dt; if(w.nuke.age>=w.nuke.life) endLevel(); }
-    else if(topSpeed()<40*w.S&&!anySpaz()){ w.quiet+=dt; if(w.quiet>0.7) endLevel(); }
-    else w.quiet=0;
+    while(acc>=FIXED&&!w.over){ acc-=FIXED; step(FIXED,false); w.elapsed+=FIXED; }
+    if(live) hud();
+  } else if(live){
+    while(acc>=FIXED&&!w.over){
+      acc-=FIXED; step(FIXED,false); w.elapsed+=FIXED;
+      if(w.nuke){ w.nuke.age+=FIXED; if(w.nuke.age>=w.nuke.life) endLevel(); }
+      else if(topSpeed()<40*w.S&&!anySpaz()){ w.quiet+=FIXED; if(w.quiet>0.7) endLevel(); }
+      else w.quiet=0;
+    }
     hud();
   }
   for(const b of w.bodies) if(b.kind==='item') drawItem(b);
