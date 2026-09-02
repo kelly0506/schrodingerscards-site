@@ -107,7 +107,44 @@
     ctx.beginPath(); ctx.arc(lx,ly,lr+5,0,7); ctx.stroke();
   }
 
-  const ART={cats:artCats,fits:artFits,hats:artHats};
+  /* Catastrophe: a cat coming apart on a shelf, with the crockery on its way
+     to the floor. */
+  function artChaos(ctx,W,H){
+    const floorY=H*0.86;
+    ctx.fillStyle='#1b2040'; ctx.fillRect(0,floorY,W,H-floorY);
+    ctx.strokeStyle='#2a2f52'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(0,floorY); ctx.lineTo(W,floorY); ctx.stroke();
+    ctx.fillStyle='#2f3560';
+    ctx.fillRect(W*0.06,H*0.40,W*0.34,8); ctx.fillRect(W*0.58,H*0.30,W*0.34,8);
+    /* things in the air */
+    const flying=[[0.30,0.60,'#7dd8ff',9],[0.46,0.34,'#ffd88a',7],[0.62,0.62,'#8fe3b0',8],
+                  [0.20,0.24,'#ff8fd0',6],[0.80,0.55,'#b48bff',8]];
+    for(const [fx,fy,col,r] of flying){
+      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(W*fx,H*fy,r,0,7); ctx.fill();
+    }
+    ctx.fillStyle='#3b4470';
+    for(let i=0;i<26;i++){ const a=(i*2.7)%7;
+      ctx.save(); ctx.translate(W*(0.12+0.76*((i*13)%17)/17),H*(0.20+0.62*((i*7)%13)/13));
+      ctx.rotate(a); ctx.fillRect(-3,-1.6,6,3.2); ctx.restore(); }
+    /* the cat that started it, mid-panic */
+    const cx=W*0.40, cy=H*0.30, r=26, fur=FUR[4];
+    ctx.fillStyle=fur; ctx.beginPath();
+    for(let i=0;i<=26;i++){ const a=(i/26)*7, sp=i%2?1.30:0.95;
+      const x=cx+Math.cos(a)*r*0.92*sp, y=cy+Math.sin(a)*r*0.72*sp;
+      i?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle=FUR[4]; ctx.lineWidth=5; ctx.lineCap='round';
+    for(const [dx,dy] of [[-0.9,0.9],[-0.3,1.2],[0.4,1.15],[1.0,0.8]]){
+      ctx.beginPath(); ctx.moveTo(cx+dx*r*0.5,cy+dy*r*0.3);
+      ctx.lineTo(cx+dx*r*1.15,cy+dy*r*0.85); ctx.stroke(); }
+    head(ctx,cx+r*0.5,cy-r*0.5,r*0.55,fur,1.3);
+    ctx.strokeStyle='rgba(255,216,138,.8)'; ctx.lineWidth=2.5;
+    for(let i=0;i<6;i++){ const a=(i/6)*7;
+      ctx.beginPath(); ctx.moveTo(cx+Math.cos(a)*r*1.5,cy+Math.sin(a)*r*1.25);
+      ctx.lineTo(cx+Math.cos(a)*r*1.95,cy+Math.sin(a)*r*1.6); ctx.stroke(); }
+  }
+
+  const ART={cats:artCats,fits:artFits,hats:artHats,chaos:artChaos};
   document.querySelectorAll('canvas.tile-art').forEach(cv=>{
     const ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
     ctx.clearRect(0,0,W,H);
