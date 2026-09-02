@@ -62,19 +62,17 @@ canvas#field:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
 
 /* ---- arcade leaderboard ---- */
-.board{margin-top:26px}
-.board h3{font-family:var(--font-head);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint);margin-bottom:12px;display:flex;gap:10px;align-items:center}
-.board-scope{font-size:.62rem;letter-spacing:.1em;padding:3px 8px;border-radius:999px;border:1px solid var(--border);color:var(--text-faint)}
+.board{margin:0 auto 20px;max-width:330px;text-align:left}
+.board h3{font-family:var(--font-head);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint);margin-bottom:10px;text-align:center}
 .board ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
-.board li{display:grid;grid-template-columns:2.2rem 1fr auto;gap:12px;align-items:baseline;
-  padding:8px 14px;border-radius:8px;background:var(--bg-alt);border:1px solid transparent;
+.board li{display:grid;grid-template-columns:1.8rem 1fr auto;gap:10px;align-items:baseline;
+  padding:6px 12px;border-radius:8px;background:var(--bg-alt);border:1px solid transparent;
   font-family:var(--font-head);font-variant-numeric:tabular-nums}
 .board li.you{border-color:var(--gold);background:rgba(255,216,138,.07)}
 .board .rank{color:var(--text-faint);font-size:.82rem}
 .board .who{font-weight:700;letter-spacing:.22em;font-size:1rem}
 .board .pts{font-weight:700;font-size:.95rem;color:var(--accent)}
 .board li.you .pts{color:var(--gold)}
-.board-empty{color:var(--text-faint);font-size:.86rem;padding:10px 2px}
 
 .entry{margin:0 auto 18px;max-width:340px}
 .entry p{font-size:.88rem;color:var(--gold);margin-bottom:12px}

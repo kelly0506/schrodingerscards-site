@@ -111,7 +111,17 @@ body {
   font-size: 1.15rem;
   color: var(--text);
 }
-.logo-mark { color: var(--accent); display: inline-flex; }
+.logo-mark {
+  color: var(--accent);
+  display: inline-flex;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+/* No tooltip, no label, no cursor change beyond the usual link — the
+   only hint that the mark goes anywhere is a small tilt on hover. */
+.logo-mark:hover { transform: rotate(-12deg) scale(1.06); }
+.logo-mark:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.logo-text:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .logo-text em { font-style: normal; color: var(--accent); }
 
 .main-nav {

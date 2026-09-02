@@ -1,28 +1,58 @@
 /* ---------------- leaderboard ----------------
-   Shared store when the page is running with the db capability, and a
-   per-device fallback otherwise, so the same file works anywhere. Only
-   scores good enough for the top ten are written, which also keeps the
-   document count from growing without bound. */
+
+   WHERE SCORES LIVE
+   -----------------
+   Set SCORES_URL to a Firebase Realtime Database URL and every visitor
+   sees and adds to the same board. Leave it null and scores stay in each
+   visitor's own browser, which is the safe default: a wrong URL here
+   would mean the board silently does nothing.
+
+   To turn the shared board on (about five minutes, no billing):
+     1. console.firebase.google.com -> Add project (skip Analytics)
+     2. Build -> Realtime Database -> Create Database -> Start in TEST mode
+     3. Copy the database URL, e.g. https://something.firebaseio.com
+     4. Paste it below
+     5. Rules tab, replace with:
+        { "rules": { "scores": { ".read": true, ".write": true,
+            "$s": { ".validate":
+              "newData.hasChildren(['name','score'])
+               && newData.child('name').isString()
+               && newData.child('name').val().length <= 3
+               && newData.child('score').isNumber()
+               && newData.child('score').val() >= 0
+               && newData.child('score').val() <= 100000" } } } }
+
+   Those rules stop junk being written but cannot stop a determined
+   person posting a score they did not earn — a browser game has no way
+   to prove otherwise. For an arcade board on a card shop site that is a
+   fine trade; just do not treat it as authoritative. */
+const SCORES_URL = null;
+
 const BOARD_SIZE = 10;
 const LOCAL_KEY = 'scats-board';
+
 const Board = {
-  db: null,
-  ready: false,
-  get shared(){ return !!this.db; },
+  shared: false,
   async init(){
-    try { this.db = (window.claude && claude.use) ? await claude.use('db') : null; }
-    catch { this.db = null; }
-    this.ready = true;
+    this.shared = false;
+    if (!SCORES_URL) return false;
+    try {
+      const res = await fetch(SCORES_URL.replace(/\/$/,'') + '/scores.json', { cache:'no-store' });
+      if (res.ok) this.shared = true;
+    } catch { this.shared = false; }
     return this.shared;
   },
   localRows(){
     try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]'); } catch { return []; }
   },
   async top(){
-    if (this.db){
+    if (this.shared){
       try {
-        const snap = await this.db.collection('scores').orderBy('score','desc').limit(BOARD_SIZE).get();
-        return snap.docs.map(d => d.data()).filter(Boolean);
+        const res = await fetch(SCORES_URL.replace(/\/$/,'') + '/scores.json', { cache:'no-store' });
+        const obj = await res.json();
+        const rows = obj ? Object.values(obj) : [];
+        return rows.filter(r => r && typeof r.score === 'number')
+                   .sort((a,b)=>b.score-a.score).slice(0, BOARD_SIZE);
       } catch { /* fall through to local */ }
     }
     return this.localRows().sort((a,b)=>b.score-a.score).slice(0, BOARD_SIZE);
@@ -34,8 +64,12 @@ const Board = {
   },
   async submit(name, score){
     const row = { name, score, at: Date.now() };
-    if (this.db){
-      try { await this.db.collection('scores').add(row); return row; } catch { /* fall through */ }
+    if (this.shared){
+      try {
+        await fetch(SCORES_URL.replace(/\/$/,'') + '/scores.json',
+          { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(row) });
+        return row;
+      } catch { /* fall through to local */ }
     }
     const rows = this.localRows();
     rows.push(row);
@@ -73,7 +107,7 @@ const CAT_SCALE = 2.35;
 const VISIT_MS = 8200;          // how long a cat sticks around uncaught
 
 let W=0, H=0, fieldScale=1, ringScale=1, running=false, endsAt=0, score=0, caught=0, progress=0;
-let cats=[], pops=[], haul={};
+let cats=[], pops=[], haul={}, motes=[], rings=[];
 let best = Number(localStorage.getItem('scats-best') || 0);
 document.getElementById('best').textContent = best;
 const pointer = { x:-999, y:-999, down:false, touch:false };
@@ -139,10 +173,15 @@ const catCap = () => Math.min(3, 1 + Math.floor(caught / 5));
 /* ---------------- the cat ---------------- */
 function drawCat(c, t){
   const r = c.r, B = r.build;
-  const scale = B.scale * fieldScale * (c.arrive < 1 ? 0.55 + 0.45*c.arrive : 1);
+  let scale = B.scale * fieldScale * (c.arrive < 1 ? 0.55 + 0.45*c.arrive : 1);
+  /* A caught cat collapses to a point rather than fading out — it squashes
+     down, spins a little and vanishes, which is much funnier than a
+     dissolve. A cat that merely wandered off still just fades. */
+  if (c.caughtFlag) scale *= Math.pow(1 - c.leaving, 0.85);
   ctx.save();
   ctx.translate(c.x, c.y);
-  ctx.globalAlpha = c.leaving ? 1 - c.leaving : 1;
+  if (c.caughtFlag && c.leaving) ctx.rotate(c.leaving * 1.5);
+  ctx.globalAlpha = c.leaving ? (c.caughtFlag ? 1 - Math.pow(c.leaving, 2.2) : 1 - c.leaving) : 1;
 
   // aura, so a rare sighting announces itself across the field
   if (r.aura > 0){
@@ -361,8 +400,20 @@ function drawPop(p){
   ctx.globalAlpha=1;
 }
 
+/* Motes flung out at the moment of capture. */
+function poof(x, y, colour){
+  for (let i=0;i<10;i++){
+    const a = (i/10)*Math.PI*2 + Math.random()*0.5;
+    const sp = 60 + Math.random()*90;
+    motes.push({ x, y, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp - 30,
+                 life:0.55+Math.random()*0.25, max:0.8, colour, r:1.6+Math.random()*2 });
+  }
+  rings.push({ x, y, r:6, life:1, colour });
+}
+
 function land(c){
   score += c.r.pts; caught++;
+  poof(c.x, c.y, c.r.fur);
   haul[c.r.key] = (haul[c.r.key]||0)+1;
   document.getElementById('score').textContent = score;
   document.getElementById('caught').textContent = caught;
@@ -391,7 +442,7 @@ function loop(now){
     }
 
     for (const c of cats){
-      if (c.leaving){ c.leaving=Math.min(1,c.leaving+dt*2.6); continue; }
+      if (c.leaving){ c.leaving=Math.min(1,c.leaving+dt*(c.caughtFlag?2.1:3.2)); continue; }
       c.arrive = Math.min(1, c.arrive + dt*3);
 
       c.think-=dt;
@@ -466,6 +517,26 @@ function loop(now){
     for (const c of cats) drawCat(c, reduced?0:t);
   }
 
+  // expanding shockwave rings
+  for (const g of rings){
+    g.life -= dt*2.2; g.r += dt*230;
+    if (g.life<=0) continue;
+    ctx.globalAlpha = g.life*0.5; ctx.strokeStyle = g.colour; ctx.lineWidth = 2.4*g.life;
+    ctx.beginPath(); ctx.arc(g.x, g.y, g.r, 0, Math.PI*2); ctx.stroke();
+  }
+  rings = rings.filter(g=>g.life>0);
+  ctx.globalAlpha = 1;
+
+  // motes
+  for (const m of motes){
+    m.life -= dt; if (m.life<=0) continue;
+    m.x += m.vx*dt; m.y += m.vy*dt; m.vy += 210*dt; m.vx *= 0.98;
+    ctx.globalAlpha = Math.max(0, m.life/m.max); ctx.fillStyle = m.colour;
+    ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, Math.PI*2); ctx.fill();
+  }
+  motes = motes.filter(m=>m.life>0);
+  ctx.globalAlpha = 1;
+
   for (const p of pops) p.life-=dt;
   pops=pops.filter(p=>p.life>0);
   pops.forEach(drawPop);
@@ -491,7 +562,7 @@ cv.addEventListener('pointerleave', ()=>{ if(!pointer.down){ pointer.x=-999; poi
 
 function start(){
   resize();
-  score=0; caught=0; progress=0; cats=[]; pops=[]; haul={};
+  score=0; caught=0; progress=0; cats=[]; pops=[]; haul={}; motes=[]; rings=[];
   document.getElementById('score').textContent='0';
   document.getElementById('caught').textContent='0';
   document.getElementById('overlay').hidden=true;
@@ -522,6 +593,7 @@ function finish(){
   // offer the initials box only if the run actually made the board
   const entry = document.getElementById('entry');
   entry.hidden = true;
+  renderBoard();
   Board.qualifies(score).then(ok => {
     if (!ok) return;
     entry.hidden = false;
@@ -538,18 +610,18 @@ document.getElementById('start').addEventListener('click', start);
 let justEntered = null;
 async function renderBoard(){
   const rows = await Board.top();
+  const wrap = document.getElementById('board');
   const list = document.getElementById('board-list');
-  const empty = document.getElementById('board-empty');
-  document.getElementById('board-scope').textContent =
-    Board.shared ? 'shared with everyone' : 'local to this device';
-  if (!rows.length){ list.innerHTML=''; empty.hidden=false; return; }
-  empty.hidden = true;
+  if (!rows.length){ wrap.hidden = true; return; }
+  document.getElementById('board-title').textContent =
+    Board.shared ? 'High scores' : 'Your best runs';
   list.innerHTML = rows.map((r,i)=>{
     const mine = justEntered && r.name===justEntered.name && r.score===justEntered.score;
     return `<li class="${mine?'you':''}"><span class="rank">${i+1}</span>` +
            `<span class="who">${String(r.name||'???').slice(0,3)}</span>` +
            `<span class="pts">${Number(r.score)||0}</span></li>`;
   }).join('');
+  wrap.hidden = false;
 }
 
 const initials = document.getElementById('initials');
@@ -564,10 +636,9 @@ async function submitScore(){
   document.getElementById('entry').hidden = true;
   justEntered = await Board.submit(name, score);
   await renderBoard();
-  document.getElementById('board-list').scrollIntoView({ block:'nearest' });
 }
 
-Board.init().then(renderBoard);
+Board.init();
 
 /* ---------------- dex ---------------- */
 document.getElementById('dex').innerHTML = RARITIES.map(r=>`

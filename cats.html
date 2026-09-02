@@ -11,8 +11,8 @@
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="css/styles.css?v=7">
-<link rel="stylesheet" href="css/cats.css?v=1">
+<link rel="stylesheet" href="css/styles.css?v=8">
+<link rel="stylesheet" href="css/cats.css?v=2">
 </head>
 <body>
 
@@ -20,12 +20,14 @@
 
 <header class="site-header" id="site-header">
   <div class="wrap header-inner">
-    <a href="index.html#top" class="logo">
-      <span class="logo-mark" aria-hidden="true">
+    <div class="logo">
+      <!-- The mark is the way in to the game. Deliberately unlabelled to
+           anyone looking at the page; still named for screen readers. -->
+      <a class="logo-mark" href="cats.html" aria-label="Schrödinger's Cats">
         <img src="assets/favicon.svg" width="34" height="34" alt="">
-      </span>
-      <span class="logo-text">Schrödinger's<em>Cards</em></span>
-    </a>
+      </a>
+      <a class="logo-text" href="index.html#top">Schrödinger's<em>Cards</em></a>
+    </div>
 
     <nav class="main-nav" id="main-nav">
       <a href="index.html#story">Our Story</a>
@@ -33,7 +35,6 @@
       <a href="gallery.html">Gallery</a>
       <a href="index.html#visit">Visit Us</a>
       <a href="guide.html">Collection Guide</a>
-      <a href="cats.html" aria-current="page">Play</a>
       <a href="index.html#contact">Contact</a>
     </nav>
 
@@ -82,6 +83,10 @@
           </div>
         </div>
         <p class="pb" id="pb" hidden>New personal best</p>
+        <div class="board" id="board" hidden>
+          <h3 id="board-title">High scores</h3>
+          <ol id="board-list"></ol>
+        </div>
         <button class="btn" id="start">Start</button>
       </div>
     </div>
@@ -90,12 +95,6 @@
   <div class="legend">
     <h3>What&rsquo;s out there</h3>
     <div class="dex" id="dex"></div>
-  </div>
-
-  <div class="board">
-    <h3>High scores <span class="board-scope" id="board-scope">local to this device</span></h3>
-    <ol id="board-list"></ol>
-    <p class="board-empty" id="board-empty">No scores yet. Be the first.</p>
   </div>
 
   <p class="note">Rarer cats are faster, twitchier, and need a longer hold, with a tighter ring to stay inside. They also turn up far less often &mdash; though the odds shift toward them as the round goes on, so the back half is where the big scores are. Uncaught cats wander off after a while, so a gold sighting is worth dropping whatever else you were doing.</p>
@@ -108,7 +107,6 @@
     <div class="footer-links">
       <a href="gallery.html">Gallery</a>
       <a href="guide.html">Collection Guide</a>
-      <a href="cats.html">Play</a>
       <a href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">eBay</a>
       <a href="https://www.facebook.com/profile.php?id=61594026205359" target="_blank" rel="noopener">Facebook</a>
       <a href="mailto:booth151.jtx@gmail.com">Email</a>
@@ -116,7 +114,7 @@
   </div>
 </footer>
 
-<script src="js/script.js?v=5"></script>
-<script src="js/cats.js?v=1"></script>
+<script src="js/script.js?v=8"></script>
+<script src="js/cats.js?v=2"></script>
 </body>
 </html>
