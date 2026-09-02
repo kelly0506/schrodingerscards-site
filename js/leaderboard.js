@@ -142,7 +142,11 @@ function attachBoardUI(board, getScore){
   });
   initials.addEventListener('keydown', e => { if (e.key==='Enter') submit(); });
   $('submit-score').addEventListener('click', () => submit());
-  board.init();
+  /* Kept rather than discarded: a game that offers the board before the first
+     round has to know when the store has answered, and awaiting this is what
+     stops it either racing the answer or spending a second request to ask the
+     same question. */
+  const ready = board.init();
   /* Called at the end of a round: show the board, and offer the initials box
      only if the run actually made it. */
   async function finish(){
@@ -160,5 +164,46 @@ function attachBoardUI(board, getScore){
     initials.value = '';
     initials.focus();
   }
-  return { render, finish };
+  /* ---- the board before you have played ----
+     The board used to be reachable only by finishing a run, which left the
+     people most likely to want it — anyone deciding whether the game is worth
+     five minutes — unable to see it. Every game's start screen can carry a
+     #see-board button; where the markup has one it is wired here, so the four
+     games share the behaviour rather than four copies of it. Games without
+     the button are unaffected. */
+  const peek = $('see-board');
+  function syncPeek(){
+    if (!peek) return;
+    const open = !$('board').hidden;
+    peek.textContent = open ? 'Hide scores' : 'High scores';
+    peek.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  /* Called when a run starts, so the peek does not sit there through the game
+     as though it were part of the round. */
+  function closePeek(){ $('board').hidden = true; syncPeek(); }
+  async function togglePeek(){
+    const panel = $('board');
+    if (!panel.hidden){ panel.hidden = true; return syncPeek(); }
+    peek.disabled = true;
+    /* Awaited rather than repeated: this is the request the page already made
+       at load, which matters when the store allows fifty a day. */
+    await ready;
+    const rows = await board.top();
+    if (rows.length) await render(rows);
+    else {
+      /* render() hides an empty board, which is right at the end of a round
+         and wrong here: a button that answers with nothing reads as broken. */
+      $('board-title').textContent = board.shared ? 'High scores' : 'Your best runs';
+      $('board-list').innerHTML =
+        '<li class="board-empty">No scores yet. Yours could be the first.</li>';
+      panel.hidden = false;
+    }
+    peek.disabled = false;
+    syncPeek();
+  }
+  if (peek) peek.addEventListener('click', togglePeek);
+
+  /* finish() opens the board on its own, so the button has to be told. */
+  async function finishAndSync(){ await finish(); syncPeek(); }
+  return { render, finish: finishAndSync, ready, closePeek, syncPeek };
 }

@@ -12,7 +12,7 @@
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="css/styles.css?v=10">
-<link rel="stylesheet" href="css/board.css?v=1">
+<link rel="stylesheet" href="css/board.css?v=2">
 <link rel="stylesheet" href="css/fits.css?v=2">
 </head>
 <body>
@@ -84,7 +84,10 @@
           <h3 id="board-title">High scores</h3>
           <ol id="board-list"></ol>
         </div>
-        <button class="btn" id="start">Start</button>
+        <div class="ov-actions">
+          <button class="btn" id="start">Start</button>
+          <button class="btn btn-ghost" id="see-board" type="button" aria-expanded="false" aria-controls="board">High scores</button>
+        </div>
       </div>
     </div>
   </div>
@@ -107,7 +110,7 @@
 </footer>
 
 <script src="js/script.js?v=8"></script>
-<script src="js/leaderboard.js?v=1"></script>
-<script src="js/fits.js?v=2"></script>
+<script src="js/leaderboard.js?v=2"></script>
+<script src="js/fits.js?v=3"></script>
 </body>
 </html>

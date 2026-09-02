@@ -636,7 +636,7 @@ function start(){
   timeLeft=ROUND; running=true; over=false; holding=null; holdT=0; flash=null; celebrate=null; downNow=false;
   document.getElementById('score').textContent='0';
   document.getElementById('hats').textContent='0';
-  document.getElementById('overlay').hidden=true;
+  document.getElementById('overlay').hidden=true; boardUI.closePeek();
   newLevel();
   cv.focus({preventScroll:true});
 }

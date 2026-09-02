@@ -1245,7 +1245,7 @@ function hud(){
 }
 function startLevel(i){
   buildLevel(i,seed); playing=true;
-  hudMode();
+  hudMode(); boardUI.closePeek();
   $('overlay').hidden=true; pips(); hud();
   cv.focus({preventScroll:true});
 }
@@ -1325,6 +1325,10 @@ const Board = makeBoard({
   storeName: 'schrodingerscards-catastrophe-highscores'
 });
 const boardUI = attachBoardUI(Board, () => total);
+
+/* The High scores button on the start screen is wired by attachBoardUI,
+   shared with the other three games. All this file has to do is close the
+   peek when a round begins. */
 
 /* ---- pointer ----
    Two behaviours on the same canvas. In the scored levels a press is a single

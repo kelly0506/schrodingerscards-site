@@ -512,7 +512,7 @@ function start(){
   score=0; caught=0; progress=0; cats=[]; pops=[]; haul={}; motes=[]; rings=[];
   document.getElementById('score').textContent='0';
   document.getElementById('caught').textContent='0';
-  document.getElementById('overlay').hidden=true;
+  document.getElementById('overlay').hidden=true; boardUI.closePeek();
   running=true; endsAt=performance.now()+ROUND_MS;
   spawnCat();
   cv.focus({preventScroll:true});

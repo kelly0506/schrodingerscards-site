@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Static Cats — mockups | Schrödinger's Cards</title>
+<!-- A prototype page, not a game we are shipping: kept out of search and out
+     of the arcade until one of these three is chosen. -->
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="css/styles.css?v=10">
+<link rel="stylesheet" href="css/static-cats.css?v=1">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header" id="site-header">
+  <div class="wrap header-inner">
+    <div class="logo">
+      <a class="logo-mark" href="arcade.html" aria-label="Games">
+        <img src="assets/favicon.svg" width="34" height="34" alt="">
+      </a>
+      <a class="logo-text" href="index.html#top">Schrödinger's<em>Cards</em></a>
+    </div>
+
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html#story">Our Story</a>
+      <a href="index.html#carry">What We Carry</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="index.html#visit">Visit Us</a>
+      <a href="guide.html">Collection Guide</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+
+    <div class="header-actions">
+      <a class="btn btn-ghost" href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">Shop on eBay</a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="main-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="game-main">
+<div class="game-wrap">
+  <header class="game-head">
+    <p class="eyebrow">Three mockups &middot; not finished</p>
+    <h1>Static Cats</h1>
+    <p>Press and scrub side to side &mdash; finger or mouse, it is the same gesture &mdash; and the cat charges up until his fur is standing on end. Charged fur picks up balloons. Below are three different games built on that one idea: the cat, the scrubbing and the balloons are identical in all three, and everything else is deliberately not. Play a room of each and see which one you want to keep.</p>
+  </header>
+
+  <div class="mode-pick" role="group" aria-label="Choose a prototype">
+    <button type="button" data-mode="A" class="on">A &middot; Rub &amp; Cling</button>
+    <button type="button" data-mode="B">B &middot; Carpet &amp; Earth</button>
+    <button type="button" data-mode="C">C &middot; Static Field</button>
+  </div>
+
+  <div class="mode-card">
+    <h2 id="mode-name">Rub &amp; Cling</h2>
+    <p id="mode-blurb">Charge anywhere.</p>
+  </div>
+
+  <div class="hud">
+    <div class="stat"><span>Score</span><strong id="score">0</strong></div>
+    <div class="stat"><span>Room</span><strong id="level">1/9</strong></div>
+    <div class="stat"><span>Balloons</span><strong id="left">0</strong></div>
+    <div class="hud-spacer"></div>
+    <div class="stat"><span>Seconds</span><strong id="clock">32</strong></div>
+  </div>
+
+  <div class="charge">
+    <div class="charge-label"><span>Static charge</span><span>scrub side to side</span></div>
+    <div class="charge-track"><div class="charge-fill" id="charge-fill"></div></div>
+    <div class="charge-ticks">
+      <i style="left:0%;color:#ff8fd0">PINK</i>
+      <i style="left:30%;color:#7dd8ff">BLUE</i>
+      <i style="left:58%;color:#b48bff">PURPLE</i>
+      <i style="left:88%;color:#ffd88a">GOLD</i>
+    </div>
+  </div>
+
+  <div class="stage-wrap">
+    <canvas id="stage" tabindex="0" aria-label="A cat and a room full of balloons"></canvas>
+    <div class="overlay" id="overlay">
+      <div>
+        <h2 id="ov-title">Static Cats</h2>
+        <p id="ov-body">Press and scrub side to side to charge him up.</p>
+        <div id="ov-score" hidden></div>
+        <div id="ov-final" hidden>
+          <div class="final" id="final-score">0</div>
+          <div class="final-label">Final score</div>
+        </div>
+        <button class="btn" id="go" type="button">Start</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="note"><b>What is the same in all three.</b> The cats are the eight from the other games, and the spiky fur is the same code that makes a Catastrophe cat puff up when it panics &mdash; here it is wired to the charge meter instead, so the cat <em>is</em> the readout. Charge always leaks away, so a charged cat is a temporary cat. Roughly one balloon in five has something rattling about inside it: five more seconds, a full charge, a slow-drift spell, or magnet paws. Balloons you have collected ride above you on strings and pull you upward, so a full cat steers like a balloon itself. <b>What differs</b> is where charge comes from and what it does &mdash; A spends it, B makes it a place you have to go back to, C turns it into a magnet with a window rather than a key. <b>Nine rooms</b>, one clock across all of them, twelve seconds handed back for clearing a room.</p>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p>&copy; <span id="year"></span> Schrödinger's Cards LLC. Jacksonville, Texas.</p>
+    <div class="footer-links">
+      <a href="gallery.html">Gallery</a>
+      <a href="guide.html">Collection Guide</a>
+      <a href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">eBay</a>
+      <a href="https://www.facebook.com/profile.php?id=61594026205359" target="_blank" rel="noopener">Facebook</a>
+      <a href="mailto:booth151.jtx@gmail.com">Email</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/script.js?v=8"></script>
+<script src="js/static-cats.js?v=2"></script>
+</body>
+</html>

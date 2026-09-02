@@ -692,7 +692,7 @@ function renderLives(){
 function start(){
   resize(); score=0; round=1; lives=MAX_LIVES; running=true;
   document.getElementById('score').textContent='0';
-  document.getElementById('overlay').hidden=true;
+  document.getElementById('overlay').hidden=true; boardUI.closePeek();
   renderLives(); newRound(); cv.focus({preventScroll:true});
 }
 function gameOver(){

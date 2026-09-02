@@ -12,10 +12,18 @@
   padding:6px 12px;border-radius:8px;background:var(--bg-alt);border:1px solid transparent;
   font-family:var(--font-head);font-variant-numeric:tabular-nums}
 .board li.you{border-color:var(--gold);background:rgba(255,216,138,.07)}
+/* The empty state is a row of prose, not a rank/name/score row, so it opts out
+   of the grid the scored rows use. */
+.board li.board-empty{display:block;text-align:center;font-family:var(--font-body);
+  font-weight:400;letter-spacing:0;font-size:.86rem;color:var(--text-faint);padding:12px}
 .board .rank{color:var(--text-faint);font-size:.82rem}
 .board .who{font-weight:700;letter-spacing:.22em;font-size:1rem}
 .board .pts{font-weight:700;font-size:.95rem;color:var(--accent)}
 .board li.you .pts{color:var(--gold)}
+
+/* The start screen carries two buttons now — Start, and the one that opens
+   this panel before a round rather than after one. */
+.ov-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 
 .entry{margin:0 auto 18px;max-width:340px}
 .entry p{font-size:.88rem;color:var(--gold);margin-bottom:12px}
