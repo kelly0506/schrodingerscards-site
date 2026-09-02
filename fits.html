@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gallery | Schrödinger's Cards</title>
-<meta name="description" content="Photos from the Schrödinger's Cards booth at Treasure Cove Mall in Jacksonville, Texas — the display, the cases, and what's new on the shelves right now.">
+<title>If I Fits I Sits — a game | Schrödinger's Cards</title>
+<meta name="description" content="A small browser game from Schrödinger's Cards: a cat is a liquid, so pick the vessel it fills most exactly and watch it pour itself in. It never changes size — a narrow vessel just makes it taller.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;500&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="css/styles.css?v=8">
-<link rel="stylesheet" href="css/gallery.css?v=3">
+<link rel="stylesheet" href="css/fits.css?v=1">
 </head>
 <body>
 
@@ -32,7 +32,7 @@
     <nav class="main-nav" id="main-nav">
       <a href="index.html#story">Our Story</a>
       <a href="index.html#carry">What We Carry</a>
-      <a href="gallery.html" aria-current="page">Gallery</a>
+      <a href="gallery.html">Gallery</a>
       <a href="index.html#visit">Visit Us</a>
       <a href="guide.html">Collection Guide</a>
       <a href="index.html#contact">Contact</a>
@@ -47,57 +47,39 @@
   </div>
 </header>
 
-<main id="main" class="gallery-main">
-  <div class="wrap">
+<main id="main" class="game-main">
+<div class="game-wrap">
+  <header class="game-head">
+    <p class="eyebrow">A small diversion</p>
+    <h1>If I Fits I Sits</h1>
+    <p>A cat is a liquid: it takes the shape of whatever it is in, and there is always exactly as much cat afterwards as there was before. Pick the vessel this one fills most exactly, then watch it post itself in rear-first and spread to the walls. It never gets bigger or smaller &mdash; a narrow vessel just makes it taller. Too much cat and the surplus mounds over the rim.</p>
+  </header>
 
-    <div class="gallery-intro">
-      <p class="eyebrow">The Booth</p>
-      <h1>Come have a look around.</h1>
-      <p class="gallery-lede">Photos from Booth 151 inside Treasure Cove Mall &mdash; the cases, the displays, and whatever has just landed on the shelves.</p>
-
-      <div class="gallery-hold">
-        <p>See something you want held? We&rsquo;ll put it aside for you.</p>
-        <a class="btn btn-primary" href="index.html#contact">Ask us to hold it</a>
-      </div>
-    </div>
-
-    <div id="gallery-status" class="gallery-status" role="status">Loading photos&hellip;</div>
-
-    <section class="gallery-section" id="section-now" hidden>
-      <div class="gallery-section-head">
-        <h2>Just in</h2>
-        <p>The most recent additions to the booth. Photos come down after a week, so nothing here is old &mdash; though we can&rsquo;t promise something hasn&rsquo;t already sold.</p>
-      </div>
-      <div class="photo-grid" id="grid-now"></div>
-    </section>
-
-    <section class="gallery-section" id="section-evergreen" hidden>
-      <div class="gallery-section-head">
-        <h2>Around the booth</h2>
-        <p>The setup itself — what to look for when you find us.</p>
-      </div>
-      <div class="photo-grid" id="grid-evergreen"></div>
-    </section>
-
-    <div class="gallery-cta">
-      <h2>Looking for something specific?</h2>
-      <p>We're at Booth 151, Tuesday to Saturday, 10am to 5pm. If you want something set aside before you drive out, just ask.</p>
-      <a class="btn btn-primary" href="index.html#contact">Get in touch</a>
-    </div>
-
+  <div class="hud">
+    <div class="stat"><span>Score</span><strong id="score">0</strong></div>
+    <div class="stat"><span>Round</span><strong id="round">1</strong></div>
+    <div class="hud-spacer"></div>
+    <div class="stat"><span>Lives</span><div class="lives" id="lives"></div></div>
   </div>
-</main>
 
-<!-- Lightbox -->
-<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Photo viewer">
-  <button class="lb-close" id="lb-close" type="button" aria-label="Close">&times;</button>
-  <button class="lb-nav lb-prev" id="lb-prev" type="button" aria-label="Previous photo">&#8249;</button>
-  <button class="lb-nav lb-next" id="lb-next" type="button" aria-label="Next photo">&#8250;</button>
-  <figure class="lb-stage">
-    <img id="lb-img" alt="">
-    <figcaption id="lb-caption"></figcaption>
-  </figure>
+  <div class="stage-wrap">
+    <canvas id="stage" tabindex="0" aria-label="Choose a container for the cat"></canvas>
+    <div class="overlay" id="overlay">
+      <div>
+        <h2 id="ov-title">How much cat is that?</h2>
+        <p id="ov-body">Five vessels, no measurements, a different cat each round. Judge it by eye. Nine lives, obviously &mdash; one goes whenever a cat overflows or rattles about. A purrfect fit hands one back.</p>
+        <div id="ov-score" hidden>
+          <div class="final" id="final-score">0</div>
+          <div class="final-label">Final score</div>
+        </div>
+        <button class="btn" id="start">Start</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="note"><b>Scoring.</b> The closer the cat comes to filling the vessel exactly, the more it is worth, and steeply so &mdash; a snug fit beats a safe one by a mile. <b>Purrfect</b> is a narrow window and worth several times a merely snug fit; land one and a lost life comes back, though nine is still the ceiling. <b>The trick</b> is that shape lies: a cone fills fast at the top and slowly at the bottom, so a flask and a deck box holding the same cat look nothing alike. Judge the area, not the height.</p>
 </div>
+</main>
 
 <footer class="site-footer">
   <div class="wrap footer-inner">
@@ -113,6 +95,6 @@
 </footer>
 
 <script src="js/script.js?v=8"></script>
-<script src="js/gallery.js?v=3"></script>
+<script src="js/fits.js?v=1"></script>
 </body>
 </html>

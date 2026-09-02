@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gallery | Schrödinger's Cards</title>
-<meta name="description" content="Photos from the Schrödinger's Cards booth at Treasure Cove Mall in Jacksonville, Texas — the display, the cases, and what's new on the shelves right now.">
+<title>Games | Schrödinger's Cards</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="A couple of small browser games from Schrödinger's Cards.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;500&display=swap" rel="stylesheet">
@@ -12,7 +13,7 @@
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="css/styles.css?v=8">
-<link rel="stylesheet" href="css/gallery.css?v=3">
+<link rel="stylesheet" href="css/arcade.css?v=1">
 </head>
 <body>
 
@@ -32,7 +33,7 @@
     <nav class="main-nav" id="main-nav">
       <a href="index.html#story">Our Story</a>
       <a href="index.html#carry">What We Carry</a>
-      <a href="gallery.html" aria-current="page">Gallery</a>
+      <a href="gallery.html">Gallery</a>
       <a href="index.html#visit">Visit Us</a>
       <a href="guide.html">Collection Guide</a>
       <a href="index.html#contact">Contact</a>
@@ -47,57 +48,36 @@
   </div>
 </header>
 
-<main id="main" class="gallery-main">
-  <div class="wrap">
+<main id="main" class="arcade-main">
+<div class="arcade-wrap">
+  <header class="arcade-head">
+    <p class="eyebrow">You found it</p>
+    <h1>Two small games</h1>
+    <p>Nothing to do with cards, and no reason for either of them to exist. Pick one.</p>
+  </header>
 
-    <div class="gallery-intro">
-      <p class="eyebrow">The Booth</p>
-      <h1>Come have a look around.</h1>
-      <p class="gallery-lede">Photos from Booth 151 inside Treasure Cove Mall &mdash; the cases, the displays, and whatever has just landed on the shelves.</p>
-
-      <div class="gallery-hold">
-        <p>See something you want held? We&rsquo;ll put it aside for you.</p>
-        <a class="btn btn-primary" href="index.html#contact">Ask us to hold it</a>
+  <div class="game-tiles">
+    <a class="game-tile" href="cats.html">
+      <canvas class="tile-art" data-art="cats" width="480" height="270" aria-hidden="true"></canvas>
+      <div class="tile-body">
+        <p class="kind">Reflexes &middot; 45 seconds</p>
+        <h2>Schr&ouml;dinger&rsquo;s Cats</h2>
+        <p>Your cursor is a wave function. Hold it on a cat until it collapses into your collection. The gold ones are fast, twitchy and worth fifty commons.</p>
       </div>
-    </div>
-
-    <div id="gallery-status" class="gallery-status" role="status">Loading photos&hellip;</div>
-
-    <section class="gallery-section" id="section-now" hidden>
-      <div class="gallery-section-head">
-        <h2>Just in</h2>
-        <p>The most recent additions to the booth. Photos come down after a week, so nothing here is old &mdash; though we can&rsquo;t promise something hasn&rsquo;t already sold.</p>
+    </a>
+    <a class="game-tile" href="fits.html">
+      <canvas class="tile-art" data-art="fits" width="480" height="270" aria-hidden="true"></canvas>
+      <div class="tile-body">
+        <p class="kind">Judgement &middot; nine lives</p>
+        <h2>If I Fits I Sits</h2>
+        <p>A cat is a liquid. Pick the vessel it fills most exactly and watch it pour itself in &mdash; it never changes size, so a narrow vessel just makes it taller.</p>
       </div>
-      <div class="photo-grid" id="grid-now"></div>
-    </section>
-
-    <section class="gallery-section" id="section-evergreen" hidden>
-      <div class="gallery-section-head">
-        <h2>Around the booth</h2>
-        <p>The setup itself — what to look for when you find us.</p>
-      </div>
-      <div class="photo-grid" id="grid-evergreen"></div>
-    </section>
-
-    <div class="gallery-cta">
-      <h2>Looking for something specific?</h2>
-      <p>We're at Booth 151, Tuesday to Saturday, 10am to 5pm. If you want something set aside before you drive out, just ask.</p>
-      <a class="btn btn-primary" href="index.html#contact">Get in touch</a>
-    </div>
-
+    </a>
   </div>
-</main>
 
-<!-- Lightbox -->
-<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Photo viewer">
-  <button class="lb-close" id="lb-close" type="button" aria-label="Close">&times;</button>
-  <button class="lb-nav lb-prev" id="lb-prev" type="button" aria-label="Previous photo">&#8249;</button>
-  <button class="lb-nav lb-next" id="lb-next" type="button" aria-label="Next photo">&#8250;</button>
-  <figure class="lb-stage">
-    <img id="lb-img" alt="">
-    <figcaption id="lb-caption"></figcaption>
-  </figure>
+  <p class="arcade-note">Neither is linked from anywhere else on the site. The way back in is the same way you got here: the mark in the top left.</p>
 </div>
+</main>
 
 <footer class="site-footer">
   <div class="wrap footer-inner">
@@ -113,6 +93,6 @@
 </footer>
 
 <script src="js/script.js?v=8"></script>
-<script src="js/gallery.js?v=3"></script>
+<script src="js/arcade.js?v=1"></script>
 </body>
 </html>
