@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="css/styles.css?v=10">
 <link rel="stylesheet" href="css/board.css?v=1">
-<link rel="stylesheet" href="css/catastrophe.css?v=1">
+<link rel="stylesheet" href="css/catastrophe.css?v=4">
 </head>
 <body>
 
@@ -56,15 +56,23 @@
   <p>Five rooms, one poke each. Choose the cat whose panic takes down the most, because the chain does the rest on its own and you only get the one. Damage carries a multiplier that climbs with the level, so the last one is worth more than the first four together &mdash; and the last one is not a room.</p>
   </header>
 
-  <div class="hud">
-    <div class="stat"><span>Level</span><strong id="lvl">1</strong></div>
+  <div class="hud" id="hud">
+    <div class="stat"><span id="lvl-label">Level</span><strong id="lvl">1</strong></div>
     <div class="stat stat-chaos"><span>Damage</span><strong id="chaos">0%</strong></div>
-    <div class="stat"><span>This level</span><strong id="lvlscore">0</strong></div>
+    <div class="stat"><span id="lvlscore-label">This level</span><strong id="lvlscore">0</strong></div>
     <div class="hud-spacer"></div>
-    <div class="stat"><span>Progress</span><div class="pips" id="pips"></div></div>
+    <div class="stat stat-pips"><span>Progress</span><div class="pips" id="pips"></div></div>
     <div class="stat stat-total"><span>Total</span><strong id="total">0</strong></div>
   </div>
   <div class="track"><div class="fill" id="fill"></div></div>
+
+  <div class="free-bar" id="free-bar" hidden>
+    <p><b>Free play.</b> Press and hold a cat, then drag it wherever you like.<span class="free-more"> Let go mid-swing to throw it.</span></p>
+    <div class="free-actions">
+      <button class="btn btn-sm btn-ghost" id="free-reset" type="button">Fresh room</button>
+      <button class="btn btn-sm btn-ghost" id="free-exit" type="button">Back to the game</button>
+    </div>
+  </div>
 
   <div class="stage-wrap">
     <canvas id="stage" tabindex="0" aria-label="A room full of cats and breakable things"></canvas>
@@ -94,12 +102,15 @@
           <h3 id="board-title">High scores</h3>
           <ol id="board-list"></ol>
         </div>
-        <button class="btn" id="go">Start</button>
+        <div class="ov-actions">
+          <button class="btn" id="go">Start</button>
+          <button class="btn btn-ghost" id="go2" type="button" hidden>Free play</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <p class="note"><b>Scoring.</b> Damage is how much of the level ended up broken, moved or awake. Points are damage times a multiplier that rises with the level, so a good poke late is worth several early ones. <b>The last level</b> is a city and the cats are the size of buildings. The towers have health: hit one hard enough and its lights go out and it cracks, and enough of that brings it down on whatever was standing on it. A good cat takes down four of the six; only the glowing one takes all of them. <b>One cat is glowing</b> &mdash; poke that one directly and it does something the others cannot. The chain reaching it will not do; you have to choose it.</p>
+  <p class="note"><b>Scoring.</b> Damage is how much of the level ended up broken, moved or awake. Points are damage times a multiplier that rises with the level, so a good poke late is worth several early ones. <b>The last level</b> is a city and the cats are the size of buildings. The towers have health: hit one hard enough and its lights go out and it cracks, and enough of that brings it down on whatever was standing on it. A good cat takes down four of the six; only the glowing one takes all of them. <b>One cat is glowing</b> &mdash; poke that one directly and it does something the others cannot. The chain reaching it will not do; you have to choose it. <b>Free play</b> unlocks when you finish all five: one very overloaded room where you pick a cat up and drag it through the place yourself. Nothing there is scored and nothing there reaches the leaderboard &mdash; it is purely for the mess.</p>
 </div>
 </main>
 
@@ -118,6 +129,6 @@
 
 <script src="js/script.js?v=8"></script>
 <script src="js/leaderboard.js?v=1"></script>
-<script src="js/catastrophe.js?v=1"></script>
+<script src="js/catastrophe.js?v=3"></script>
 </body>
 </html>

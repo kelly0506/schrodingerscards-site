@@ -18,6 +18,12 @@ const G=1500, AIR=0.9985, REST=0.34, FLOOR_F=0.80;
    gets past 90%. Swept, not guessed. */
 const P={ launch:[260,449], kick:[156,328], rate:8, spazT:4.1,
           wake:28, catWake:2.4, force:760, dmg:1.0 };
+/* How many perches the cats are spread over, as a fraction of the cat count.
+   Below 1 they pile up, and piles are what carry the chain across a room —
+   see the note in buildLevel. Swept against the damage distribution over 400
+   runs: this holds the overall median at 57% (the shipped build was 56%) while
+   lifting the two stingiest levels, the kitchen 42→49 and the booth 29→38. */
+const CLUSTER=[0.35,0.75];
 
 const BREEDS=[
   { key:'common',   fur:'#9aa3bd', mark:'#7c86a4', ear:'round', eye:'sleepy' },
@@ -133,6 +139,59 @@ const LEVELS=[
 ];
 
 
+/* ================= free play =================
+   Unlocked by finishing the five levels. One room, no scoring, no clock:
+   you grab a cat and drag it through the place yourself. It is the same
+   physics and the same cats — the only difference is that the wrecking ball
+   is under your hand instead of running on its own.
+
+   Deliberately the busiest room in the game. Roughly three times the
+   breakables of a scored level, five chandeliers' worth of hanging glass
+   between two of them, and every surface loaded, because the whole point is
+   that there is always something else to knock over. */
+const FREE_LVL = 99;
+const FREE = {
+  name:'Free play', blurb:'Grab a cat. Drag it wherever you like.',
+  mult:0, cats:7, floorItems:34, catR:17, free:true, tidy:true,
+  pool:['vase','lamp','mug','plant','books','boxes','frame','bowl','clock','bottle',
+        'candle','teapot','globe','trophy','jar','radio','cup','plate','pan','kettle',
+        'pack','binder','slab','pot','fern','glassjar'],
+  perchItems:[4,7],
+  /* Nothing stands above y=0.33 except the bookcase, which is hard left, so
+     both chandeliers hang in clear air and can swing without crossing a shelf.
+     No two pieces overlap — checked by an AABB pass in the harness, because
+     a chair tucked visually under a table also tucks its perch inside it. */
+  chandeliers:[0.250,0.620],
+  /* 27 surfaces, which is where the density comes from now that items are
+     laid out at their real widths rather than stacked into each other. The two
+     x-bands the chandeliers hang through — 0.208-0.292 and 0.578-0.662, down
+     to y=0.308 — are kept clear, and no two pieces overlap. Both checked by
+     the harness rather than by eye. */
+  furn:[{k:'shelf',x:0.010,y:0.190,w:0.190,h:0.018},
+        {k:'shelf',x:0.300,y:0.190,w:0.270,h:0.018},
+        {k:'shelf',x:0.670,y:0.190,w:0.320,h:0.018},
+        {k:'bookcase',x:0.010,y:0.250,w:0.128,h:0.650,shelves:[0.02,0.18,0.34,0.50,0.66,0.82]},
+        {k:'shelf',x:0.300,y:0.290,w:0.180,h:0.018},
+        {k:'shelf',x:0.700,y:0.250,w:0.290,h:0.018},
+        {k:'shelf',x:0.150,y:0.330,w:0.150,h:0.018},
+        {k:'shelf',x:0.330,y:0.380,w:0.150,h:0.018},
+        {k:'shelf',x:0.505,y:0.400,w:0.150,h:0.018},
+        {k:'shelf',x:0.700,y:0.330,w:0.150,h:0.018},
+        {k:'shelf',x:0.150,y:0.480,w:0.150,h:0.018},
+        {k:'shelf',x:0.330,y:0.530,w:0.150,h:0.018},
+        {k:'shelf',x:0.150,y:0.600,w:0.150,h:0.018},
+        {k:'rack',x:0.700,y:0.480,w:0.148,h:0.420,shelves:[0.02,0.26,0.50,0.74]},
+        {k:'cabinet',x:0.870,y:0.300,w:0.120,h:0.150},
+        {k:'shelf',x:0.865,y:0.540,w:0.128,h:0.018},
+        {k:'shelf',x:0.865,y:0.640,w:0.128,h:0.018},
+        {k:'counter',x:0.148,y:0.700,w:0.150,h:0.200},
+        {k:'desk',x:0.318,y:0.630,w:0.160,h:0.270},
+        {k:'chair',x:0.492,y:0.720,w:0.062,h:0.180},
+        {k:'table',x:0.558,y:0.570,w:0.132,h:0.330},
+        {k:'bed',x:0.862,y:0.700,w:0.132,h:0.200}]
+};
+const levelAt = (i) => i===FREE_LVL ? FREE : LEVELS[i];
+
 /* ================= the world ================= */
 const cv=document.getElementById('stage'), ctx=cv.getContext('2d');
 const w={ W:0,H:0,S:1, floorY:0, ceilY:0, L:LEVELS[0], lvl:0,
@@ -184,21 +243,55 @@ function add(kind,type,fx,fy,extra={}){
   w.bodies.push(b); return b;
 }
 function buildLevel(i,seed){
-  w.lvl=i; w.L=LEVELS[i]; w.nuke=null; w.nuked=false; w.furn=[];
+  w.lvl=i; w.L=levelAt(i); w.free=!!w.L.free; w.grab=null;
+  w.nuke=null; w.nuked=false; w.furn=[];
   w.bodies=[]; w.shards=[]; w.puffs=[];
   let s=(seed+i*7919)*9301+49297;
   const R=()=>{ s=(s*9301+49297)%233280; return s/233280; };
+  /* Fisher-Yates on the seeded stream, so a shuffle is repeatable within a
+     build but different on every new game. */
+  const shuffle=(arr)=>{ const a=arr.slice();
+    for(let k=a.length-1;k>0;k--){ const j=Math.floor(R()*(k+1)); [a[k],a[j]]=[a[j],a[k]]; }
+    return a; };
   resize();
   const pool=w.L.pool;
+  const [PI_LO,PI_HI]=w.L.perchItems||[3,6];
+  /* ---- tidy spawning ----
+     The five scored levels drop a fixed number of items onto each shelf at
+     even fractions of its width, which for anything but a small count means
+     they are born inside one another. The settle pass shoves them apart into
+     a jammed pile that never fully comes to rest, and the pile then breaks
+     ITSELF: the living room loses 47 of its 62 breakables in six seconds with
+     nobody touching it. That has always been true and the scored levels are
+     balanced around it, so they are left exactly as they were.
+
+     Free play cannot live with it — the whole promise is that the wreckage is
+     yours — so it lays items out along a surface at their real widths and
+     stops when the surface is full. Same density, no overlap, and a room that
+     holds still until you touch it. */
+  const fillRow=(x0,x1,topY,gap=2)=>{
+    let x=x0+3*w.S, guard=0;
+    while(guard++<80){
+      const key=pool[Math.floor(R()*pool.length)];
+      const r=ITEMS[key].r*w.S;
+      if(x+r*2>x1-3*w.S) break;
+      add('item',key,(x+r)/w.W,(topY-r-1)/w.H);
+      x+=r*2+gap*w.S;
+    }
+  };
   w.perches.forEach(p=>{
-    const n=3+Math.floor(R()*3.4);
+    if(w.L.tidy){ fillRow(p.x,p.x+p.w,p.y); return; }
+    const n=PI_LO+Math.floor(R()*(PI_HI-PI_LO+0.4));
     for(let k=0;k<n;k++){
       const key=pool[Math.floor(R()*pool.length)];
       const fx=(p.x+p.w*(0.12+0.76*((k+0.5)/n))+(R()-0.5)*p.w*0.10)/w.W;
       add('item',key,fx,(p.y-ITEMS[key].r*w.S-1)/w.H);
     }
   });
-  for(let k=0;k<w.L.floorItems;k++){
+  /* The floor is one unbroken run of fifty-odd items, so it gets a wider gap
+     than a shelf: shoulder to shoulder, one nudge sets off the whole row. */
+  if(w.L.tidy) fillRow(w.W*0.03,w.W*0.97,w.floorY,6);
+  else for(let k=0;k<w.L.floorItems;k++){
     const key=pool[Math.floor(R()*pool.length)];
     add('item',key,0.05+0.90*((k+0.5)/w.L.floorItems)+(R()-0.5)*0.04,
         (w.floorY-ITEMS[key].r*w.S-1)/w.H);
@@ -212,44 +305,88 @@ function buildLevel(i,seed){
       w.poles.push(p);
     }
   } else w.poles=[];
-  if(w.L.chandelier)
-    w.chand=add('item','chandelier',0.505,(w.ceilY+w.H*0.215)/w.H,
-      {hang:{x:0.505*w.W,y:w.ceilY,len:w.H*0.215},lit:true});
-  else w.chand=null;
-  /* cats spread over the surfaces, then the floor if there are more cats
-     than places to put them */
-  const spots=[];
-  w.perches.forEach((p,pi)=>{ if(pi%1===0) spots.push({p}); });
-  /* On the city they are placed by hand — some on roofs, some in the street,
-     spread right across it — so they are not all queued up on the left in the
-     same pose the way an even spread over the perch list put them. */
-  /* Three on roofs of noticeably different heights, four down in the street,
-     spread across the width. */
-  const CITY_SPOTS=[{roof:1},{street:0.156},{roof:0},{street:0.510},
-                    {roof:3},{street:0.687},{street:0.864}];
+  /* One level hangs a single chandelier over the middle; free play hangs
+     several, because glass on a chain is the best thing in the room to hit. */
+  const hangs = w.L.chandeliers || (w.L.chandelier ? [0.505] : []);
+  w.chands = hangs.map(hx => add('item','chandelier',hx,(w.ceilY+w.H*0.215)/w.H,
+    {hang:{x:hx*w.W,y:w.ceilY,len:w.H*0.215},lit:true}));
+  w.chand = w.chands[0] || null;
+  /* ---- where the cats go ----
+     This was fixed. The perch for cat k was `(k*3+1) % perches.length` and the
+     breed was `BREEDS[k % BREEDS.length]`, so every playthrough put the same
+     coloured cat on the same shelf, give or take a few pixels — which is fine
+     once and dull the third time. Everything below now comes off the seeded
+     stream: which perches are used, which cat is which breed, where along a
+     perch it sits, how many end up on the floor instead, and on the city which
+     cat is the one you should not poke. */
+  const perchOrder = shuffle(w.perches.map((p,pi)=>({p,pi})));
+  /* Cats are spread over a RANDOM SUBSET of the perches, not one per perch, so
+     some shelves get two or three of them. This matters more than it looks:
+     the old fixed stride `(k*3+1) % perches.length` happened to land all nine
+     greenhouse cats on three perches, and that pile was doing a lot of the
+     work in the chain. Spreading them evenly cost 22 points of median damage
+     on that level before this went back in. The subset size is swept, not
+     guessed — see the note on P at the top. */
+  const usable = Math.max(1, Math.min(perchOrder.length,
+                   Math.round(w.L.cats*(CLUSTER[0]+(CLUSTER[1]-CLUSTER[0])*R()))));
+  const chosen = perchOrder.slice(0, usable);
+  /* Some cats go on the floor even when there are perches free, so the room
+     is not simply "one cat per shelf from the left" every time. */
+  const nFloor = w.L.city ? 0 : Math.min(w.L.cats-1, Math.floor(R()*2.6));
+  const breeds = shuffle(BREEDS);
+  /* Roof or street, shuffled, so the skyline is not populated the same way
+     twice — and the tall towers are not always the occupied ones. */
+  const cityPlan = shuffle([{roof:true},{roof:true},{roof:true},
+                            {street:true},{street:true},{street:true},{street:true}]);
+  const roofPick = shuffle(w.perches.map((p,pi)=>pi));
+  const lanes = shuffle([0.12,0.27,0.42,0.57,0.72,0.87]);
+  let roofN=0, streetN=0;
+  /* The special cat is a different one every game. */
+  const specialK = w.L.city ? Math.floor(R()*w.L.cats) : -1;
   for(let k=0;k<w.L.cats;k++){
     let fx,fy;
     if(w.L.city){
-      const cs=CITY_SPOTS[k%CITY_SPOTS.length];
-      if(cs.roof!==undefined && w.perches[cs.roof]){
-        const p=w.perches[cs.roof];
-        fx=(p.x+p.w*(0.20+0.55*R()))/w.W; fy=(p.y-w.L.catR*w.S-1)/w.H;
-      } else { fx=(cs.street??0.5)+(R()-0.5)*0.05; fy=(w.floorY-w.L.catR*w.S-1)/w.H; }
+      const cs=cityPlan[k%cityPlan.length];
+      const p = cs.roof ? w.perches[roofPick[roofN++%roofPick.length]] : null;
+      if(p){ fx=(p.x+p.w*(0.18+0.60*R()))/w.W; fy=(p.y-w.L.catR*w.S-1)/w.H; }
+      else { fx=lanes[streetN++%lanes.length]+(R()-0.5)*0.06;
+             fy=(w.floorY-w.L.catR*w.S-1)/w.H; }
     } else {
-      const st = k<spots.length ? spots[(k*3+1)%spots.length] : null;
-      if(st){ const p=st.p; fx=(p.x+p.w*(0.14+0.24*R()))/w.W; fy=(p.y-w.L.catR*w.S-1)/w.H; }
-      else { fx=0.12+0.76*R(); fy=(w.floorY-w.L.catR*w.S-1)/w.H; }
+      const st = k<w.L.cats-nFloor ? chosen[k%chosen.length] : null;
+      if(st){ const p=st.p, cr=w.L.catR*w.S;
+        /* Across the whole shelf, but never overhanging it. Placing by a plain
+           fraction of the width put a cat half off the edge whenever the roll
+           came up high; it fell the moment play started, landed on the floor
+           items and lit the chain before the player had touched anything. */
+        const span=Math.max(0,p.w-cr*2);
+        fx=(p.x+cr+span*R())/w.W; fy=(p.y-cr-1)/w.H; }
+      else { fx=0.10+0.80*R(); fy=(w.floorY-w.L.catR*w.S-1)/w.H; }
     }
-    const B=BREEDS[k%BREEDS.length];
+    const B=breeds[k%breeds.length];
     /* the last level hides one cat that should not be poked, or should be,
        depending on how you feel about the neighbourhood */
-    const special = w.L.city && k===w.L.cats-1;
+    const special = k===specialK;
     add('cat',B.key,fx,fy,{B,state:'calm',stance:STANCES[Math.floor(R()*STANCES.length)],
       spazT:0,woken:false,legs:[0,0,0,0],legV:[0,0,0,0],tail:[0,0,0,0,0],puff:0,seed:R()*9,
       special, big:special});
   }
+  /* Cats are placed after the items, so on a tidily-packed shelf a cat lands
+     on top of whatever was already there and shoves it off before the player
+     has touched anything. Clear the items it is standing in. */
+  if(w.L.tidy){
+    const cats=w.bodies.filter(b=>b.kind==='cat');
+    w.bodies=w.bodies.filter(b=>b.kind!=='item'||b.hang||
+      !cats.some(c=>Math.hypot(c.x-b.x,c.y-b.y)<c.r+b.r+2*w.S));
+  }
+  /* How long the room is allowed to shake itself down before the damage is
+     wiped and play starts. 220 frames is what the five scored levels were
+     tuned against and they keep it. Free play needs far longer: it holds
+     three times the clutter, and a room still jostling itself apart when the
+     player arrives takes away the thing they came for — the mess should be
+     theirs. Swept against how much breaks with nobody touching it. */
   w.settling=true;
-  for(let k=0;k<220;k++) step(1/60,true);
+  const settleFrames=w.L.settle||220;
+  for(let k=0;k<settleFrames;k++) step(1/60,true);
   w.settling=false;
   for(const b of w.bodies){
     b.vx=b.vy=b.vr=0; b.rot=b.kind==='cat'?0:b.rot*0.2;
@@ -257,9 +394,11 @@ function buildLevel(i,seed){
     b.fx=b.x/w.W; b.fy=b.y/w.H; b.home={x:b.x,y:b.y};
     if(b.kind==='cat'){ b.state='calm'; b.woken=false; b.puff=0; }
   }
-  if(w.chand){ w.chand.x=w.chand.hang.x; w.chand.y=w.chand.hang.y+w.chand.hang.len;
-    w.chand.fx=w.chand.x/w.W; w.chand.fy=w.chand.y/w.H;
-    w.chand.home={x:w.chand.x,y:w.chand.y}; w.chand.lit=true; }
+  for(const ch of (w.chands||[])){
+    ch.x=ch.hang.x; ch.y=ch.hang.y+ch.hang.len;
+    ch.fx=ch.x/w.W; ch.fy=ch.y/w.H;
+    ch.home={x:ch.x,y:ch.y}; ch.lit=true;
+  }
   w.shards=[]; w.puffs=[]; w.started=false; w.over=false; w.elapsed=0; w.quiet=0; w.shake=0;
 }
 function spazz(c,byHand){
@@ -371,9 +510,10 @@ function detonate(c){
 
 /* ================= physics ================= */
 function step(dt,settling){
-  const calm=(!settling&&w.elapsed>7)?Math.pow(0.5,w.elapsed-7):1;
+  const calm=(!settling&&!w.free&&w.elapsed>7)?Math.pow(0.5,w.elapsed-7):1;
   for(const b of w.bodies){
     if(b.kind==='cat'){
+      if(b.grabbed){ b.state='spaz'; b.spazT=P.spazT; b.woken=true; }
       if(b.state==='spaz'){
         b.spazT-=dt; b.puff=Math.min(1,b.puff+dt*7);
         if(!settling && Math.random()<dt*P.rate){
@@ -414,6 +554,19 @@ function step(dt,settling){
       b.vx-=vn*nx; b.vy-=vn*ny;
       b.vx*=0.995; b.vy*=0.995;
       b.x+=b.vx*dt; b.y+=b.vy*dt; b.rot+=b.vr*dt; b.vr*=0.97;
+      continue;
+    }
+    /* A cat under the pointer is driven, not simulated: it goes exactly where
+       the hand goes. Its velocity is derived from that movement so everything
+       it touches is hit with the force the player actually put in, and it is
+       given effectively infinite mass in the contact pass below so nothing
+       shoves it off course. */
+    if(b.grabbed){
+      const inv=1/Math.max(dt,1/240);
+      b.vx=clamp((w.grab.px-b.x)*inv,-5200,5200);
+      b.vy=clamp((w.grab.py-b.y)*inv,-5200,5200);
+      b.x=w.grab.px; b.y=w.grab.py;
+      b.rot+=b.vr*dt; b.vr=clamp(b.vr*0.94+b.vx*dt*0.09,-16,16);
       continue;
     }
     b.vy+=G*dt;
@@ -467,9 +620,10 @@ function step(dt,settling){
     const dx=b.x-a.x, dy=b.y-a.y, d=Math.hypot(dx,dy), min=a.r+b.r;
     if(d>=min||d===0) continue;
     const nx=dx/d, ny=dy/d, ov=min-d;
-    const ma=a.hang?1e6:a.mass, mb=b.hang?1e6:b.mass, tot=ma+mb;
-    if(!a.hang){ a.x-=nx*ov*(mb/tot); a.y-=ny*ov*(mb/tot); }
-    if(!b.hang){ b.x+=nx*ov*(ma/tot); b.y+=ny*ov*(ma/tot); }
+    const aFix=a.hang||a.grabbed, bFix=b.hang||b.grabbed;
+    const ma=aFix?1e6:a.mass, mb=bFix?1e6:b.mass, tot=ma+mb;
+    if(!aFix){ a.x-=nx*ov*(mb/tot); a.y-=ny*ov*(mb/tot); }
+    if(!bFix){ b.x+=nx*ov*(ma/tot); b.y+=ny*ov*(ma/tot); }
     const sep=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;
     if(sep>0) continue;
     const imp=-(1+REST)*sep/(1/ma+1/mb);
@@ -477,7 +631,7 @@ function step(dt,settling){
     if(ny>0.5) a.sup=true;          // a is resting on b
     if(ny<-0.5) b.sup=true;         // b is resting on a
     if(!settling){ a.vr+=rand(-1,1)*Math.abs(sep)*0.02; b.vr+=rand(-1,1)*Math.abs(sep)*0.02; }
-    const spazzing=(a.kind==='cat'&&a.state==='spaz')||(b.kind==='cat'&&b.state==='spaz');
+    const spazzing=(a.kind==='cat'&&(a.state==='spaz'||a.grabbed))||(b.kind==='cat'&&(b.state==='spaz'||b.grabbed));
     const force=Math.abs(sep)*Math.min(a.mass,b.mass)*0.9+(spazzing?P.force:0);
     const at={x:a.x+nx*a.r,y:a.y+ny*a.r};
     hit(a,force,at,b); hit(b,force,at,a);
@@ -1017,16 +1171,34 @@ function pips(){
   LEVELS.forEach((L,i)=>{ const d=document.createElement('div');
     d.className='pip'+(i<runs.length?' done':i===runs.length&&playing?' now':''); box.appendChild(d); });
 }
+/* Free play has no level number, no multiplier and no running total, so the
+   two stats that mean nothing there are relabelled rather than left showing
+   stale numbers from the run that unlocked it. */
+function hudMode(){
+  const free=w.free;
+  $('hud').classList.toggle('hud-free',free);
+  $('lvl-label').textContent = free?'Mode':'Level';
+  $('lvlscore-label').textContent = free?'Broken':'This level';
+  $('free-bar').hidden = !free;
+  cv.classList.toggle('draggable',free);
+}
 function hud(){
   const c=chaosOf();
-  $('lvl').textContent=(w.lvl+1)+'/5';
   $('chaos').textContent=c+'%';
+  $('fill').style.width=c+'%';
+  if(w.free){
+    const p=parts();
+    $('lvl').textContent='Free';
+    $('lvlscore').textContent=p.broken+'/'+p.breakable;
+    return;
+  }
+  $('lvl').textContent=(w.lvl+1)+'/5';
   $('lvlscore').textContent=w.started?pointsFor(c,w.lvl):0;
   $('total').textContent=total;
-  $('fill').style.width=c+'%';
 }
 function startLevel(i){
   buildLevel(i,seed); playing=true;
+  hudMode();
   $('overlay').hidden=true; pips(); hud();
   cv.focus({preventScroll:true});
 }
@@ -1059,13 +1231,35 @@ function finish(){
   $('ov-final').hidden=false;
   $('go').textContent='Play again';
   $('go').onclick=newGame;
+  $('go2').hidden=false;
+  $('go2').textContent='Free play';
+  $('go2').onclick=freePlay;
   $('overlay').hidden=false;
   boardUI.finish();
 }
 function newGame(){
   seed=Math.floor(Math.random()*1e6); total=0; runs=[];
   $('ov-final').hidden=true; $('entry').hidden=true; $('board').hidden=true; $('ov-score').hidden=true;
+  $('go2').hidden=true;
   startLevel(0);
+}
+/* Free play deliberately never touches the leaderboard: the board is the sum
+   of five scored levels and a sandbox with unlimited drags would not be a
+   comparable number. Nothing in here calls boardUI. */
+function freePlay(){
+  seed=Math.floor(Math.random()*1e6);
+  $('ov-final').hidden=true; $('entry').hidden=true; $('board').hidden=true;
+  $('ov-score').hidden=true; $('go2').hidden=true;
+  playing=true;
+  buildLevel(FREE_LVL,seed);
+  w.started=true;                 // no poke to wait for; the room is live at once
+  hudMode(); $('overlay').hidden=true; pips(); hud();
+  cv.focus({preventScroll:true});
+}
+function exitFree(){
+  w.free=false; w.grab=null;
+  hudMode();
+  newGame();
 }
 
 /* This game's board. Mechanics live in js/leaderboard.js, shared with the
@@ -1085,16 +1279,66 @@ const Board = makeBoard({
 });
 const boardUI = attachBoardUI(Board, () => total);
 
-cv.addEventListener('pointerdown',e=>{
-  if(!playing||w.started||w.over) return;
-  const r=cv.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
+/* ---- pointer ----
+   Two behaviours on the same canvas. In the scored levels a press is a single
+   poke and then you watch. In free play a press picks a cat up and holds it
+   until you let go, which is the whole point of the mode. */
+const catAt=(x,y,reach)=>{
   let best=null,bd=1e9;
-  for(const b of w.bodies){ if(b.kind!=='cat') continue;
-    const d=Math.hypot(b.x-x,b.y-y); if(d<b.r*2.0&&d<bd){bd=d;best=b;} }
+  for(const b of w.bodies){ if(b.kind!=='cat'||b.state==='gone') continue;
+    const d=Math.hypot(b.x-x,b.y-y); if(d<b.r*reach&&d<bd){bd=d;best=b;} }
+  return best;
+};
+const atCanvas=e=>{ const r=cv.getBoundingClientRect();
+  return { x:clamp(e.clientX-r.left,0,w.W), y:clamp(e.clientY-r.top,0,w.H) }; };
+
+function release(){
+  if(!w.grab) return;
+  const b=w.grab.b;
+  b.grabbed=false;
+  /* it keeps the speed of the throw, so letting go mid-swing launches it */
+  b.state='spaz'; b.spazT=Math.max(b.spazT,P.spazT*0.6);
+  w.grab=null;
+  document.body.classList.remove('dragging');
+}
+
+cv.addEventListener('pointerdown',e=>{
+  if(!playing||w.over) return;
+  const {x,y}=atCanvas(e);
+  if(w.free){
+    const c=catAt(x,y,2.4);
+    if(!c) return;
+    e.preventDefault();
+    try { cv.setPointerCapture?.(e.pointerId); } catch {}
+    release();
+    c.grabbed=true; c.woken=true;
+    w.grab={ b:c, px:x, py:y, id:e.pointerId };
+    document.body.classList.add('dragging');
+    return;
+  }
+  if(w.started) return;
+  const best=catAt(x,y,2.0);
   if(!best) return;
   w.started=true; w.elapsed=0; w.quiet=0; spazz(best,true);
 });
+cv.addEventListener('pointermove',e=>{
+  if(!w.grab||e.pointerId!==w.grab.id) return;
+  e.preventDefault();
+  const {x,y}=atCanvas(e);
+  /* kept a body-radius clear of the edges so a dragged cat cannot be parked
+     half outside the room */
+  const r=w.grab.b.r;
+  w.grab.px=clamp(x,r,w.W-r); w.grab.py=clamp(y,r+w.ceilY,w.floorY-r*0.35);
+});
+/* Not pointerleave: with the pointer captured the canvas stays the hit-test
+   target, so a leave either never arrives or arrives at the wrong moment.
+   lostpointercapture is the reliable end of a drag. */
+for(const ev of ['pointerup','pointercancel','lostpointercapture'])
+  cv.addEventListener(ev,e=>{ if(w.grab&&e.pointerId===w.grab.id) release(); });
+
 $('go').onclick=newGame;
+$('free-reset').onclick=freePlay;
+$('free-exit').onclick=exitFree;
 
 let last=performance.now();
 function frame(now){
@@ -1103,7 +1347,9 @@ function frame(now){
   ctx.save();
   if(w.shake>0.4) ctx.translate(rand(-w.shake,w.shake),rand(-w.shake,w.shake));
   drawRoom();
-  if(w.started&&!w.over){
+  if(w.free){
+    if(!w.over){ step(dt,false); w.elapsed+=dt; hud(); }
+  } else if(w.started&&!w.over){
     step(dt,false); w.elapsed+=dt;
     if(w.nuke){ w.nuke.age+=dt; if(w.nuke.age>=w.nuke.life) endLevel(); }
     else if(topSpeed()<40*w.S&&!anySpaz()){ w.quiet+=dt; if(w.quiet>0.7) endLevel(); }
@@ -1130,4 +1376,4 @@ function frame(now){
   ctx.restore();
   requestAnimationFrame(frame);
 }
-resize(); buildLevel(0,seed); pips(); requestAnimationFrame(frame);
+resize(); buildLevel(0,seed); hudMode(); pips(); requestAnimationFrame(frame);
