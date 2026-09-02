@@ -70,3 +70,19 @@ canvas#stage:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
   .overlay p{font-size:.86rem;margin-bottom:14px}
   .note{margin-top:18px;font-size:.82rem}
 }
+
+/* Keep the whole board on screen at once. At 1280x720 the canvas was 624px
+   tall with only ~347px of room below the timer, so playing meant scrolling —
+   and scrolling took the timer off screen mid-round, which is no way to run a
+   game against a clock. The stage is capped to what the viewport can show,
+   and on a short window the introduction stands down to give it more room. */
+@media (min-width: 641px) {
+  .stage-wrap { max-width: min(100%, max(430px, (100dvh - 366px) * 16 / 10)); margin: 0 auto; }
+}
+@media (min-width: 641px) and (max-height: 860px) {
+  .game-main { padding-top: calc(var(--header-h) + 26px); padding-bottom: 56px; }
+  .game-head { margin-bottom: 14px; }
+  .game-head h1 { font-size: 1.7rem; margin-bottom: 0; }
+  .game-head p { display: none; }
+  .stage-wrap { max-width: min(100%, max(430px, (100dvh - 232px) * 16 / 10)); }
+}

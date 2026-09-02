@@ -165,13 +165,14 @@ const FACES=['plain','wide','sleepy','smug','derp'];
 
 /* ================= the cat ================= */
 const cv=document.getElementById('stage'), ctx=cv.getContext('2d');
-let W=0,H=0,S=1;
+let W=0,H=0,S=1,TS=1;
 function resize(){
   const dpr=Math.min(devicePixelRatio||1,2), r=cv.getBoundingClientRect();
   W=r.width; H=r.height;
   cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
   ctx.setTransform(dpr,0,0,dpr,0,0);
   S=Math.min(W/760,H/570);
+  TS=clamp(S,0.88,1.12);   // type does not shrink with the board
   if(cat) placeCat();
 }
 addEventListener('resize',()=>{resize();});
@@ -576,7 +577,7 @@ function frame(now){
     else{
       ctx.save(); ctx.globalAlpha=a; ctx.textAlign='center';
       ctx.fillStyle=flash.tone==='good'?'#ffd88a':'#ff9d9d';
-      ctx.font=`700 ${25*S}px "Space Grotesk", system-ui, sans-serif`;
+      ctx.font=`700 ${25*TS}px "Space Grotesk", system-ui, sans-serif`;
       ctx.fillText(flash.text, W/2, H*0.13);
       ctx.restore();
     }
@@ -624,6 +625,9 @@ function start(){
 const pos=e=>{const r=cv.getBoundingClientRect(); mx=e.clientX-r.left; my=e.clientY-r.top;};
 cv.addEventListener('pointermove',e=>{ pos(e); });
 cv.addEventListener('pointerleave',()=>{ mx=my=-999; holding=null; holdT=0; });
+/* Sweeping the lens with a trackpad would otherwise scroll the page and take
+   the timer off screen mid-round. */
+cv.addEventListener('wheel',e=>{ if(running) e.preventDefault(); },{passive:false});
 cv.addEventListener('pointerdown',e=>{
   if(!running||celebrate) return;
   e.preventDefault(); cv.setPointerCapture?.(e.pointerId);

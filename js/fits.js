@@ -30,31 +30,31 @@ const pickOne=a=>a[Math.floor(Math.random()*a.length)];
    `hole` is an optional inner radius: the slice becomes a ring and the cat
    has to fit around a post. */
 const DEFS = [
-  { key:'bowl',   name:'Cereal bowl',   h:0.62, half:t=>0.52+0.46*t,                     cx:()=>0 },
-  { key:'jar',    name:'Jam jar',       h:1.05, half:t=>0.52-0.04*Math.max(0,t-0.86)*6,  cx:()=>0 },
-  { key:'mug',    name:'Big mug',       h:0.92, half:()=>0.50,                           cx:()=>0, handle:true },
-  { key:'box',    name:'Cardboard box', h:0.80, half:()=>0.78,                           cx:()=>0 },
-  { key:'vase',   name:'Vase',          h:1.30, half:t=>0.30+0.42*Math.sin(Math.PI*Math.min(1,t*1.15))+0.10*t, cx:()=>0 },
-  { key:'fish',   name:'Fishbowl',      h:0.96, half:t=>0.72*Math.sqrt(Math.max(0,1-Math.pow(2*(t*0.92)-0.92,2))), cx:()=>0 },
-  { key:'glass',  name:'Wine glass',    h:0.86, half:t=>0.16+0.52*t,                     cx:()=>0, stem:true },
-  { key:'tube',   name:'Test tube',     h:1.45, half:()=>0.21,                           cx:()=>0 },
-  { key:'tub',    name:'Bathtub',       h:0.44, half:()=>1.02,                           cx:()=>0 },
-  { key:'boot',   name:'Wellington',    h:1.15, half:t=>t<0.30?0.34:0.30,                cx:t=>t<0.30?-0.42+1.4*t:0 },
-  { key:'kettle', name:'Kettle',        h:0.90, half:t=>0.60-0.18*Math.pow(t,3),         cx:()=>0, spout:true },
-  { key:'sink',   name:'Sink',          h:0.58, half:t=>0.80+0.16*t,                     cx:()=>0 },
-  { key:'pot',    name:'Plant pot',     h:0.78, half:t=>0.42+0.26*t,                     cx:()=>0 },
-  { key:'flask',  name:'Erlenmeyer',    h:1.12, half:t=>t<0.70?0.74-0.56*(t/0.70):0.18,  cx:()=>0 },
-  { key:'zig',    name:'Zigzag jar',    h:1.00, half:t=>0.30+0.20*(Math.floor(t*5)%2),   cx:()=>0 },
-  { key:'step',   name:'Step tower',    h:1.10, half:t=>0.66-0.13*Math.floor(t*4),       cx:()=>0 },
-  { key:'martini',name:'Martini glass', h:0.74, half:t=>0.06+0.84*t,                     cx:()=>0, stem:true },
-  { key:'booster',name:'Booster box',   h:1.02, half:()=>0.46,                           cx:()=>0 },
-  { key:'deck',   name:'Deck box',      h:0.64, half:()=>0.40,                           cx:()=>0 },
-  { key:'binder', name:'Card binder',   h:0.90, half:()=>0.66,                           cx:()=>0 },
-  { key:'ball',   name:'Poke ball',     h:0.92, half:t=>0.66*Math.sqrt(Math.max(0,1-Math.pow(2*(t*0.94)-0.94,2))), cx:()=>0 },
-  { key:'funnel', name:'Funnel',        h:0.98, half:t=>t<0.55?0.10:0.10+0.72*((t-0.55)/0.45), cx:()=>0 },
-  { key:'trophy', name:'Trophy cup',    h:0.88, half:t=>0.22+0.50*Math.pow(t,0.55),      cx:()=>0, stem:true },
-  { key:'hour',   name:'Hourglass',     h:1.20, half:t=>0.24+0.42*Math.abs(2*t-1),       cx:()=>0 },
-  { key:'donut',  name:'Donut vase',    h:1.22,
+  { key:'bowl',   name:'Cereal bowl', short:'Bowl',   h:0.62, half:t=>0.52+0.46*t,                     cx:()=>0 },
+  { key:'jar',    name:'Jam jar', short:'Jar',       h:1.05, half:t=>0.52-0.04*Math.max(0,t-0.86)*6,  cx:()=>0 },
+  { key:'mug',    name:'Big mug', short:'Mug',       h:0.92, half:()=>0.50,                           cx:()=>0, handle:true },
+  { key:'box',    name:'Cardboard box', short:'Box', h:0.80, half:()=>0.78,                           cx:()=>0 },
+  { key:'vase',   name:'Vase', short:'Vase',          h:1.30, half:t=>0.30+0.42*Math.sin(Math.PI*Math.min(1,t*1.15))+0.10*t, cx:()=>0 },
+  { key:'fish',   name:'Fishbowl', short:'Fishbowl',      h:0.96, half:t=>0.72*Math.sqrt(Math.max(0,1-Math.pow(2*(t*0.92)-0.92,2))), cx:()=>0 },
+  { key:'glass',  name:'Wine glass', short:'Wine',    h:0.86, half:t=>0.16+0.52*t,                     cx:()=>0, stem:true },
+  { key:'tube',   name:'Test tube', short:'Tube',     h:1.45, half:()=>0.21,                           cx:()=>0 },
+  { key:'tub',    name:'Bathtub', short:'Bath',       h:0.44, half:()=>1.02,                           cx:()=>0 },
+  { key:'boot',   name:'Wellington', short:'Boot',    h:1.15, half:t=>t<0.30?0.34:0.30,                cx:t=>t<0.30?-0.42+1.4*t:0 },
+  { key:'kettle', name:'Kettle', short:'Kettle',        h:0.90, half:t=>0.60-0.18*Math.pow(t,3),         cx:()=>0, spout:true },
+  { key:'sink',   name:'Sink', short:'Sink',          h:0.58, half:t=>0.80+0.16*t,                     cx:()=>0 },
+  { key:'pot',    name:'Plant pot', short:'Pot',     h:0.78, half:t=>0.42+0.26*t,                     cx:()=>0 },
+  { key:'flask',  name:'Erlenmeyer', short:'Flask',    h:1.12, half:t=>t<0.70?0.74-0.56*(t/0.70):0.18,  cx:()=>0 },
+  { key:'zig',    name:'Zigzag jar', short:'Zigzag',    h:1.00, half:t=>0.30+0.20*(Math.floor(t*5)%2),   cx:()=>0 },
+  { key:'step',   name:'Step tower', short:'Steps',    h:1.10, half:t=>0.66-0.13*Math.floor(t*4),       cx:()=>0 },
+  { key:'martini',name:'Martini glass', short:'Martini', h:0.74, half:t=>0.06+0.84*t,                     cx:()=>0, stem:true },
+  { key:'booster',name:'Booster box', short:'Booster', h:1.02, half:()=>0.46,                           cx:()=>0 },
+  { key:'deck',   name:'Deck box', short:'Deck',      h:0.64, half:()=>0.40,                           cx:()=>0 },
+  { key:'binder', name:'Card binder', short:'Binder',   h:0.90, half:()=>0.66,                           cx:()=>0 },
+  { key:'ball',   name:'Poke ball', short:'Ball',     h:0.92, half:t=>0.66*Math.sqrt(Math.max(0,1-Math.pow(2*(t*0.94)-0.94,2))), cx:()=>0 },
+  { key:'funnel', name:'Funnel', short:'Funnel',        h:0.98, half:t=>t<0.55?0.10:0.10+0.72*((t-0.55)/0.45), cx:()=>0 },
+  { key:'trophy', name:'Trophy cup', short:'Trophy',    h:0.88, half:t=>0.22+0.50*Math.pow(t,0.55),      cx:()=>0, stem:true },
+  { key:'hour',   name:'Hourglass', short:'Hourglass',     h:1.20, half:t=>0.24+0.42*Math.abs(2*t-1),       cx:()=>0 },
+  { key:'donut',  name:'Donut vase', short:'Donut',    h:1.22,
       half:t=>{ const c=0.20+0.46*Math.sqrt(Math.max(0,1-Math.pow(clamp((t-0.42)/0.48,-1,1),2)));
                 return t<0.74 ? c : lerp(c,0.17,clamp((t-0.74)/0.26,0,1)); },
       hole:t=>0.26*Math.sqrt(Math.max(0,1-Math.pow(clamp((t-0.42)/0.26,-1,1),2))),
@@ -428,13 +428,17 @@ const Board = makeBoard({
 
 /* ================= the round ================= */
 const cv=document.getElementById('stage'), ctx=cv.getContext('2d');
-let W=0,H=0,S=1,BASEPX=1;
+let W=0,H=0,S=1,TS=1,BASEPX=1;
 function resize(){
   const dpr=Math.min(devicePixelRatio||1,2), r=cv.getBoundingClientRect();
   W=r.width; H=r.height;
   cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
   ctx.setTransform(dpr,0,0,dpr,0,0);
   S=Math.min(W/880,H/550);
+  /* Geometry scales with the board, but text cannot: at 366px wide S is 0.42,
+     which made the vessel labels 4.6px and the prompt 5.8px. Type gets its own
+     scale with a floor under it. */
+  TS=clamp(S,0.86,1.12);
 }
 addEventListener('resize',()=>{resize();layout();});
 
@@ -491,6 +495,7 @@ function layout(){
   slots.forEach((s,i)=>{
     s.x=W*(0.112+i*0.194); s.y=baseY; s.px=px*s.scale;
     s.w=2*maxHalf(s.def)*s.px; s.hpx=s.def.h*s.px;
+    s.span=W*0.194;          // centre to centre: what a label actually has to fit in
   });
   if(cat){
     cat.homeX=W/2; cat.homeY=H*0.170;
@@ -541,9 +546,20 @@ function drawVessel(s,hover,behind){
     for(let i=0;i<=N;i++){const t=i/N; ctx.lineTo(s.x+(d.cx(t)+d.half(t))*s.px, s.y-t*d.h*s.px);}
     ctx.stroke();
     ctx.fillStyle=hover?'#7dd8ff':'#6d7299';
-    ctx.font=`600 ${11*S}px "Space Grotesk", system-ui, sans-serif`;
+    ctx.font=`600 ${11*TS}px "Space Grotesk", system-ui, sans-serif`;
     ctx.textAlign='center';
-    ctx.fillText(d.name.toUpperCase(), s.x, s.y+(d.stem?40:22)*S);
+    /* The room a label has is the gap to the next vessel, not the width of
+       the vessel it sits under — a wide box next to a narrow tube still only
+       gets its own slot. Full name when it fits, short name when it does not,
+       and only then does the type give any ground, down to a readable floor. */
+    let label=d.name.toUpperCase();
+    const room=s.span-6;
+    if(ctx.measureText(label).width > room) label=(d.short||d.name).toUpperCase();
+    let fs=11*TS;
+    while(fs>8.2 && ctx.measureText(label).width > room){
+      fs-=0.4; ctx.font=`600 ${fs}px "Space Grotesk", system-ui, sans-serif`;
+    }
+    ctx.fillText(label, s.x, s.y+(d.stem?40:22)*S);
   }
   ctx.restore();
 }
@@ -569,7 +585,7 @@ function frame(now){
     drawBody(ctx,S,null,seg,cat.homeX,cat.B,cat.R,t);
     drawHead(ctx,S,seg,cat.homeX,cat.B,cat.R,cat.face);
     ctx.fillStyle='#a8adcf'; ctx.textAlign='center';
-    ctx.font=`500 ${14*S}px Sora, system-ui, sans-serif`;
+    ctx.font=`500 ${14*TS}px Sora, system-ui, sans-serif`;
     ctx.fillText('Which one does this cat fill?', W/2, H*0.315);
   } else {
     const st=cat.stage, s=slots[picked];
@@ -615,13 +631,13 @@ const sl_hasHole=s=>{ for(let i=0;i<=24;i++) if(s.def.hole(i/24)>0.001) return t
 function drawVerdict(){
   ctx.save(); ctx.textAlign='center';
   ctx.fillStyle = result.key==='perf'?'#ffd88a':result.life<0?'#ff9d9d':'#7dd8ff';
-  ctx.font=`700 ${25*S}px "Space Grotesk", system-ui, sans-serif`;
+  ctx.font=`700 ${25*TS}px "Space Grotesk", system-ui, sans-serif`;
   ctx.fillText(result.label, W/2, H*0.11);
-  ctx.fillStyle='#a8adcf'; ctx.font=`400 ${13.5*S}px Sora, system-ui, sans-serif`;
+  ctx.fillStyle='#a8adcf'; ctx.font=`400 ${13.5*TS}px Sora, system-ui, sans-serif`;
   ctx.fillText(result.phrase, W/2, H*0.163);
-  ctx.fillStyle='#eef0fb'; ctx.font=`700 ${17*S}px "Space Grotesk", system-ui, sans-serif`;
+  ctx.fillStyle='#eef0fb'; ctx.font=`700 ${17*TS}px "Space Grotesk", system-ui, sans-serif`;
   ctx.fillText((result.pts>0?'+'+result.pts:'no points') + (result.gained?'   +1 life':''), W/2, H*0.222);
-  ctx.fillStyle='#6d7299'; ctx.font=`500 ${11.5*S}px "Space Grotesk", system-ui, sans-serif`;
+  ctx.fillStyle='#6d7299'; ctx.font=`500 ${11.5*TS}px "Space Grotesk", system-ui, sans-serif`;
   ctx.fillText(lives>0?'CLICK ANYWHERE TO CONTINUE':'OUT OF LIVES', W/2, H*0.275);
   ctx.restore();
 }
@@ -636,6 +652,9 @@ cv.addEventListener('pointermove',e=>{
   cv.style.cursor = hoverIdx>=0?'pointer':'default';
 });
 cv.addEventListener('pointerleave',()=>{hoverIdx=-1;});
+/* Playing means sweeping a pointer across the board; a stray trackpad gesture
+   would otherwise scroll the page and take the timer off screen mid-round. */
+cv.addEventListener('wheel',e=>{ if(running) e.preventDefault(); },{passive:false});
 cv.addEventListener('pointerdown',e=>{
   if(!running) return;
   const r=cv.getBoundingClientRect();
