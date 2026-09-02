@@ -288,7 +288,14 @@ h2 {
   background: var(--surface);
   transition: transform 0.15s ease, border-color 0.15s ease;
 }
-.carry-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+.carry-card:hover,
+.carry-card:focus-visible,
+.carry-card.measured {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  background: var(--surface-2);
+}
+.carry-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .carry-icon {
   width: 42px; height: 42px;
   display: flex; align-items: center; justify-content: center;
@@ -300,6 +307,30 @@ h2 {
 }
 .carry-card h3 { font-family: var(--font-head); font-size: 1.1rem; margin-bottom: 10px; }
 .carry-card p { color: var(--text-dim); font-size: 0.95rem; }
+
+/* --- Wave function collapse on the carry tiles ---
+   The description ships visible. Only once carry-wave.js has run and added
+   .wave-on does it hide behind the wave, so with JS off or broken the
+   section reads exactly as it always did. */
+.carry-body { position: relative; min-height: 92px; }
+.carry-body canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+.carry-grid.wave-on .carry-card { cursor: default; }
+.carry-grid.wave-on .carry-card p {
+  /* Driven per-frame from JS, deliberately with no CSS transition: the text
+     must stay put until the wave has finished merging, then snap. A
+     transition here would smear that snap back into a fade. */
+  opacity: var(--reveal, 0);
+  filter: blur(var(--reveal-blur, 3.5px));
+  transform: translateY(var(--reveal-y, 3px));
+  will-change: opacity, filter;
+}
 
 /* Visit */
 .visit-details {
