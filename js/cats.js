@@ -1,61 +1,72 @@
 /* ---------------- leaderboard ----------------
 
-   WHERE SCORES LIVE
-   -----------------
-   Set SCORES_URL to a Firebase Realtime Database URL and every visitor
-   sees and adds to the same board. Leave it null and scores stay in each
-   visitor's own browser, which is the safe default: a wrong URL here
-   would mean the board silently does nothing.
+   Scores are shared: everyone who plays reads and writes the same list,
+   with no account for anyone. It is one JSON document on a free public
+   store that needs no key, fetched and rewritten by the page.
 
-   To turn the shared board on (about five minutes, no billing):
-     1. console.firebase.google.com -> Add project (skip Analytics)
-     2. Build -> Realtime Database -> Create Database -> Start in TEST mode
-     3. Copy the database URL, e.g. https://something.firebaseio.com
-     4. Paste it below
-     5. Rules tab, replace with:
-        { "rules": { "scores": { ".read": true, ".write": true,
-            "$s": { ".validate":
-              "newData.hasChildren(['name','score'])
-               && newData.child('name').isString()
-               && newData.child('name').val().length <= 3
-               && newData.child('score').isNumber()
-               && newData.child('score').val() >= 0
-               && newData.child('score').val() <= 100000" } } } }
+   Two things this deliberately does not do:
+   - It cannot stop someone forging a score. A browser game has no way to
+     prove a number was earned. That is an accepted trade.
+   - It does not trust what comes back. Anything could be in that
+     document, so names are re-sanitised on the way in AND on the way out
+     before they are ever put on the page.
 
-   Those rules stop junk being written but cannot stop a determined
-   person posting a score they did not earn — a browser game has no way
-   to prove otherwise. For an arcade board on a card shop site that is a
-   fine trade; just do not treat it as authoritative. */
-const SCORES_URL = null;
+   If the store is unreachable the board quietly falls back to this
+   browser's own scores, so a service outage degrades rather than breaks. */
+const SCORES_ID = null;                       // set to the shared document id
+const SCORES_API = 'https://api.restful-api.dev/objects';
 
 const BOARD_SIZE = 10;
 const LOCAL_KEY = 'scats-board';
 
+/* Three letters is enough to spell something we would not want sitting on
+   the site. Names are A-Z and 0-9 only, and these are refused outright. */
+const BLOCKED = new Set([
+  'ASS','FUK','FUC','FCK','CUM','TIT','SEX','FAG','JEW','NIG','KKK',
+  'CNT','DIK','DIC','PIS','SHT','WTF','GAY','HOE','NAZ','POO','PEE'
+]);
+function cleanName(v){
+  const n = String(v || '').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,3);
+  if (!n) return null;
+  return BLOCKED.has(n) ? null : n;
+}
+function cleanRow(r){
+  if (!r || typeof r !== 'object') return null;
+  const name = cleanName(r.name);
+  const score = Number(r.score);
+  if (!name || !Number.isFinite(score) || score <= 0 || score > 1e6) return null;
+  return { name, score: Math.floor(score), at: Number(r.at) || 0 };
+}
+
 const Board = {
   shared: false,
+  url(){ return SCORES_ID ? `${SCORES_API}/${SCORES_ID}` : null; },
   async init(){
     this.shared = false;
-    if (!SCORES_URL) return false;
+    if (!this.url()) return false;
     try {
-      const res = await fetch(SCORES_URL.replace(/\/$/,'') + '/scores.json', { cache:'no-store' });
-      if (res.ok) this.shared = true;
+      const res = await fetch(this.url(), { cache:'no-store' });
+      this.shared = res.ok;
     } catch { this.shared = false; }
     return this.shared;
   },
   localRows(){
     try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]'); } catch { return []; }
   },
+  async fetchShared(){
+    const res = await fetch(this.url(), { cache:'no-store' });
+    if (!res.ok) throw new Error(res.status);
+    const body = await res.json();
+    const raw = (body && body.data && body.data.scores) || [];
+    return raw.map(cleanRow).filter(Boolean).sort((a,b)=>b.score-a.score);
+  },
   async top(){
     if (this.shared){
-      try {
-        const res = await fetch(SCORES_URL.replace(/\/$/,'') + '/scores.json', { cache:'no-store' });
-        const obj = await res.json();
-        const rows = obj ? Object.values(obj) : [];
-        return rows.filter(r => r && typeof r.score === 'number')
-                   .sort((a,b)=>b.score-a.score).slice(0, BOARD_SIZE);
-      } catch { /* fall through to local */ }
+      try { return (await this.fetchShared()).slice(0, BOARD_SIZE); }
+      catch { this.shared = false; }
     }
-    return this.localRows().sort((a,b)=>b.score-a.score).slice(0, BOARD_SIZE);
+    return this.localRows().map(cleanRow).filter(Boolean)
+      .sort((a,b)=>b.score-a.score).slice(0, BOARD_SIZE);
   },
   async qualifies(score){
     if (score <= 0) return false;
@@ -63,12 +74,22 @@ const Board = {
     return rows.length < BOARD_SIZE || score > rows[rows.length-1].score;
   },
   async submit(name, score){
-    const row = { name, score, at: Date.now() };
+    const row = cleanRow({ name, score, at: Date.now() });
+    if (!row) return null;
     if (this.shared){
       try {
-        await fetch(SCORES_URL.replace(/\/$/,'') + '/scores.json',
-          { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(row) });
-        return row;
+        /* Re-read immediately before writing, so two people finishing at
+           once are unlikely to overwrite each other. Not airtight — the
+           store has no compare-and-set — but the window is tiny and the
+           stakes are a cat game. */
+        const current = await this.fetchShared();
+        const next = [...current, row].sort((a,b)=>b.score-a.score).slice(0, 50);
+        const res = await fetch(this.url(), {
+          method:'PUT',
+          headers:{ 'Content-Type':'application/json' },
+          body: JSON.stringify({ name:'schrodingerscards-highscores', data:{ scores: next } })
+        });
+        if (res.ok) return row;
       } catch { /* fall through to local */ }
     }
     const rows = this.localRows();
@@ -618,7 +639,7 @@ async function renderBoard(){
   list.innerHTML = rows.map((r,i)=>{
     const mine = justEntered && r.name===justEntered.name && r.score===justEntered.score;
     return `<li class="${mine?'you':''}"><span class="rank">${i+1}</span>` +
-           `<span class="who">${String(r.name||'???').slice(0,3)}</span>` +
+           `<span class="who">${cleanName(r.name) || '???'}</span>` +
            `<span class="pts">${Number(r.score)||0}</span></li>`;
   }).join('');
   wrap.hidden = false;
@@ -632,7 +653,7 @@ initials.addEventListener('keydown', e => { if (e.key==='Enter') submitScore(); 
 document.getElementById('submit-score').addEventListener('click', () => submitScore());
 
 async function submitScore(){
-  const name = (initials.value || 'CAT').padEnd(3,'.').slice(0,3);
+  const name = cleanName(initials.value) || 'CAT';
   document.getElementById('entry').hidden = true;
   justEntered = await Board.submit(name, score);
   await renderBoard();
