@@ -312,6 +312,11 @@ h2 {
    The description ships visible. Only once carry-wave.js has run and added
    .wave-on does it hide behind the wave, so with JS off or broken the
    section reads exactly as it always did. */
+.carry-grid.wave-on .carry-card {
+  /* Kills the ~300ms double-tap-zoom wait before click fires on mobile. */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
 .carry-body { position: relative; min-height: 92px; }
 .carry-body canvas {
   position: absolute;

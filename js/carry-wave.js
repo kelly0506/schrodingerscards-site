@@ -179,14 +179,26 @@
     if (reduced) c.p = on ? 1 : 0;
   }
 
+  let lastPointerDown = -1e9;
+  addEventListener('pointerdown', () => { lastPointerDown = performance.now(); }, true);
+
   cards.forEach((c) => {
     if (canHover) {
       c.card.addEventListener('pointerenter', () => setMeasured(c, true));
       c.card.addEventListener('pointerleave', () => setMeasured(c, false));
     }
-    c.card.addEventListener('focus', () => setMeasured(c, true));
+    /* Only KEYBOARD focus should reveal. A tap also focuses a tabindex
+       element, so honouring every focus meant one tap opened it and the
+       click straight after toggled it shut — hence two taps on a phone.
+       :focus-visible looked like the right discriminator but is not
+       dependable enough here (Safari on iOS is inconsistent, and it even
+       matches programmatic focus), so key off whether a pointer went
+       down moments ago instead. Focus with no recent press is keyboard. */
+    c.card.addEventListener('focus', () => {
+      if (performance.now() - lastPointerDown > 300) setMeasured(c, true);
+    });
     c.card.addEventListener('blur', () => setMeasured(c, false));
-    /* Tap always works, so touch screens are not left out. */
+    /* Tap toggles, so touch screens are not left out. */
     c.card.addEventListener('click', () => setMeasured(c, !c.measured));
     c.card.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setMeasured(c, !c.measured); }
