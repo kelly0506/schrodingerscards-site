@@ -34,7 +34,22 @@
 .field-wrap{position:relative}
 canvas#field{display:block;width:100%;aspect-ratio:1/1;border:1px solid var(--border);border-radius:18px;
   background:radial-gradient(120% 90% at 50% 0%,rgba(180,139,255,.05),transparent 60%),var(--surface);
-  cursor:none;touch-action:none}
+  cursor:none;
+  /* Holding a finger on a canvas otherwise starts a native text selection
+     and a drag, and iOS puts a little drag preview under the finger — which
+     hijacks the gesture and breaks tracking completely. All four of these
+     are needed; touch-action alone does not stop the selection or callout. */
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-touch-callout:none;
+  -webkit-user-drag:none}
+/* While a finger is down, stop the rest of the page being selected too —
+   a drag that strays off the canvas would otherwise start highlighting text. */
+body.dragging, body.dragging *{
+  user-select:none !important;
+  -webkit-user-select:none !important;
+  -webkit-touch-callout:none !important}
 canvas#field:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
 .overlay{position:absolute;inset:0;display:grid;place-items:center;padding:28px;border-radius:18px;

@@ -577,8 +577,26 @@ function pos(e){
   updateAim();
 }
 cv.addEventListener('pointermove', pos);
-cv.addEventListener('pointerdown', e=>{ pos(e); pointer.down=true; cv.setPointerCapture(e.pointerId); });
-addEventListener('pointerup', ()=>{ pointer.down=false; });
+cv.addEventListener('pointerdown', e=>{
+  /* Stops the browser turning the press into a selection or a drag before
+     we ever see a move. Safe here because the canvas has no text or
+     controls of its own — the overlay sits outside it. */
+  e.preventDefault();
+  pos(e); pointer.down=true;
+  document.body.classList.add('dragging');
+  try { cv.setPointerCapture(e.pointerId); } catch {}
+});
+addEventListener('pointerup', ()=>{ pointer.down=false; document.body.classList.remove('dragging'); });
+addEventListener('pointercancel', ()=>{ pointer.down=false; document.body.classList.remove('dragging'); });
+
+/* Belt and braces for the long-press behaviours that fire independently of
+   pointer events: the iOS callout menu, the selection, and the drag image. */
+for (const evt of ['contextmenu','selectstart','dragstart']){
+  cv.addEventListener(evt, e => e.preventDefault());
+}
+/* Older iOS ignores touch-action, so refuse the touch gestures outright. */
+cv.addEventListener('touchstart', e => e.preventDefault(), { passive:false });
+cv.addEventListener('touchmove',  e => e.preventDefault(), { passive:false });
 cv.addEventListener('pointerleave', ()=>{ if(!pointer.down){ pointer.x=-999; pointer.y=-999; updateAim(); } });
 
 function start(){
