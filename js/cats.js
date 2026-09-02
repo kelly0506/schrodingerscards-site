@@ -13,7 +13,7 @@
 
    If the store is unreachable the board quietly falls back to this
    browser's own scores, so a service outage degrades rather than breaks. */
-const SCORES_ID = null;                       // set to the shared document id
+const SCORES_ID = 'ff808181a058d43f01a0602bfe69182a';   // the shared board
 const SCORES_API = 'https://api.restful-api.dev/objects';
 
 const BOARD_SIZE = 10;
