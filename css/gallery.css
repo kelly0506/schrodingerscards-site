@@ -19,6 +19,28 @@
 }
 .gallery-lede { color: var(--text-dim); font-size: 1.05rem; }
 
+/* Asking us to hold something is the one action this page wants, so it gets
+   a real control rather than a sentence telling people to message us. */
+.gallery-hold {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 26px;
+  padding: 18px 22px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 12px;
+  background: var(--bg-alt);
+}
+.gallery-hold p {
+  color: var(--text);
+  font-size: 0.96rem;
+  margin: 0;
+  flex: 1 1 240px;
+}
+.gallery-hold .btn { flex: 0 0 auto; }
+
 .gallery-status {
   color: var(--text-faint);
   font-size: 0.95rem;
