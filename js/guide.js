@@ -104,64 +104,52 @@ const SCORES = {
 
 /* ---------- Screens ----------
    Each screen holds one or more fields. `when` decides whether the
-   screen is shown at all, so the flow adapts: a singles-only user
-   never sees the sealed questions. ------------------------------- */
+   screen (or a single field) is shown, so the flow adapts: a
+   singles-only user never sees the sealed questions.
+
+   GROUPING IS DELIBERATE. An earlier version asked the same things
+   across ten separate screens. Every extra Continue press is a place
+   to abandon a funnel, so related questions now share a screen: five
+   screens for a singles- or sealed-only collection, six for a mix.
+   Adding a field to an existing screen is nearly free; adding a
+   screen is not. ------------------------------------------------- */
 
 const hasSingles = (s) => s.holdings === 'singles' || s.holdings === 'both';
 const hasSealed  = (s) => s.holdings === 'sealed'  || s.holdings === 'both';
 
 const SCREENS = [
   {
-    id: 'holdings',
-    title: 'What do you have?',
-    sub: 'Sealed product and loose cards behave like two different markets, so we handle them separately.',
-    fields: [{
-      key: 'holdings', type: 'single',
-      options: [
-        { v: 'singles', t: 'Individual cards', d: 'Loose singles, sleeved or in binders, boxes or stacks.' },
-        { v: 'sealed', t: 'Sealed product', d: 'Unopened packs, boxes, ETBs, tins, collection boxes.' },
-        { v: 'both', t: 'Both', d: 'A mix of loose cards and sealed product.' }
-      ]
-    }]
-  },
-
-  {
-    id: 'goal',
-    title: 'What are you hoping to get out of it?',
-    sub: 'There is no wrong answer here — it just changes which trade-offs we weigh more heavily.',
-    fields: [{
-      key: 'goal', type: 'single',
-      options: [
-        { v: 'cash', t: 'Cash, reasonably quickly', d: 'Convenience matters more to me than squeezing out the last dollar.' },
-        { v: 'max', t: 'As much money as is reasonable', d: "I'll do more work if it means a meaningfully better return." },
-        { v: 'grade', t: 'Maximize what my best cards are worth', d: "I'd spend money and wait months if the upside justifies it." },
-        { v: 'unsure', t: "I'm not sure yet", d: 'I want to understand what I have before I decide anything.' }
-      ]
-    }]
-  },
-
-  {
-    id: 'size',
-    title: 'Roughly how big is the collection?',
-    sub: 'A ballpark is fine. This mostly tells us whether selling piece by piece is even practical.',
-    fields: [{
-      key: 'size', type: 'single',
-      hint: 'For sealed product, count each sealed item as one.',
-      options: [
-        { v: 'u50', t: 'Under 50 items' },
-        { v: 's50_250', t: '50 – 250' },
-        { v: 's250_1k', t: '250 – 1,000' },
-        { v: 's1k_5k', t: '1,000 – 5,000' },
-        { v: 's5k', t: '5,000+' },
-        { v: 'dk', t: "I don't know" }
-      ]
-    }]
+    id: 'start',
+    title: 'Start with the basics',
+    sub: 'Two quick ones. Sealed product and loose cards behave like different markets, so we handle them separately from here.',
+    fields: [
+      {
+        key: 'holdings', type: 'single',
+        label: 'What do you have?',
+        options: [
+          { v: 'singles', t: 'Individual cards', d: 'Loose singles, sleeved or in binders, boxes or stacks.' },
+          { v: 'sealed', t: 'Sealed product', d: 'Unopened packs, boxes, ETBs, tins, collection boxes.' },
+          { v: 'both', t: 'Both', d: 'A mix of loose cards and sealed product.' }
+        ]
+      },
+      {
+        key: 'goal', type: 'single',
+        label: 'What are you hoping to get out of it?',
+        hint: 'No wrong answer — it just changes which trade-offs we weigh more heavily.',
+        options: [
+          { v: 'cash', t: 'Cash, reasonably quickly', d: 'Convenience matters more than the last dollar.' },
+          { v: 'max', t: 'As much money as is reasonable', d: "I'll do more work for a better return." },
+          { v: 'grade', t: 'Maximize what my best cards are worth', d: "I'd spend money and wait months if it pays." },
+          { v: 'unsure', t: "I'm not sure yet", d: 'I want to understand what I have first.' }
+        ]
+      }
+    ]
   },
 
   {
     id: 'condition',
     title: 'What kind of condition is it in?',
-    sub: "Condition moves value more than almost anything else, and it's the easiest thing to be too generous about. If you're not sure, say so — we'd rather give you an honest answer than a flattering one.",
+    sub: "Condition moves value more than anything else here, and it is the easiest thing to be too generous about. If you're not sure, say so — we'd rather give you an honest answer than a flattering one.",
     showHelp: true,
     fields: [
       {
@@ -188,42 +176,46 @@ const SCREENS = [
           { v: 'mixed', t: 'Genuinely mixed' },
           { v: 'dk', t: "I don't know how to judge this" }
         ]
+      },
+      {
+        key: 'sealedFactory', type: 'single', when: hasSealed,
+        label: 'Is it all still unopened and factory sealed?',
+        options: [
+          { v: 'yes', t: 'Yes, all of it' },
+          { v: 'mixed', t: 'Some has been opened or resealed' },
+          { v: 'no', t: 'No' },
+          { v: 'dk', t: "I don't know" }
+        ]
       }
     ]
   },
 
   {
-    id: 'singlesTypes',
-    title: "What's actually in there?",
-    sub: 'Pick everything that applies. Rarity and era decide whether collectors compete for your cards or ignore them.',
-    when: hasSingles,
-    fields: [{
-      key: 'typesSingles', type: 'multi',
-      options: [
-        { v: 'vintage', t: 'Vintage', d: 'Base Set, Jungle, Fossil, Team Rocket — the WotC years, roughly 1999–2003.' },
-        { v: 'older_modern', t: 'Older modern', d: 'Roughly the 2000s through mid-2010s.' },
-        { v: 'modern', t: 'Modern', d: 'Recent-ish sets that are out of print.' },
-        { v: 'recent', t: 'Current releases', d: 'Sets still on shelves right now.' },
-        { v: 'sir_sar', t: 'SIRs, SARs, Alt Arts, Full Arts', d: 'The chase pulls with special artwork.' },
-        { v: 'first_ed', t: 'First Edition or shadowless' },
-        { v: 'serialized', t: 'Serialized / numbered cards', d: 'Cards stamped like 07/99.' },
-        { v: 'promo', t: 'Promos and exclusives' },
-        { v: 'chase', t: 'Known chase cards', d: 'The specific cards people hunt for in a set.' },
-        { v: 'commons', t: 'Mostly commons and uncommons', d: 'Bulk — the everyday cards that fill a binder.' },
-        { v: 'dk', t: "I don't know what I have" }
-      ]
-    }]
-  },
-
-  {
-    id: 'singlesTop',
-    title: 'Your best cards',
-    sub: 'One or two strong cards often change the whole recommendation, so it matters more than the total.',
+    id: 'singles',
+    title: "What's in the collection?",
+    sub: 'Rarity and era decide whether collectors compete for your cards or ignore them — and one or two strong cards often change the whole recommendation.',
     when: hasSingles,
     fields: [
       {
+        key: 'typesSingles', type: 'multi',
+        label: 'What kinds of cards are in there?',
+        options: [
+          { v: 'vintage', t: 'Vintage', d: 'Base Set, Jungle, Fossil, Team Rocket — the WotC years, roughly 1999–2003.' },
+          { v: 'older_modern', t: 'Older modern', d: 'Roughly the 2000s through mid-2010s.' },
+          { v: 'modern', t: 'Modern', d: 'Recent-ish sets that are out of print.' },
+          { v: 'recent', t: 'Current releases', d: 'Sets still on shelves right now.' },
+          { v: 'sir_sar', t: 'SIRs, SARs, Alt Arts, Full Arts', d: 'The chase pulls with special artwork.' },
+          { v: 'first_ed', t: 'First Edition or shadowless' },
+          { v: 'serialized', t: 'Serialized / numbered cards', d: 'Cards stamped like 07/99.' },
+          { v: 'promo', t: 'Promos and exclusives' },
+          { v: 'chase', t: 'Known chase cards', d: 'The specific cards people hunt for in a set.' },
+          { v: 'commons', t: 'Mostly commons and uncommons', d: 'Bulk — the everyday cards that fill a binder.' },
+          { v: 'dk', t: "I don't know what I have" }
+        ]
+      },
+      {
         key: 'topCard100', type: 'single',
-        label: 'Do you have any individual cards worth roughly $100 or more?',
+        label: 'Any individual cards worth roughly $100 or more?',
         options: [
           { v: 'yes', t: 'Yes' },
           { v: 'no', t: 'No' },
@@ -236,7 +228,7 @@ const SCREENS = [
         label: 'Are any of them genuinely rare or sought after?',
         hint: 'SIRs · SARs · Alt Arts · vintage holos · First Edition · promos · serialized · major chase cards',
         options: [
-          { v: 'yes', t: 'Yes, I have cards collectors actively look for' },
+          { v: 'yes', t: 'Yes, cards collectors actively look for' },
           { v: 'no', t: 'Not really — valuable, but common enough' },
           { v: 'dk', t: "I don't know" }
         ]
@@ -245,81 +237,48 @@ const SCREENS = [
   },
 
   {
-    id: 'sealedTypes',
-    title: 'What sealed product do you have?',
-    sub: 'Pick everything that applies.',
-    when: hasSealed,
-    fields: [{
-      key: 'typesSealed', type: 'multi',
-      options: [
-        { v: 'booster_box', t: 'Booster boxes' },
-        { v: 'packs', t: 'Loose booster packs' },
-        { v: 'etb', t: 'Elite Trainer Boxes' },
-        { v: 'tins', t: 'Tins' },
-        { v: 'collection_box', t: 'Collection or specialty boxes' },
-        { v: 'blister', t: 'Blisters and three-pack hangers' },
-        { v: 'other', t: 'Something else' },
-        { v: 'dk', t: "I don't know" }
-      ]
-    }]
-  },
-
-  {
-    id: 'sealedDetail',
-    title: 'A few things about the sealed product',
-    sub: 'Sealed is its own asset class. These four answers do most of the work.',
+    id: 'sealed',
+    title: 'About the sealed product',
+    sub: 'Sealed is its own asset class, and scarcity is what separates the part that appreciates from the part that does not.',
     when: hasSealed,
     fields: [
       {
-        key: 'sealedFactory', type: 'single',
-        label: 'Is it all still unopened and factory sealed?',
+        key: 'typesSealed', type: 'multi',
+        label: 'What have you got?',
         options: [
-          { v: 'yes', t: 'Yes, all of it' },
-          { v: 'mixed', t: 'Some is, some has been opened or resealed' },
-          { v: 'no', t: 'No' },
+          { v: 'booster_box', t: 'Booster boxes' },
+          { v: 'packs', t: 'Loose booster packs' },
+          { v: 'etb', t: 'Elite Trainer Boxes' },
+          { v: 'tins', t: 'Tins' },
+          { v: 'collection_box', t: 'Collection or specialty boxes' },
+          { v: 'blister', t: 'Blisters and three-pack hangers' },
+          { v: 'other', t: 'Something else' },
           { v: 'dk', t: "I don't know" }
         ]
       },
       {
-        key: 'sealedOutOfPrint', type: 'single',
-        label: 'Is any of it older or out of print?',
-        hint: 'Out-of-print sealed is the part that tends to appreciate.',
+        key: 'sealedScarcity', type: 'single',
+        label: 'Is any of it out of print or hard to find?',
+        hint: 'This is the single biggest question for sealed. In-print product does not appreciate while it is still being made.',
         options: [
-          { v: 'yes', t: 'Yes' },
-          { v: 'no', t: 'No, it’s all current product' },
+          { v: 'yes_scarce', t: 'Yes — and some of it is genuinely hard to find', d: 'Out of print, and not easy to turn up even if you go looking.' },
+          { v: 'yes_oop', t: 'Yes, some of it is out of print', d: 'Older sets you can no longer buy new.' },
+          { v: 'no', t: "No, it's all current product", d: 'Sets still on shelves right now.' },
           { v: 'dk', t: "I don't know" }
-        ]
-      },
-      {
-        key: 'sealedScarce', type: 'single',
-        label: 'Is any of it particularly hard to find?',
-        options: [
-          { v: 'yes', t: 'Yes, I believe so' },
-          { v: 'no', t: 'No' },
-          { v: 'dk', t: "I don't know" }
-        ]
-      },
-      {
-        key: 'sealedOpening', type: 'single',
-        label: 'Are you thinking about opening any of it?',
-        options: [
-          { v: 'yes', t: "Yes, I've been tempted" },
-          { v: 'no', t: 'No, I plan to keep it sealed' },
-          { v: 'unsure', t: "I'm not sure" }
         ]
       }
     ]
   },
 
   {
-    id: 'value',
-    title: 'Any sense of what it might be worth?',
-    sub: 'A guess is fine. We weight it by how you arrived at it.',
+    id: 'worth',
+    title: 'What is it worth, roughly?',
+    sub: 'A guess is completely fine — we weight it by how you arrived at it. Where the value sits matters at least as much as the total.',
     fields: [
       {
         key: 'value', type: 'single',
         label: 'Estimated total value',
-        hint: 'No idea? Pick "I have no idea" — we will show you how to work it out at the end.',
+        hint: 'No idea? Say so — we will show you how to work it out at the end.',
         options: [
           { v: 'u100', t: 'Under $100' },
           { v: 'v100_500', t: '$100 – $500' },
@@ -327,7 +286,7 @@ const SCREENS = [
           { v: 'v1k_5k', t: '$1,000 – $5,000' },
           { v: 'v5k_10k', t: '$5,000 – $10,000' },
           { v: 'v10k', t: '$10,000+' },
-          { v: 'dk', t: "I have no idea" }
+          { v: 'dk', t: 'I have no idea' }
         ]
       },
       {
@@ -343,32 +302,40 @@ const SCREENS = [
           { v: 'ebay_asking', t: 'eBay asking prices' },
           { v: 'guess', t: 'I mostly guessed' }
         ]
+      },
+      {
+        key: 'concentration', type: 'single',
+        label: 'Where is the value sitting?',
+        options: [
+          { v: 'few', t: 'In a handful of items', d: 'A few pieces are worth more than everything else combined.' },
+          { v: 'spread', t: 'Spread across the collection', d: 'Lots of cards that individually are not worth much.' },
+          { v: 'dk', t: "I don't know" }
+        ]
+      },
+      {
+        key: 'size', type: 'single',
+        label: 'Roughly how big is it?',
+        hint: 'A ballpark. This mostly tells us whether selling piece by piece is even practical. Count each sealed item as one.',
+        options: [
+          { v: 'u50', t: 'Under 50 items' },
+          { v: 's50_250', t: '50 – 250' },
+          { v: 's250_1k', t: '250 – 1,000' },
+          { v: 's1k_5k', t: '1,000 – 5,000' },
+          { v: 's5k', t: '5,000+' },
+          { v: 'dk', t: "I don't know" }
+        ]
       }
     ]
   },
 
   {
-    id: 'concentration',
-    title: 'Where is the value sitting?',
-    sub: 'This is one of the strongest signals in the whole questionnaire.',
-    fields: [{
-      key: 'concentration', type: 'single',
-      options: [
-        { v: 'few', t: 'In a handful of items', d: 'A few pieces are worth far more than everything else combined.' },
-        { v: 'spread', t: 'Spread across the collection', d: 'Lots of cards that individually are not worth much.' },
-        { v: 'dk', t: "I don't know" }
-      ]
-    }]
-  },
-
-  {
-    id: 'work',
-    title: 'How much of the work do you want to do?',
-    sub: 'Be honest with yourself here. Half-finished listings are the most common way people lose money.',
+    id: 'you',
+    title: 'Last one: how do you want to do this?',
+    sub: 'Be honest with yourself here. Half-finished listings are the most common way people lose money on a collection.',
     fields: [
       {
         key: 'effort', type: 'single',
-        label: 'Time and effort you’re willing to put in',
+        label: 'Time and effort you are willing to put in',
         options: [
           { v: 'little', t: 'Very little', d: 'I want this handled with minimal hassle.' },
           { v: 'some', t: 'Some', d: "I'll list and ship a reasonable number of items." },
@@ -385,28 +352,22 @@ const SCREENS = [
           { v: 'sixplus', t: 'Six months or more', d: "I'm comfortable holding or grading." },
           { v: 'none', t: 'No timeline at all', d: "I'm focused purely on value." }
         ]
+      },
+      {
+        key: 'investWilling', type: 'single',
+        when: (s) => hasSingles(s) &&
+                     ['nm', 'lp', 'mixed', 'dk'].includes(s.condSingles) &&
+                     (s.topCard100 === 'yes' || s.topCard100 === 'dk' ||
+                      ['v1k_5k', 'v5k_10k', 'v10k'].includes(s.value)),
+        label: 'Would you spend money up front for a shot at a higher return?',
+        hint: 'Grading fees, supplies, insured shipping both ways, and months of waiting — with no guarantee of the grade you want.',
+        options: [
+          { v: 'yes', t: 'Yes, if the math works' },
+          { v: 'maybe', t: 'Maybe, show me the numbers' },
+          { v: 'no', t: "No, I'd rather not spend anything" }
+        ]
       }
     ]
-  },
-
-  {
-    id: 'invest',
-    title: 'One last question',
-    sub: 'Grading costs real money up front, and the grade you get back is never guaranteed.',
-    when: (s) => hasSingles(s) &&
-                 ['nm', 'lp', 'mixed', 'dk'].includes(s.condSingles) &&
-                 (s.topCard100 === 'yes' || s.topCard100 === 'dk' ||
-                  ['v1k_5k', 'v5k_10k', 'v10k'].includes(s.value)),
-    fields: [{
-      key: 'investWilling', type: 'single',
-      label: 'Would you spend money up front for a shot at a higher return?',
-      hint: 'Grading fees, supplies, insured shipping both ways, and months of waiting — with no guarantee of the grade you want.',
-      options: [
-        { v: 'yes', t: 'Yes, if the math works' },
-        { v: 'maybe', t: 'Maybe, show me the numbers' },
-        { v: 'no', t: 'No, I’d rather not spend anything' }
-      ]
-    }]
   }
 ];
 
@@ -478,11 +439,13 @@ function computeFactors(state) {
     let d = 26;
     (state.typesSealed || []).forEach((t) => { d += SCORES.sealedType[t] || 0; });
     if (has(state.typesSealed, 'dk')) mark('what sealed product you have');
-    if (state.sealedOutOfPrint === 'yes') { d += 24; notes.push('Out-of-print sealed is the part of the market that actually appreciates.'); }
-    if (state.sealedOutOfPrint === 'no') d -= 8;
-    if (state.sealedOutOfPrint === 'dk') mark('whether sealed is out of print');
-    if (state.sealedScarce === 'yes') d += 20;
-    if (state.sealedScarce === 'dk') mark('how scarce the sealed product is');
+    /* One merged scarcity question replaced two near-identical ones
+       ("out of print?" and "hard to find?"), which users conflated
+       anyway. The combined weight matches the old pair. */
+    if (state.sealedScarcity === 'yes_scarce') { d += 40; notes.push('Out-of-print sealed that is genuinely hard to find is the part of the market that actually appreciates.'); }
+    if (state.sealedScarcity === 'yes_oop') { d += 24; notes.push('Out-of-print sealed is the part of the market that actually appreciates.'); }
+    if (state.sealedScarcity === 'no') d -= 8;
+    if (state.sealedScarcity === 'dk') mark('whether the sealed product is out of print');
     if (state.sealedFactory === 'no') { d -= 26; notes.push('Sealed product that has been opened or resealed loses most of its sealed premium.'); }
     if (state.sealedFactory === 'mixed') d -= 10;
     if (state.sealedFactory === 'dk') mark('whether product is still factory sealed');
@@ -652,12 +615,12 @@ function primaryCopy(state, f, p) {
   if (key === 'reseller') {
     const paras = [];
     paras.push('Given how quickly you want this done and how much work you want to put in, selling the collection as a lot is the honest answer. You will not get top dollar — nobody selling this way does — but you will get a single number, one transaction, and no listings to manage.');
-    paras.push('As a rule of thumb, expect a reseller to offer somewhere around half of a collection\'s tracked market value for Near Mint material, and meaningfully less as condition drops. A buyer has to resell everything you hand them, absorb the pieces that do not move, and carry that inventory in the meantime.');
-    paras.push('<strong>We are deliberately not putting a dollar figure on yours.</strong> A handful of questions cannot tell us what you actually have, and any number we produced from them would look far more precise than it deserves to. Getting a real one means somebody looking at the cards.');
+    paras.push('As a rule of thumb, expect a reseller to offer somewhere around half of a collection\'s tracked market value for Near Mint material, and meaningfully less as condition drops. <strong>We are deliberately not putting a dollar figure on yours</strong> — a handful of questions cannot tell us what you actually have, and getting a real number means somebody looking at the cards.');
+    paras.push('The reason the offer is a share rather than the whole is simple enough: a buyer has to resell everything you hand them, absorb the pieces that never move, and carry that inventory in the meantime.');
     if (f.C < 55) paras.push('Condition is doing most of the damage here. Played cards are not a small discount off Near Mint — they are frequently worth a fraction of it, and that gap is why the offer will feel low.');
     paras.push('One thing worth doing first: pull out anything you suspect is genuinely valuable and price those separately. Bulk pricing on a collection that quietly contains a $400 card is how people lose the most money on this path.');
     paras.push('For what it is worth, the gap between this and selling it yourself is smaller than it looks. Online marketplaces take ' + CONFIG.fees.rangeLow + '–' + CONFIG.fees.rangeHigh + '% of every sale before shipping, and the cards that never sell still cost you the time you spent listing them.');
-    return { title: 'Sell it as a lot to a reseller', paras };
+    return { title: 'Sell it as a lot to a reseller', paras, lede: 2 };
   }
 
   if (key === 'individual') {
@@ -670,7 +633,7 @@ function primaryCopy(state, f, p) {
       paras.push('Your value is spread out, which is the harder version of this path. Listing hundreds of individually cheap cards rarely pays for the hours involved. Consider selling in themed lots — by set, by type, by era — rather than one card at a time.');
     }
     if (both) paras.push('Treat your sealed product as a separate decision. It sells to a different buyer, on a different timeline, for different reasons.');
-    return { title: 'Sell the good pieces individually', paras };
+    return { title: 'Sell the good pieces individually', paras, lede: 2 };
   }
 
   if (key === 'grade') {
@@ -682,21 +645,23 @@ function primaryCopy(state, f, p) {
     if (CONFIG.grading.valueTiersPaused) {
       paras.push('One timing note that matters right now. <strong>PSA paused its cheap Value tiers in June 2026</strong> to work through a record backlog, so the cheapest tier you can currently order is Regular at ' + money(CONFIG.grading.feePerCard) + ' — roughly three times what bulk grading used to cost. That pushes the break-even up sharply. Since you already told us you are not in a rush, simply waiting for those tiers to reopen is a legitimate strategy in itself.');
     }
-    return { title: 'Grade selectively — your best cards only', paras };
+    return { title: 'Grade selectively — your best cards only', paras, lede: 2 };
   }
 
   const paras = [];
   paras.push("Nothing you have told us points cleanly at a sale yet, and that is a perfectly reasonable place to be. The most expensive decisions in this hobby get made by people who sold before they understood what they had.");
+  let ledeN = 1;
   if (p.forced === 'evaluate' && (state.condSingles === 'dk' || state.condSealed === 'dk')) {
     paras.push('The specific problem is condition. You may be sitting on something worth real money, and condition is the single largest factor in what it is worth — <strong>a Near Mint card and a Moderately Played copy of the same card are not close in price.</strong> Any number anyone quotes you before that is settled, including ours, is a guess.');
+    ledeN = 2;
   }
   paras.push('In the meantime, protect what you have. Penny sleeves inside toploaders or a proper binder, stored upright, somewhere dry and out of direct sunlight, at a stable temperature. Cards degrade quietly — sun fading, humidity warping and corner dings all happen slowly enough that you do not notice until the value is gone.');
   paras.push('Cataloguing is genuinely worth doing, and most people find it more enjoyable than they expect. Working through the collection card by card is also how you discover the pieces you did not know mattered. There is a section below on the apps we use to price things, and how much to trust each one.');
-  return { title: 'Get it evaluated before you decide anything', paras };
+  return { title: 'Get it evaluated before you decide anything', paras, lede: ledeN };
 }
 
 function sealedPrimary(state, f, key) {
-  const desirable = state.sealedOutOfPrint === 'yes' || state.sealedScarce === 'yes';
+  const desirable = state.sealedScarcity === 'yes_scarce' || state.sealedScarcity === 'yes_oop';
   const goodCond = (f.cSealed ?? 50) >= 70;
   const sealedIntact = state.sealedFactory === 'yes';
 
@@ -708,12 +673,12 @@ function sealedPrimary(state, f, key) {
       paras.push('Be upfront about anything that has been opened or resealed. Buyers check, and a collection that gets returned costs you far more than the honest price would have.');
     }
     paras.push('Packaging condition is worth two minutes of your time before you get an offer. Crushed corners, dented lids, scuffed shrink and sun fading all move the number, and a buyer will spot every one of them.');
-    return { title: 'Sell the sealed product as a lot', paras };
+    return { title: 'Sell the sealed product as a lot', paras, lede: 2 };
   }
 
   if (key === 'grade') {
     return { title: 'Get the sealed product valued properly',
-      paras: ['Grading applies to individual cards, not sealed boxes. What your product needs is an accurate current valuation — and if you are considering opening any of it, that valuation should come first.'] };
+      paras: ['Grading applies to individual cards, not sealed boxes. What your product needs is an accurate current valuation — and if you are considering opening any of it, that valuation should come first.'], lede: 1 };
   }
 
   const paras = [];
@@ -721,18 +686,18 @@ function sealedPrimary(state, f, key) {
     paras.push('This is the good version of a sealed collection. Out-of-print product in clean condition is the closest thing this hobby has to a real asset: the supply is fixed, it cannot be reprinted, and it shrinks every time someone opens a box. You also told us you are in no hurry, which is the one thing that makes holding a strategy rather than just procrastinating.');
     paras.push('<strong>Our recommendation is to hold what is genuinely scarce and sell the rest selectively.</strong> Where you do sell, sell to collectors — individual listings or direct to buyers who know exactly what the product is. Do not put desirable out-of-print sealed into a bulk offer; you will be paid a bulk number for something that is not bulk.');
     paras.push('Storage matters more than people expect for sealed. Keep boxes upright and unstacked, away from sunlight and humidity, at a stable temperature. Shrink wrap yellows, cardboard warps, and a box that quietly degrades in a garage loses the exact premium you were holding it for.');
-    return { title: 'Hold the scarce pieces, sell the rest to collectors', paras };
+    return { title: 'Hold the scarce pieces, sell the rest to collectors', paras, lede: 2 };
   }
 
   if (desirable && !goodCond) {
     paras.push('The product itself is desirable, but the packaging condition is working against you — and unlike a market, condition never recovers. Time is not on your side here the way it would be with a clean copy.');
     paras.push('Sell it individually, photograph the wear honestly, and price it against comparable copies in similar shape rather than against pristine ones. Collectors will still want it; they just want to know what they are getting.');
-    return { title: 'Sell it individually, sooner rather than later', paras };
+    return { title: 'Sell it individually, sooner rather than later', paras, lede: 2 };
   }
 
   paras.push('Your sealed product is current, in-print material, and that changes the calculus completely. In-print product does not appreciate — there is no scarcity story while it is still being manufactured, and every week that passes there is more of it in the world, not less.');
   paras.push('Sell it at or near retail, individually or in small lots. The buyers are there and the pricing is well understood, so this is one of the easier things in the hobby to move. What you should not do is sit on it waiting for an increase that only happens after a set goes out of print — and even then, only for some sets.');
-  return { title: 'Sell it near retail — holding will not help', paras };
+  return { title: 'Sell it near retail — holding will not help', paras, lede: 2 };
 }
 
 function sealedStrategy(state, f) {
@@ -740,7 +705,7 @@ function sealedStrategy(state, f) {
     return { title: 'Sell it as opened product',
       body: 'Once a box has been opened or resealed, the sealed premium is gone and it is not coming back. Price it on the cards inside, not on what a sealed copy sells for.' };
   }
-  const desirable = state.sealedOutOfPrint === 'yes' || state.sealedScarce === 'yes';
+  const desirable = state.sealedScarcity === 'yes_scarce' || state.sealedScarcity === 'yes_oop';
   const goodCond = (f.cSealed ?? 50) >= 70;
   if (desirable && goodCond) {
     return { title: 'Hold it, or sell it to collectors directly',
@@ -846,6 +811,117 @@ function renderCalcTable(state) {
     </tbody>`;
 }
 
+/* ---------- Contact, placed directly under the recommendation ----------
+   This used to be a single link at the very bottom of a long page. Anyone
+   whose answer is "sell it to a shop" had to scroll past every other
+   section to find out how to reach one. The form posts to the same
+   endpoint as the one on the home page, and carries a summary of what the
+   tool concluded so we open the email already knowing the shape of the
+   collection. ---------------------------------------------------------- */
+
+const CONTACT = {
+  email: 'booth151.jtx@gmail.com',
+  ebay: 'https://www.ebay.com/usr/nottheorphans',
+  action: 'https://formsubmit.co/booth151.jtx@gmail.com',
+  next: 'https://schrodingerscards.com/thanks.html'
+};
+
+const CONTACT_PITCH = {
+  reseller: {
+    h: 'We are the other side of this transaction',
+    p: 'Selling as a lot means selling to a shop, and that is what we do. Tell us roughly what you have and we will come back with a real number — or tell you honestly when you would do better selling it yourself. No obligation either way.',
+    btn: 'Send us the details'
+  },
+  evaluate: {
+    h: 'This is the part we can help with',
+    p: 'Working out what a collection actually is, before deciding anything, is exactly what we spent months doing with our own. Tell us roughly what you have and we will help you place it — free, and with no expectation that you sell it to us.',
+    btn: 'Ask us to take a look'
+  },
+  individual: {
+    h: 'Happy to be a second opinion',
+    p: 'Selling it yourself is the right call here, and we are not going to talk you out of it. If you want a sanity check on a price, a read on condition, or somewhere to move the bulk you do not want to list, just ask.',
+    btn: 'Ask us a question'
+  },
+  grade: {
+    h: 'Get a second look before you submit',
+    p: 'Grading is the one decision here you cannot undo cheaply, and the most common way it goes wrong is a card that was not the grade its owner thought. If you want another set of eyes on your candidates first, send them over.',
+    btn: 'Ask us about your cards'
+  }
+};
+
+/* A short machine-written précis of the run, sent with the form so the
+   reply can start from something concrete instead of "tell me more". */
+function answerSummary(state, p) {
+  const label = (map, v) => map[v] || v || 'not answered';
+  const bits = [
+    'Recommendation: ' + PATH_META[p.ranked[0].key].label,
+    'Holdings: ' + label({ singles: 'individual cards', sealed: 'sealed product', both: 'both' }, state.holdings),
+    'Goal: ' + label({ cash: 'cash reasonably quickly', max: 'as much money as reasonable', grade: 'maximize best cards', unsure: 'not sure yet' }, state.goal),
+    'Size: ' + label({ u50: 'under 50 items', s50_250: '50-250', s250_1k: '250-1,000', s1k_5k: '1,000-5,000', s5k: '5,000+', dk: 'unknown' }, state.size),
+    'Stated value: ' + label({ u100: 'under $100', v100_500: '$100-500', v500_1k: '$500-1,000', v1k_5k: '$1,000-5,000', v5k_10k: '$5,000-10,000', v10k: '$10,000+', dk: 'no idea' }, state.value)
+  ];
+  if (hasSingles(state)) {
+    bits.push('Card condition: ' + label({ nm: 'Near Mint', lp: 'Lightly Played', mp: 'Moderately Played', hp: 'Heavily Played', mixed: 'mixed', dk: 'unknown' }, state.condSingles));
+    bits.push('Card worth $100+: ' + label({ yes: 'yes', no: 'no', dk: 'unknown' }, state.topCard100));
+  }
+  if (hasSealed(state)) {
+    bits.push('Sealed condition: ' + label({ factory: 'factory sealed, excellent', minor: 'minor wear', noticeable: 'noticeable wear', damaged: 'significant damage', mixed: 'mixed', dk: 'unknown' }, state.condSealed));
+    bits.push('Sealed scarcity: ' + label({ yes_scarce: 'out of print and hard to find', yes_oop: 'some out of print', no: 'all current product', dk: 'unknown' }, state.sealedScarcity));
+  }
+  return bits.join(' | ');
+}
+
+function contactBlock(state, f, p) {
+  const key = p.ranked[0].key;
+  const pitch = CONTACT_PITCH[key] || CONTACT_PITCH.evaluate;
+  const summary = answerSummary(state, p);
+  const subject = 'Collection guide — ' + PATH_META[key].label;
+
+  return `<section class="rec-contact" id="rec-contact">
+    <div class="rec-contact-copy">
+      <p class="eyebrow">Talk to us</p>
+      <h2>${pitch.h}</h2>
+      <p>${pitch.p}</p>
+      <ul class="rec-contact-list">
+        <li><span>Email</span><a href="mailto:${CONTACT.email}?subject=${encodeURIComponent(subject)}">${CONTACT.email}</a></li>
+        <li><span>In person</span>Booth 151, Treasure Cove Mall<br>118 E Commerce St, Jacksonville, TX<br>Tuesday&ndash;Saturday, 10am&ndash;5pm</li>
+        <li><span>Buying instead?</span><a href="${CONTACT.ebay}" target="_blank" rel="noopener">Our eBay store</a></li>
+      </ul>
+    </div>
+
+    <form class="rec-contact-form" action="${CONTACT.action}" method="POST">
+      <input type="hidden" name="_subject" value="${subject}">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_next" value="${CONTACT.next}">
+      <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp-field">
+      <input type="hidden" name="guide_result" value="${summary.replace(/"/g, '&quot;')}">
+
+      <p class="rec-form-note">Your answers come with the message, so you do not have to repeat any of it.</p>
+
+      <label for="rc-name">Name</label>
+      <input type="text" id="rc-name" name="name" required>
+
+      <label for="rc-email">Your email address</label>
+      <input type="email" id="rc-email" name="email" required>
+
+      <label for="rc-message">Anything you want to add</label>
+      <textarea id="rc-message" name="message" rows="4" placeholder="Which sets or eras, anything already graded, and photos if you have them — all useful, none of it required."></textarea>
+
+      <button type="submit" class="btn btn-primary">${pitch.btn}</button>
+    </form>
+  </section>`;
+}
+
+/* A collapsed section. Everything that is genuinely reference material
+   lives in one of these: available to anyone who wants it, invisible to
+   anyone who does not. */
+function fold(summary, note, body, open) {
+  return `<details class="rec-fold"${open ? ' open' : ''}>
+    <summary><span class="fold-title">${summary}</span>${note ? `<span class="fold-note">${note}</span>` : ''}</summary>
+    <div class="fold-body">${body}</div>
+  </details>`;
+}
+
 /* ============================================================
    RESULTS PAGE
    ============================================================ */
@@ -855,16 +931,22 @@ function renderResults(state) {
   const p = scorePaths(state, f);
   const primary = primaryCopy(state, f, p);
   const both = state.holdings === 'both';
+  const ledeN = primary.lede || 1;
+  const lede = primary.paras.slice(0, ledeN);
+  const rest = primary.paras.slice(ledeN);
   let html = '';
 
-  /* ---- Primary ---- */
+  /* ---- The answer, and nothing else ---- */
   html += `<p class="result-eyebrow">Our recommendation</p>
     <div class="rec-primary">
       <h1>${primary.title}</h1>
-      ${primary.paras.map((t) => `<p class="rec-body">${t}</p>`).join('')}
+      ${lede.map((t) => `<p class="rec-body">${t}</p>`).join('')}
     </div>`;
 
-  /* ---- Mixed collection split ---- */
+  /* ---- Then how to reach us, before anything else competes for attention ---- */
+  html += contactBlock(state, f, p);
+
+  /* ---- A mixed collection genuinely has two answers, so both stay visible ---- */
   if (both) {
     const sg = singlesStrategy(state, f), sl = sealedStrategy(state, f);
     html += `<section class="rec-section">
@@ -878,55 +960,51 @@ function renderResults(state) {
   } else if (hasSealed(state)) {
     const sl = sealedStrategy(state, f);
     html += `<section class="rec-section">
-      <h2>Your sealed product</h2>
       <div class="card-stack"><div class="rec-card"><h3>${sl.title}</h3><p>${sl.body}</p></div></div>
     </section>`;
   }
 
-  /* ---- Opening warning ---- */
-  if (hasSealed(state) && (state.sealedOpening === 'yes' || state.sealedOpening === 'unsure')) {
-    html += `<section class="rec-section">
-      <div class="rec-card rec-card-warn">
-        <h3>Before you open it</h3>
-        <p>Opening sealed product changes the equation completely. You are trading a known, finite, collectible object for a random assortment of cards — and on average, the cards inside a box are worth less than the sealed box itself. That is how the economics have to work; it is why sealed product exists as a category.</p>
-        <p>The trade is irreversible. If your goal is value, find out what the sealed item is worth <strong>before</strong> you open it. If your goal is the fun of opening it, that is a completely legitimate reason — just make it a decision rather than an accident.</p>
-        <p><a class="btn btn-outline btn-sm" href="index.html#contact">I'd like help evaluating it first</a></p>
-      </div>
-    </section>`;
-  }
+  /* ---- Everything below here is reference, and folds away ---- */
+  html += '<div class="rec-folds"><p class="rec-folds-head">More detail, if you want it</p>';
 
-  /* ---- Grading ---- */
-  if (hasSingles(state)) {
-    if (p.gate.passed) {
-      html += `<section class="rec-section">
-        <h2>Run the grading numbers</h2>
-        <p class="rec-section-sub">Grading is not automatically right for an expensive card. The spread has to be wide enough to cover the fees, the wait and the risk. Put in what one of your best cards is worth raw:</p>
-        ${gradingCalcHTML(state)}
-      </section>`;
-    } else if (p.gate.blockers.length && p.gate.blockers[0].key !== 'singles') {
-      html += `<section class="rec-section">
-        <h2>Why we're not recommending grading</h2>
-        <p class="rec-section-sub">Grading needs several things to line up at once. Here's what isn't lining up for you:</p>
-        <div class="card-stack">
-          ${p.gate.blockers.map((b) => `<div class="rec-card"><h3>${gateLabel(b.key)}</h3><p>${b.msg}</p></div>`).join('')}
-        </div>
-      </section>`;
-    }
+  if (rest.length) {
+    html += fold('The rest of the reasoning', `${rest.length} more note${rest.length > 1 ? 's' : ''}`,
+      rest.map((t) => `<p>${t}</p>`).join(''));
   }
 
   /* ---- Alternatives ---- */
   const alts = p.ranked.slice(1).filter((r) => !(r.key === 'grade' && !p.gate.passed));
   if (alts.length) {
-    html += `<section class="rec-section">
-      <h2>Your other options</h2>
-      <p class="rec-section-sub">Ranked by how well they fit what you told us. None of these are wrong — they just trade different things away.</p>
-      <div class="card-stack">
+    html += fold('Your other options', `${alts.length} ranked`,
+      `<p class="fold-lede">Ranked by how well they fit what you told us. None of these are wrong — they just trade different things away.</p>
+       <div class="card-stack">
         ${alts.map((r, i) => `<div class="rec-card">
           <h3>${PATH_META[r.key].label} <span class="tag ${i === 0 ? 'tag-mid' : ''}">${r.score}/100 fit</span></h3>
           <p>${PATH_META[r.key].short}</p>
         </div>`).join('')}
-      </div>
-    </section>`;
+       </div>`);
+  }
+
+  /* ---- Opening sealed product ---- */
+  if (hasSealed(state)) {
+    html += fold('Thinking about opening any of the sealed product?', 'Read this first',
+      `<p>Opening sealed product changes the equation completely. You are trading a known, finite, collectible object for a random assortment of cards — and on average, the cards inside a box are worth less than the sealed box itself. That is how the economics have to work; it is why sealed product exists as a category.</p>
+       <p>The trade is irreversible. If your goal is value, find out what the sealed item is worth <strong>before</strong> you open it. If your goal is the fun of opening it, that is a completely legitimate reason — just make it a decision rather than an accident.</p>`);
+  }
+
+  /* ---- Grading ---- */
+  if (hasSingles(state)) {
+    if (p.gate.passed) {
+      html += fold('Run the grading numbers', 'Interactive',
+        `<p class="fold-lede">Grading is not automatically right for an expensive card. The spread has to be wide enough to cover the fees, the wait and the risk. Put in what one of your best cards is worth raw:</p>
+         ${gradingCalcHTML(state)}`);
+    } else if (p.gate.blockers.length && p.gate.blockers[0].key !== 'singles') {
+      html += fold("Why we're not recommending grading", `${p.gate.blockers.length} reason${p.gate.blockers.length > 1 ? 's' : ''}`,
+        `<p class="fold-lede">Grading needs several things to line up at once. Here's what isn't lining up for you:</p>
+         <div class="card-stack">
+          ${p.gate.blockers.map((b) => `<div class="rec-card"><h3>${gateLabel(b.key)}</h3><p>${b.msg}</p></div>`).join('')}
+         </div>`);
+    }
   }
 
   /* ---- What selling actually costs ---- */
@@ -934,10 +1012,9 @@ function renderResults(state) {
   if (topKey === 'individual' || topKey === 'reseller' || p.ranked[1]?.key === 'individual') {
     const fe = CONFIG.fees;
     const net100 = 100 - (100 * fe.ebayPct / 100) - fe.ebayPerOrder - fe.shipPerOrder;
-    html += `<section class="rec-section">
-      <h2>What selling online actually costs</h2>
-      <p class="rec-section-sub">Every "it's worth $X" number you see is a gross figure. This is the part that surprises people, so it is worth seeing before you start listing.</p>
-      <div class="card-stack">
+    html += fold('What selling online actually costs', `${fe.rangeLow}–${fe.rangeHigh}% in fees`,
+      `<p class="fold-lede">Every "it's worth $X" number you see is a gross figure. This is the part that surprises people, so it is worth seeing before you start listing.</p>
+       <div class="card-stack">
         <div class="rec-card">
           <h3>Expect to lose ${fe.rangeLow}–${fe.rangeHigh}% to fees</h3>
           <p><strong>eBay</strong> takes a ${fe.ebayPct}% final value fee plus ${money2(fe.ebayPerOrder)} per order — and it is charged on the
@@ -955,15 +1032,13 @@ function renderResults(state) {
           <p>This is also why bulk is worth handing to a buyer rather than listing: a ${money(4)} card loses most of its value to a fee, an
              envelope and fifteen minutes of your attention.</p>
         </div>
-      </div>
-    </section>`;
+       </div>`);
   }
 
   /* ---- How to price it yourself ---- */
-  html += `<section class="rec-section">
-    <h2>How to value it yourself</h2>
-    <p class="rec-section-sub">You do not need us to get a rough number. These are the tools we actually use, and what each one is good and bad at.</p>
-    <div class="card-stack">
+  html += fold('How to value it yourself', 'Four tools we actually use',
+    `<p class="fold-lede">You do not need us to get a rough number. These are the tools we actually use, and what each one is good and bad at.</p>
+     <div class="card-stack">
       <div class="rec-card">
         <h3>TCGplayer <span class="tag tag-good">Start here</span></h3>
         <p>The default price reference for singles in the US, and what most shops price against. Search the card, pick the right set and printing, and look at Market Price rather than the lowest listing — the cheapest copy is usually cheap for a reason. Free, and you do not need an account to look.</p>
@@ -981,14 +1056,12 @@ function renderResults(state) {
         <h3>PriceCharting</h3>
         <p>Most useful for graded cards and sealed product, where it tracks prices by grade over time. Good for seeing whether something has been climbing or sliding rather than just where it sits today.</p>
       </div>
-    </div>
-
-    <div class="rec-card" style="margin-top:16px">
-      <h3>A ten-minute version</h3>
-      <p>If you do nothing else: pull the <strong>ten cards you think are the best</strong>, look each one up on eBay sold listings, and add them up. That number tells you most of what you need to know, because value concentrates far more than people expect. Then assume the rest of the collection is worth less than you are hoping — that assumption is right more often than it is wrong.</p>
-      <p>If your ten best come to more than a few hundred dollars, it is worth slowing down and doing this properly before you sell anything.</p>
-    </div>
-  </section>`;
+      <div class="rec-card">
+        <h3>A ten-minute version</h3>
+        <p>If you do nothing else: pull the <strong>ten cards you think are the best</strong>, look each one up on eBay sold listings, and add them up. That number tells you most of what you need to know, because value concentrates far more than people expect. Then assume the rest of the collection is worth less than you are hoping — that assumption is right more often than it is wrong.</p>
+        <p>If your ten best come to more than a few hundred dollars, it is worth slowing down and doing this properly before you sell anything.</p>
+      </div>
+     </div>`);
 
   /* ---- Factor readout ---- */
   const factorRows = [
@@ -998,9 +1071,7 @@ function renderResults(state) {
     ['Your patience', f.T, 'How long you can leave money on the table.'],
     ['Your effort', f.E, 'How much of the selling work you will do yourself.']
   ];
-  html += `<section class="rec-section">
-    <h2>What drove this</h2>
-    <p class="rec-section-sub">Five variables decide every recommendation in this tool. Yours read like this:</p>
+  let drove = `<p class="fold-lede">Five variables decide every recommendation in this tool. Yours read like this:</p>
     <div class="factors">
       ${factorRows.map(([name, val, note]) => `
         <div class="factor-row">
@@ -1009,37 +1080,28 @@ function renderResults(state) {
           <p class="factor-note">${note}</p>
         </div>`).join('')}
     </div>`;
-
   if (f.confidence < CONFIG.confidenceFloor) {
-    html += `<div class="rec-card rec-card-warn" style="margin-top:24px">
+    drove += `<div class="rec-card rec-card-warn" style="margin-top:24px">
       <h3>We're working with gaps</h3>
       <p>You answered "I don't know" on ${listify(f.unknowns)}. That is completely fine — but it means we have scaled our confidence down, and it is why we have not put firm numbers on anything. Closing those gaps is the highest-value thing you can do before making a decision.</p>
     </div>`;
   }
-  html += `</section>`;
+  html += fold('What drove this', f.confidence < CONFIG.confidenceFloor ? 'Working with gaps' : `${f.confidence}% confidence`, drove);
 
   /* ---- Reinforcement ---- */
-  html += `<section class="rec-section">
-    <h2>Three things worth remembering</h2>
-    <div class="card-stack">
+  html += fold('Three things worth remembering', 'Whatever you decide',
+    `<div class="card-stack">
       <div class="rec-card"><h3>Condition is the whole game</h3>
         <p>It is not a modifier on value — for a lot of cards it <em>is</em> the value. The same card can swing several times over between Near Mint and Moderately Played. Almost everyone grades their own cards too generously, so if you are on the fence between two tiers, the lower one is usually right.</p></div>
       <div class="rec-card"><h3>Rarity and age decide who is bidding</h3>
         <p>SIRs, SARs, alt arts, First Edition, serialized cards, promos and vintage holos are what collectors actively hunt. They are also the cards where grading is worth considering. Everything else competes with an enormous supply of identical copies.</p></div>
       <div class="rec-card"><h3>Store it properly regardless</h3>
         <p>Whatever you decide, do not let the collection degrade while you think about it. Sleeves and toploaders or a real binder, upright, dry, stable temperature, out of the sun. This costs almost nothing and protects everything.</p></div>
-    </div>
-  </section>`;
+     </div>`);
 
-  /* ---- CTA ---- */
-  html += `<div class="rec-cta">
-    <h2>Want us to take a closer look?</h2>
-    <p>Everything above comes from a handful of answers. Actually going through the cards usually turns up things a questionnaire cannot — a card you did not know mattered, condition that is better or worse than you assumed, or one sealed item worth more than the rest combined. If you would like us to look properly, tell us what you have and we will take it from there.</p>
-    <p class="rec-cta-detail">Useful things to mention: roughly how many cards, which sets or eras they are from, whether anything is graded, and a few photos if you have them. Assessments are arranged individually, so we will reply and sort out the details with you.</p>
-    <a class="btn btn-primary" href="index.html#contact">Tell us about your collection</a>
-  </div>
+  html += '</div>';
 
-  <div class="result-actions">
+  html += `<div class="result-actions">
     <button type="button" class="btn btn-outline" id="restart-btn">Start over</button>
     <a class="btn btn-ghost" href="index.html">Back to the site</a>
   </div>`;
@@ -1050,11 +1112,18 @@ function renderResults(state) {
   document.getElementById('guide-app').hidden = true;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  const rawInput = document.getElementById('raw-value');
-  if (rawInput) {
+  /* The calculator only exists once its fold has been opened, so wire it
+     the first time that happens rather than up front. */
+  const wireCalc = () => {
+    const rawInput = document.getElementById('raw-value');
+    if (!rawInput || rawInput.dataset.wired) return;
+    rawInput.dataset.wired = '1';
     renderCalcTable(state);
     rawInput.addEventListener('input', () => renderCalcTable(state));
-  }
+  };
+  host.querySelectorAll('.rec-fold').forEach((d) => d.addEventListener('toggle', wireCalc));
+  wireCalc();
+
   document.getElementById('restart-btn').addEventListener('click', restart);
 }
 
@@ -1090,7 +1159,7 @@ const screenActive = (screen) =>
 
 function visibleScreens() { return SCREENS.filter(screenActive); }
 
-function renderScreen() {
+function renderScreen(keepFocus) {
   const screen = SCREENS[cursor];
   const flds = fieldsFor(screen);
 
@@ -1129,11 +1198,34 @@ function renderScreen() {
 
   const vis = visibleScreens();
   const pos = vis.indexOf(screen) + 1;
-  el('progress-bar').style.width = ((pos - 1) / vis.length * 100) + '%';
-  el('progress-label').textContent = `Question ${pos} of about ${vis.length}`;
+  /* On the very first screen `holdings` is still unset, so neither the
+     singles nor the sealed screen counts as active and the total reads
+     two short. Five is the floor for any real path. */
+  const total = Math.max(vis.length, state.holdings ? vis.length : 5);
+  el('progress-bar').style.width = ((pos - 1) / total * 100) + '%';
+  el('progress-label').textContent = `Step ${pos} of ${state.holdings ? total : 'about ' + total}`;
 
   el('next-btn').textContent = pos >= vis.length ? 'See my recommendation' : 'Continue';
-  el('screen-host').querySelector('.opt input')?.focus({ preventScroll: true });
+  if (!keepFocus) el('screen-host').querySelector('.opt input')?.focus({ preventScroll: true });
+}
+
+/* Reads the current screen's answers into state without validating, so a
+   field whose `when` depends on a neighbour can be re-evaluated the moment
+   that neighbour is answered. Grouping the questions onto fewer screens is
+   what made this necessary: `valueSource` follows `value` on one screen now,
+   and a screen rendered once would never show it. */
+function softCollect() {
+  const host = el('screen-host');
+  SCREENS[cursor].fields.forEach((fld) => {
+    const inputs = [...host.querySelectorAll(`input[name="${fld.key}"]`)];
+    if (!inputs.length) return;
+    if (fld.type === 'multi') {
+      state[fld.key] = inputs.filter((i) => i.checked).map((i) => i.value);
+    } else {
+      const picked = inputs.find((i) => i.checked);
+      if (picked) state[fld.key] = picked.value;
+    }
+  });
 }
 
 function collect() {
@@ -1178,6 +1270,18 @@ el('start-btn').addEventListener('click', () => {
   el('guide-app').hidden = false;
   cursor = 0;
   renderScreen();
+});
+
+el('screen-host').addEventListener('change', () => {
+  const screen = SCREENS[cursor];
+  const before = fieldsFor(screen).map((f) => f.key);
+  softCollect();
+  const after = fieldsFor(screen).map((f) => f.key);
+  if (before.join() === after.join()) return;
+  /* A field that just disappeared must not leave its answer behind to be
+     scored — the user has since contradicted it. */
+  before.filter((k) => !after.includes(k)).forEach((k) => delete state[k]);
+  renderScreen(true);
 });
 
 el('screen-form').addEventListener('submit', (e) => {

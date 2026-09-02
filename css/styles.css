@@ -166,7 +166,7 @@ body {
 /* ---------- Hero ---------- */
 .hero {
   position: relative;
-  min-height: 92vh;
+  min-height: min(78vh, 720px);
   display: flex;
   align-items: center;
   padding-top: var(--header-h);
@@ -554,3 +554,66 @@ h2 {
 
 /* Current page in the main nav */
 .main-nav a[aria-current="page"] { color: var(--accent); }
+
+/* ---------- Collection guide band (homepage, directly under the hero) ----------
+   Deliberately the first thing you reach by scrolling: the guide is the
+   sell-side entry to the funnel and used to be reachable only via the menu. */
+.collection-band {
+  padding: 64px 0;
+  background:
+    radial-gradient(80% 140% at 12% 0%, rgba(125, 216, 255, 0.10), transparent 70%),
+    var(--bg-alt);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.cb-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 48px;
+  align-items: center;
+}
+.cb-copy h2 { margin-bottom: 14px; }
+.cb-lede { color: var(--text-dim); font-size: 1.02rem; max-width: 52ch; margin-bottom: 26px; }
+.cb-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.cb-paths { display: grid; gap: 10px; }
+.cb-paths li {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  align-items: baseline;
+  gap: 4px 14px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-faint);
+  font-size: 0.9rem;
+}
+.cb-paths strong {
+  font-family: var(--font-head);
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.98rem;
+}
+.cb-paths li { grid-template-areas: "n t" ". d"; }
+.cb-path-n { grid-area: n; }
+.cb-paths strong { grid-area: t; }
+.cb-path-d { grid-area: d; }
+.cb-path-n {
+  font-family: var(--font-head);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  text-align: center;
+  padding: 3px 0;
+}
+
+@media (max-width: 860px) {
+  .collection-band { padding: 48px 0; }
+  .cb-grid { grid-template-columns: 1fr; gap: 30px; }
+}
+@media (max-width: 560px) {
+  .cb-actions .btn { flex: 1; }
+}
