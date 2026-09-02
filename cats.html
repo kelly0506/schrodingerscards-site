@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schrödinger's Cats — a game | Schrödinger's Cards</title>
+<meta name="description" content="A small browser game from Schrödinger's Cards: your cursor is a wave function, and you have forty-five seconds to catch as many cats as you can. The gold ones are worth fifty commons.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="css/styles.css?v=5">
+<link rel="stylesheet" href="css/cats.css?v=1">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header" id="site-header">
+  <div class="wrap header-inner">
+    <a href="index.html#top" class="logo">
+      <span class="logo-mark" aria-hidden="true">
+        <img src="assets/favicon.svg" width="34" height="34" alt="">
+      </span>
+      <span class="logo-text">Schrödinger's<em>Cards</em></span>
+    </a>
+
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html#story">Our Story</a>
+      <a href="index.html#carry">What We Carry</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="index.html#visit">Visit Us</a>
+      <a href="guide.html">Collection Guide</a>
+      <a href="cats.html" aria-current="page">Play</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+
+    <div class="header-actions">
+      <a class="btn btn-ghost" href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">Shop on eBay</a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="main-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="game-main">
+<div class="game-wrap">
+  <header class="game-head">
+    <p class="eyebrow">A small diversion</p>
+    <h1>Schr&ouml;dinger&rsquo;s Cats</h1>
+    <p>Catch as many as you can in forty-five seconds. Your cursor is a wave function &mdash; hold the button and stay on a cat to collapse it into your collection. Commons are everywhere. The gold ones are fast, twitchy, and worth fifty of them.</p>
+  </header>
+
+  <div class="hud">
+    <div class="stat"><span>Score</span><strong id="score">0</strong></div>
+    <div class="stat"><span>Time</span><strong id="time">45</strong></div>
+    <div class="stat"><span>Caught</span><strong id="caught">0</strong></div>
+    <div class="hud-spacer"></div>
+    <div class="stat stat-best"><span>Best</span><strong id="best">0</strong></div>
+  </div>
+  <div class="timer-track"><div class="timer-fill" id="timer-fill"></div></div>
+
+  <div class="field-wrap">
+    <canvas id="field" tabindex="0" aria-label="Cat hunting game field"></canvas>
+    <div class="overlay" id="overlay">
+      <div>
+        <h2 id="ov-title">Catch the rare ones</h2>
+        <p id="ov-body">Catch as many as you can. Hold the button and keep your wave on a cat until the ring closes &mdash; the rarer the cat, the longer it takes and the harder it runs.</p>
+        <div id="ov-score" hidden>
+          <div class="final" id="final-score">0</div>
+          <div class="final-label">Final score</div>
+        </div>
+        <div class="haul" id="haul" hidden></div>
+        <div class="entry" id="entry" hidden>
+          <p id="entry-msg">High score! Enter your initials.</p>
+          <div class="entry-row">
+            <input id="initials" maxlength="3" autocomplete="off" spellcheck="false" autocapitalize="characters" autocorrect="off" inputmode="text" aria-label="Your initials, three characters">
+            <button class="btn btn-sm" id="submit-score" type="button">Enter</button>
+          </div>
+        </div>
+        <p class="pb" id="pb" hidden>New personal best</p>
+        <button class="btn" id="start">Start</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <h3>What&rsquo;s out there</h3>
+    <div class="dex" id="dex"></div>
+  </div>
+
+  <div class="board">
+    <h3>High scores <span class="board-scope" id="board-scope">local to this device</span></h3>
+    <ol id="board-list"></ol>
+    <p class="board-empty" id="board-empty">No scores yet. Be the first.</p>
+  </div>
+
+  <p class="note">Rarer cats are faster, twitchier, and need a longer hold, with a tighter ring to stay inside. They also turn up far less often &mdash; though the odds shift toward them as the round goes on, so the back half is where the big scores are. Uncaught cats wander off after a while, so a gold sighting is worth dropping whatever else you were doing.</p>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p>&copy; <span id="year"></span> Schrödinger's Cards LLC. Jacksonville, Texas.</p>
+    <div class="footer-links">
+      <a href="gallery.html">Gallery</a>
+      <a href="guide.html">Collection Guide</a>
+      <a href="cats.html">Play</a>
+      <a href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">eBay</a>
+      <a href="https://www.facebook.com/profile.php?id=61594026205359" target="_blank" rel="noopener">Facebook</a>
+      <a href="mailto:booth151.jtx@gmail.com">Email</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/script.js?v=5"></script>
+<script src="js/cats.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+/* ============================================================
+   Schrödinger's Cats — the game
+   Depends on css/styles.css for tokens and the button base.
+   ============================================================ */
+
+:root { --gold: #ffd88a; }
+
+.game-main { padding-top: calc(var(--header-h) + 56px); padding-bottom: 90px; }
+.game-wrap { max-width: 780px; margin: 0 auto; padding: 0 24px; }
+.game-head { margin-bottom: 26px; }
+.game-head h1 {
+  font-family: var(--font-head);
+  font-size: clamp(1.9rem, 5vw, 2.9rem);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  margin: 10px 0 14px;
+}
+.game-head p { color: var(--text-dim); font-size: 1rem; max-width: 60ch; }
+.head{margin-bottom:26px}
+.head h1{font-family:var(--font-head);font-size:clamp(1.9rem,5vw,2.7rem);line-height:1.08;letter-spacing:-.025em;margin-bottom:14px}
+.head p{color:var(--text-dim);font-size:1rem;max-width:60ch}
+
+.hud{display:flex;align-items:flex-end;gap:22px;margin-bottom:12px;flex-wrap:wrap}
+.stat{display:flex;flex-direction:column;gap:2px}
+.stat span{font-family:var(--font-head);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint)}
+.stat strong{font-family:var(--font-head);font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.stat-best strong{color:var(--gold)}
+.hud-spacer{flex:1}
+
+.timer-track{height:4px;background:var(--surface-2);border-radius:999px;overflow:hidden;margin-bottom:14px}
+.timer-fill{height:100%;width:100%;background:var(--gradient);border-radius:999px}
+.timer-fill.low{background:linear-gradient(120deg,#ffd88a,#ff9d9d)}
+
+.field-wrap{position:relative}
+canvas#field{display:block;width:100%;aspect-ratio:1/1;border:1px solid var(--border);border-radius:18px;
+  background:radial-gradient(120% 90% at 50% 0%,rgba(180,139,255,.05),transparent 60%),var(--surface);
+  cursor:none;touch-action:none}
+canvas#field:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+.overlay{position:absolute;inset:0;display:grid;place-items:center;padding:28px;border-radius:18px;
+  background:rgba(10,13,24,.88);backdrop-filter:blur(5px);text-align:center;overflow-y:auto}
+.overlay[hidden]{display:none}
+.overlay h2{font-family:var(--font-head);font-size:clamp(1.4rem,4vw,2rem);letter-spacing:-.02em;margin-bottom:12px}
+.overlay p{color:var(--text-dim);font-size:.94rem;max-width:46ch;margin:0 auto 20px}
+.overlay .final{font-family:var(--font-head);font-size:3.2rem;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;
+  background:var(--gradient);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:4px}
+.overlay .final-label{font-family:var(--font-head);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-faint);margin-bottom:18px}
+.pb{color:var(--gold)!important;font-size:.86rem;margin-bottom:16px}
+.haul{display:grid;gap:5px;margin:0 auto 20px;max-width:290px;text-align:left}
+.haul div{display:flex;justify-content:space-between;font-size:.85rem;color:var(--text-dim)}
+.haul b{font-family:var(--font-head);font-weight:600}
+.haul span{font-variant-numeric:tabular-nums;color:var(--text-faint)}
+
+
+.legend{margin-top:26px}
+.legend h3{font-family:var(--font-head);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint);margin-bottom:12px}
+.dex{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.dex-card{padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--bg-alt);display:flex;gap:11px;align-items:center}
+.dex-card canvas{flex:0 0 auto;width:40px;height:32px}
+.dex-card b{display:block;font-family:var(--font-head);font-size:.79rem;font-weight:600;line-height:1.25}
+.dex-card span{font-size:.71rem;color:var(--text-faint);font-variant-numeric:tabular-nums}
+
+
+/* ---- arcade leaderboard ---- */
+.board{margin-top:26px}
+.board h3{font-family:var(--font-head);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint);margin-bottom:12px;display:flex;gap:10px;align-items:center}
+.board-scope{font-size:.62rem;letter-spacing:.1em;padding:3px 8px;border-radius:999px;border:1px solid var(--border);color:var(--text-faint)}
+.board ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.board li{display:grid;grid-template-columns:2.2rem 1fr auto;gap:12px;align-items:baseline;
+  padding:8px 14px;border-radius:8px;background:var(--bg-alt);border:1px solid transparent;
+  font-family:var(--font-head);font-variant-numeric:tabular-nums}
+.board li.you{border-color:var(--gold);background:rgba(255,216,138,.07)}
+.board .rank{color:var(--text-faint);font-size:.82rem}
+.board .who{font-weight:700;letter-spacing:.22em;font-size:1rem}
+.board .pts{font-weight:700;font-size:.95rem;color:var(--accent)}
+.board li.you .pts{color:var(--gold)}
+.board-empty{color:var(--text-faint);font-size:.86rem;padding:10px 2px}
+
+.entry{margin:0 auto 18px;max-width:340px}
+.entry p{font-size:.88rem;color:var(--gold);margin-bottom:12px}
+.entry-row{display:flex;gap:10px;justify-content:center;align-items:center}
+#initials{width:150px;text-align:center;font-family:var(--font-head);font-weight:700;
+  font-size:1.9rem;letter-spacing:.42em;text-indent:.42em;text-transform:uppercase;
+  padding:8px 6px;border-radius:12px;border:1px solid var(--accent);background:var(--surface);color:var(--text)}
+#initials:focus{outline:2px solid var(--accent);outline-offset:2px}
+.btn-sm{padding:11px 20px;font-size:.84rem}
+
+.note{margin-top:26px;padding-left:16px;border-left:2px solid var(--border);color:var(--text-faint);font-size:.88rem}
+@media (max-width:560px){.wrap{padding:32px 18px 60px}.stat strong{font-size:1.25rem}}
