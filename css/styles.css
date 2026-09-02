@@ -116,12 +116,20 @@ body {
 
 .main-nav {
   display: flex;
-  gap: 32px;
+  gap: 26px;
 }
 .main-nav a {
   font-size: 0.92rem;
   color: var(--text-dim);
   transition: color 0.15s ease;
+  /* With seven items the flex line gets tight and items were wrapping
+     mid-phrase — "Our Story" split over two lines. Let the row shrink
+     the gaps instead of breaking the words. */
+  white-space: nowrap;
+}
+@media (max-width: 1180px) and (min-width: 861px) {
+  .main-nav { gap: 18px; }
+  .main-nav a { font-size: 0.86rem; }
 }
 .main-nav a:hover { color: var(--text); }
 
