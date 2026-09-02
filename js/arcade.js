@@ -144,7 +144,52 @@
       ctx.lineTo(cx+Math.cos(a)*r*1.95,cy+Math.sin(a)*r*1.6); ctx.stroke(); }
   }
 
-  const ART={cats:artCats,fits:artFits,hats:artHats,chaos:artChaos};
+  /* Static Cats: a charged cat with the balloons already clinging to it.
+     The spikes are the same trick as artChaos — alternate vertices pushed
+     out — because in both games the puffed silhouette is the whole read. */
+  function artStatic(ctx,W,H){
+    const cx=W*0.40, cy=H*0.60, r=30, fur=FUR[3];
+    /* the field it sits in */
+    const g=ctx.createRadialGradient(cx,cy,r*0.5,cx,cy,r*3.1);
+    g.addColorStop(0,'rgba(125,216,255,.22)');
+    g.addColorStop(1,'rgba(125,216,255,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx,cy,r*3.1,0,7); ctx.fill();
+    /* balloons, three on strings and two still loose */
+    const tied=[[0.30,0.20,'#ff8fd0'],[0.44,0.13,'#7dd8ff'],[0.57,0.22,'#ffd88a']];
+    ctx.strokeStyle='rgba(205,212,245,.4)'; ctx.lineWidth=1.6;
+    for(const [fx,fy] of tied){
+      ctx.beginPath(); ctx.moveTo(W*fx,H*fy+18); ctx.lineTo(cx,cy-r*0.3); ctx.stroke();
+    }
+    const all=tied.concat([[0.78,0.34,'#b48bff'],[0.88,0.66,'#8fe3b0']]);
+    for(const [fx,fy,col] of all){
+      const x=W*fx, y=H*fy;
+      ctx.fillStyle=col; ctx.beginPath(); ctx.ellipse(x,y,14,17,0,0,7); ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,.35)';
+      ctx.beginPath(); ctx.ellipse(x-5,y-6,3.4,4.8,-0.5,0,7); ctx.fill();
+    }
+    /* the cat, fur fully up */
+    ctx.fillStyle=fur; ctx.beginPath();
+    for(let i=0;i<=26;i++){ const a=(i/26)*7, sp=i%2?1.42:0.95;
+      const x=cx+Math.cos(a)*r*0.92*sp, y=cy+Math.sin(a)*r*0.72*sp;
+      i?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+    ctx.closePath(); ctx.fill();
+    /* tail straight up, which is the tell */
+    ctx.strokeStyle=FUR[3]; ctx.lineWidth=6; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(cx-r*0.8,cy+r*0.1);
+    ctx.quadraticCurveTo(cx-r*1.5,cy-r*0.5,cx-r*1.35,cy-r*1.3); ctx.stroke();
+    ctx.lineWidth=5;
+    for(const [dx,dy] of [[-0.9,0.9],[-0.3,1.2],[0.4,1.15],[1.0,0.8]]){
+      ctx.beginPath(); ctx.moveTo(cx+dx*r*0.5,cy+dy*r*0.3);
+      ctx.lineTo(cx+dx*r*1.1,cy+dy*r*0.9); ctx.stroke(); }
+    head(ctx,cx+r*0.5,cy-r*0.5,r*0.55,fur,1.35);
+    /* arcs crawling off it */
+    ctx.strokeStyle='rgba(125,216,255,.85)'; ctx.lineWidth=2.4;
+    for(let i=0;i<7;i++){ const a=(i/7)*7+0.4;
+      ctx.beginPath(); ctx.moveTo(cx+Math.cos(a)*r*1.45,cy+Math.sin(a)*r*1.2);
+      ctx.lineTo(cx+Math.cos(a+0.3)*r*1.9,cy+Math.sin(a+0.3)*r*1.55); ctx.stroke(); }
+  }
+
+  const ART={cats:artCats,fits:artFits,hats:artHats,chaos:artChaos,static:artStatic};
   document.querySelectorAll('canvas.tile-art').forEach(cv=>{
     const ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
     ctx.clearRect(0,0,W,H);
