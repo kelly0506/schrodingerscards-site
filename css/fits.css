@@ -50,4 +50,23 @@ canvas#stage:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
 .note{margin-top:26px;padding-left:16px;border-left:2px solid var(--border);color:var(--text-faint);font-size:.88rem;max-width:74ch}
 .note b{color:var(--text-dim);font-weight:500}
-@media (max-width:560px){.game-wrap{padding:0 18px}.stat strong{font-size:1.25rem}.life{width:14px;height:14px}}
+/* On a phone the game was 354x221 sitting 534px down the page: you had to
+   scroll past the whole introduction to reach it, and then the page scrolled
+   under your finger while you played. The intro comes off (the overlay
+   explains the game anyway), the padding tightens, and the canvas gets a
+   taller ratio, so the board lands on screen at a usable size. */
+@media (max-width:640px){
+  .game-main{padding-top:calc(var(--header-h) + 16px);padding-bottom:44px}
+  .game-wrap{padding:0 12px}
+  .game-head{margin-bottom:12px}
+  .game-head h1{font-size:1.5rem;margin-bottom:0}
+  .game-head .eyebrow{margin-bottom:6px}
+  .game-head p{display:none}
+  .hud{gap:14px;margin-bottom:8px}
+  .stat strong{font-size:1.2rem}
+  .life{width:13px;height:13px}
+  canvas#stage{aspect-ratio:1.26;border-radius:14px}
+  .overlay{padding:18px;border-radius:14px}
+  .overlay p{font-size:.86rem;margin-bottom:14px}
+  .note{margin-top:18px;font-size:.82rem}
+}

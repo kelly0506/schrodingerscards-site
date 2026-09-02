@@ -1,103 +1,11 @@
-/* ---------------- leaderboard ----------------
-
-   Scores are shared: everyone who plays reads and writes the same list,
-   with no account for anyone. It is one JSON document on a free public
-   store that needs no key, fetched and rewritten by the page.
-
-   Two things this deliberately does not do:
-   - It cannot stop someone forging a score. A browser game has no way to
-     prove a number was earned. That is an accepted trade.
-   - It does not trust what comes back. Anything could be in that
-     document, so names are re-sanitised on the way in AND on the way out
-     before they are ever put on the page.
-
-   If the store is unreachable the board quietly falls back to this
-   browser's own scores, so a service outage degrades rather than breaks. */
-const SCORES_ID = 'ff808181a058d43f01a0602bfe69182a';   // the shared board
-const SCORES_API = 'https://api.restful-api.dev/objects';
-
-const BOARD_SIZE = 10;
-const LOCAL_KEY = 'scats-board';
-
-/* Three letters is enough to spell something we would not want sitting on
-   the site. Names are A-Z and 0-9 only, and these are refused outright. */
-const BLOCKED = new Set([
-  'ASS','FUK','FUC','FCK','CUM','TIT','SEX','FAG','JEW','NIG','KKK',
-  'CNT','DIK','DIC','PIS','SHT','WTF','GAY','HOE','NAZ','POO','PEE'
-]);
-function cleanName(v){
-  const n = String(v || '').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,3);
-  if (!n) return null;
-  return BLOCKED.has(n) ? null : n;
-}
-function cleanRow(r){
-  if (!r || typeof r !== 'object') return null;
-  const name = cleanName(r.name);
-  const score = Number(r.score);
-  if (!name || !Number.isFinite(score) || score <= 0 || score > 1e6) return null;
-  return { name, score: Math.floor(score), at: Number(r.at) || 0 };
-}
-
-const Board = {
-  shared: false,
-  url(){ return SCORES_ID ? `${SCORES_API}/${SCORES_ID}` : null; },
-  async init(){
-    this.shared = false;
-    if (!this.url()) return false;
-    try {
-      const res = await fetch(this.url(), { cache:'no-store' });
-      this.shared = res.ok;
-    } catch { this.shared = false; }
-    return this.shared;
-  },
-  localRows(){
-    try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]'); } catch { return []; }
-  },
-  async fetchShared(){
-    const res = await fetch(this.url(), { cache:'no-store' });
-    if (!res.ok) throw new Error(res.status);
-    const body = await res.json();
-    const raw = (body && body.data && body.data.scores) || [];
-    return raw.map(cleanRow).filter(Boolean).sort((a,b)=>b.score-a.score);
-  },
-  async top(){
-    if (this.shared){
-      try { return (await this.fetchShared()).slice(0, BOARD_SIZE); }
-      catch { this.shared = false; }
-    }
-    return this.localRows().map(cleanRow).filter(Boolean)
-      .sort((a,b)=>b.score-a.score).slice(0, BOARD_SIZE);
-  },
-  async qualifies(score){
-    if (score <= 0) return false;
-    const rows = await this.top();
-    return rows.length < BOARD_SIZE || score > rows[rows.length-1].score;
-  },
-  async submit(name, score){
-    const row = cleanRow({ name, score, at: Date.now() });
-    if (!row) return null;
-    if (this.shared){
-      try {
-        /* Re-read immediately before writing, so two people finishing at
-           once are unlikely to overwrite each other. Not airtight — the
-           store has no compare-and-set — but the window is tiny and the
-           stakes are a cat game. */
-        const current = await this.fetchShared();
-        const next = [...current, row].sort((a,b)=>b.score-a.score).slice(0, 50);
-        const res = await fetch(this.url(), {
-          method:'PUT',
-          headers:{ 'Content-Type':'application/json' },
-          body: JSON.stringify({ name:'schrodingerscards-highscores', data:{ scores: next } })
-        });
-        if (res.ok) return row;
-      } catch { /* fall through to local */ }
-    }
-    const rows = this.localRows();
-    rows.push(row);
-    localStorage.setItem(LOCAL_KEY, JSON.stringify(rows.sort((a,b)=>b.score-a.score).slice(0,50)));
-    return row;
-  }
-};
+/* This game's board. The mechanics live in js/leaderboard.js, shared with
+   the other games; only the store id and the local key are per-game, which
+   is what keeps the three boards independent of one another. */
+const Board = makeBoard({
+  id: 'ff808181a058d43f01a0602bfe69182a',
+  localKey: 'scats-board',
+  storeName: 'schrodingerscards-highscores'
+});
 
 /* ---------------- roster ----------------
    w0 = spawn weight at the start of a round, w1 = weight at the end.
@@ -629,55 +537,12 @@ function finish(){
   document.getElementById('start').textContent='Play again';
   document.getElementById('overlay').hidden=false;
 
-  // offer the initials box only if the run actually made the board
-  const entry = document.getElementById('entry');
-  entry.hidden = true;
-  renderBoard();
-  Board.qualifies(score).then(ok => {
-    if (!ok) return;
-    entry.hidden = false;
-    document.getElementById('entry-msg').textContent =
-      Board.shared ? 'You made the board! Enter your initials.'
-                   : 'High score! Enter your initials.';
-    initials.value = '';
-    initials.focus();
-  });
+  boardUI.finish();
 }
 document.getElementById('start').addEventListener('click', start);
 
-/* ---------------- board UI ---------------- */
-let justEntered = null;
-async function renderBoard(){
-  const rows = await Board.top();
-  const wrap = document.getElementById('board');
-  const list = document.getElementById('board-list');
-  if (!rows.length){ wrap.hidden = true; return; }
-  document.getElementById('board-title').textContent =
-    Board.shared ? 'High scores' : 'Your best runs';
-  list.innerHTML = rows.map((r,i)=>{
-    const mine = justEntered && r.name===justEntered.name && r.score===justEntered.score;
-    return `<li class="${mine?'you':''}"><span class="rank">${i+1}</span>` +
-           `<span class="who">${cleanName(r.name) || '???'}</span>` +
-           `<span class="pts">${Number(r.score)||0}</span></li>`;
-  }).join('');
-  wrap.hidden = false;
-}
-
-const initials = document.getElementById('initials');
-initials.addEventListener('input', () => {
-  initials.value = initials.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,3);
-});
-initials.addEventListener('keydown', e => { if (e.key==='Enter') submitScore(); });
-document.getElementById('submit-score').addEventListener('click', () => submitScore());
-
-async function submitScore(){
-  const name = cleanName(initials.value) || 'CAT';
-  document.getElementById('entry').hidden = true;
-  justEntered = await Board.submit(name, score);
-  await renderBoard();
-}
-
-Board.init();
+/* The board panel and the initials box are the same in every game. */
+const boardUI = attachBoardUI(Board, () => score);
 
 /* ---------------- dex ---------------- */
 document.getElementById('dex').innerHTML = RARITIES.map(r=>`

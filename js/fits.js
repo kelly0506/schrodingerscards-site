@@ -418,6 +418,14 @@ function roomPhrase(fill){
   return (QUIPS.under.find(q=>spare < q[1]) || QUIPS.under[6])[0];
 }
 
+/* This game's own board. Same mechanics as the others, its own store, so a
+   score here never turns up on another game's list. */
+const Board = makeBoard({
+  id: 'ff808181a061cdc401a06344dd7a05d7',
+  localKey: 'sfits-board',
+  storeName: 'schrodingerscards-fits-highscores'
+});
+
 /* ================= the round ================= */
 const cv=document.getElementById('stage'), ctx=cv.getContext('2d');
 let W=0,H=0,S=1,BASEPX=1;
@@ -472,16 +480,20 @@ function newRound(){
 }
 function layout(){
   if(!slots.length) return;
-  const baseY=H*0.855, slotW=W*0.179, slotH=H*0.60;
+  /* Vessel size is bound by width — five of them have to fit across — so the
+     row is pushed out towards the edges for every pixel it can get, and the
+     cat sits closer to them than it used to. That closes the dead band in the
+     middle, which is what made the board look small on a phone. */
+  const baseY=H*0.872, slotW=W*0.188, slotH=H*0.58;
   let px=Infinity;
   slots.forEach(s=>{ px=Math.min(px, slotW/(2*maxHalf(s.def)*s.scale), slotH/(s.def.h*s.scale)); });
   BASEPX=px;
   slots.forEach((s,i)=>{
-    s.x=W*(0.128+i*0.186); s.y=baseY; s.px=px*s.scale;
+    s.x=W*(0.112+i*0.194); s.y=baseY; s.px=px*s.scale;
     s.w=2*maxHalf(s.def)*s.px; s.hpx=s.def.h*s.px;
   });
   if(cat){
-    cat.homeX=W/2; cat.homeY=H*0.155;
+    cat.homeX=W/2; cat.homeY=H*0.170;
     cat.nat=natural(cat.B, catArea());
     cat.R=Math.sqrt(catArea())*0.30*cat.B.hr;
     if(cat.stage) cat.stage=stageFor(slots[picked]);
@@ -673,6 +685,8 @@ function gameOver(){
   document.getElementById('ov-score').hidden=false;
   document.getElementById('start').textContent='Play again';
   document.getElementById('overlay').hidden=false;
+  boardUI.finish();
 }
 document.getElementById('start').addEventListener('click',start);
+const boardUI = attachBoardUI(Board, () => score);
 resize(); renderLives(); requestAnimationFrame(frame);

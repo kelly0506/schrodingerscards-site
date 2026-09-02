@@ -75,9 +75,42 @@
     ctx.stroke();
   }
 
+  /* Hat in the Cat: a cat with the lens over it, hat showing through. */
+  function artHats(ctx,W,H){
+    const cx=W*0.44, cy=H*0.62, r=Math.min(W,H)*0.30;
+    ctx.fillStyle=FUR[4];
+    ctx.beginPath(); ctx.ellipse(cx,cy+r*0.55,r*1.15,r*0.92,0,0,7); ctx.fill();
+    head(ctx,cx,cy-r*0.42,r*0.72,FUR[4],1.42);
+    const lx=W*0.70, ly=H*0.62, lr=Math.min(W,H)*0.20;
+    ctx.save();
+    ctx.beginPath(); ctx.arc(lx,ly,lr,0,7); ctx.clip();
+    ctx.fillStyle='#071a22';
+    ctx.beginPath(); ctx.ellipse(cx,cy+r*0.55,r*1.15,r*0.92,0,0,7); ctx.fill();
+    ctx.strokeStyle='rgba(141,240,216,.10)'; ctx.lineWidth=1;
+    for(let y=ly-lr;y<ly+lr;y+=4){ ctx.beginPath(); ctx.moveTo(lx-lr,y); ctx.lineTo(lx+lr,y); ctx.stroke(); }
+    /* a top hat, drawn the way the lens draws it */
+    const hr=lr*0.52, hx=lx-lr*0.10, hy=ly+lr*0.05;
+    const path=()=>{ ctx.beginPath();
+      ctx.moveTo(hx-hr,hy+hr*.44); ctx.lineTo(hx+hr,hy+hr*.44); ctx.lineTo(hx+hr,hy+hr*.22);
+      ctx.lineTo(hx+hr*.52,hy+hr*.22); ctx.lineTo(hx+hr*.52,hy-hr*.98);
+      ctx.lineTo(hx-hr*.52,hy-hr*.98); ctx.lineTo(hx-hr*.52,hy+hr*.22);
+      ctx.lineTo(hx-hr,hy+hr*.22); ctx.closePath();
+      ctx.moveTo(hx-hr*.52,hy-hr*.34); ctx.lineTo(hx+hr*.52,hy-hr*.34); };
+    ctx.lineJoin='round'; ctx.lineCap='round';
+    ctx.strokeStyle='rgba(141,240,216,.22)'; ctx.lineWidth=Math.max(5,hr*.30); path(); ctx.stroke();
+    ctx.fillStyle='rgba(141,240,216,.20)'; path(); ctx.fill();
+    ctx.strokeStyle='#a9f7e4'; ctx.lineWidth=Math.max(1.7,hr*.11); path(); ctx.stroke();
+    ctx.restore();
+    ctx.strokeStyle='#ffd88a'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.arc(lx,ly,lr,0,7); ctx.stroke();
+    ctx.strokeStyle='rgba(255,216,138,.30)'; ctx.lineWidth=9;
+    ctx.beginPath(); ctx.arc(lx,ly,lr+5,0,7); ctx.stroke();
+  }
+
+  const ART={cats:artCats,fits:artFits,hats:artHats};
   document.querySelectorAll('canvas.tile-art').forEach(cv=>{
     const ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
     ctx.clearRect(0,0,W,H);
-    (cv.dataset.art==='cats' ? artCats : artFits)(ctx,W,H);
+    (ART[cv.dataset.art]||artFits)(ctx,W,H);
   });
 })();

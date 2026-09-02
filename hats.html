@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Schrödinger's Cats — a game | Schrödinger's Cards</title>
-<meta name="description" content="A small browser game from Schrödinger's Cards: your cursor is a wave function, and you have forty-five seconds to catch as many cats as you can. The gold ones are worth fifty commons.">
+<title>Hat in the Cat — a game | Schrödinger's Cards</title>
+<meta name="description" content="A small browser game from Schrödinger's Cards: your cursor is an x-ray lens, and every cat has a hat hidden somewhere inside it. Sixty seconds, as many cats as you can get through.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;500&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="css/styles.css?v=9">
 <link rel="stylesheet" href="css/board.css?v=1">
-<link rel="stylesheet" href="css/cats.css?v=6">
+<link rel="stylesheet" href="css/hats.css?v=1">
 </head>
 <body>
 
@@ -52,30 +52,30 @@
 <div class="game-wrap">
   <header class="game-head">
     <p class="eyebrow">A small diversion</p>
-    <h1>Schr&ouml;dinger&rsquo;s Cats</h1>
-    <p>Catch as many as you can in forty-five seconds. Your cursor is a wave function &mdash; hold the button and stay on a cat to collapse it into your collection. Commons are everywhere. The gold ones are fast, twitchy, and worth fifty of them.</p>
+    <h1>Hat in the Cat</h1>
+    <p>Cats contain multitudes, and one of them is a hat. Your cursor is a small x-ray lens &mdash; sweep it over the cat to see what is in there, and when you find the hat, <strong>press and hold</strong> to pull it out. Hold on the wrong thing and it costs you time, so be sure before you commit. Sixty seconds, as many cats as you can get through.</p>
   </header>
 
   <div class="hud">
     <div class="stat"><span>Score</span><strong id="score">0</strong></div>
-    <div class="stat"><span>Time</span><strong id="time">45</strong></div>
-    <div class="stat"><span>Caught</span><strong id="caught">0</strong></div>
+    <div class="stat"><span>Cat</span><strong id="level">1</strong></div>
+    <div class="stat"><span>Hats</span><strong id="hats">0</strong></div>
     <div class="hud-spacer"></div>
-    <div class="stat stat-best"><span>Best</span><strong id="best">0</strong></div>
+    <div class="stat stat-time" id="time-stat"><span>Time</span><strong id="time">60</strong></div>
   </div>
   <div class="timer-track"><div class="timer-fill" id="timer-fill"></div></div>
 
-  <div class="field-wrap">
-    <canvas id="field" tabindex="0" aria-label="Cat hunting game field"></canvas>
+  <div class="stage-wrap">
+    <canvas id="stage" tabindex="0" aria-label="X-ray the cat and find the hat"></canvas>
     <div class="overlay" id="overlay">
       <div>
-        <h2 id="ov-title">Catch the rare ones</h2>
-        <p id="ov-body">Catch as many as you can. Hold the button and keep your wave on a cat until the ring closes &mdash; the rarer the cat, the longer it takes and the harder it runs.</p>
+        <h2 id="ov-title">Find the hat</h2>
+        <p id="ov-body">Move the lens over the cat to see inside. Press and hold on the hat to pull it out and move on to the next cat. Holding on anything else costs you four seconds &mdash; and there are things in there worth finding on purpose.</p>
         <div id="ov-score" hidden>
           <div class="final" id="final-score">0</div>
           <div class="final-label">Final score</div>
+          <div class="tally" id="tally"></div>
         </div>
-        <div class="haul" id="haul" hidden></div>
         <div class="entry" id="entry" hidden>
           <p id="entry-msg">High score! Enter your initials.</p>
           <div class="entry-row">
@@ -83,7 +83,6 @@
             <button class="btn btn-sm" id="submit-score" type="button">Enter</button>
           </div>
         </div>
-        <p class="pb" id="pb" hidden>New personal best</p>
         <div class="board" id="board" hidden>
           <h3 id="board-title">High scores</h3>
           <ol id="board-list"></ol>
@@ -93,12 +92,9 @@
     </div>
   </div>
 
-  <div class="legend">
-    <h3>What&rsquo;s out there</h3>
-    <div class="dex" id="dex"></div>
-  </div>
+  <div class="legend" id="legend"></div>
 
-  <p class="note">Rarer cats are faster, twitchier, and need a longer hold, with a tighter ring to stay inside. They also turn up far less often &mdash; though the odds shift toward them as the round goes on, so the back half is where the big scores are. Uncaught cats wander off after a while, so a gold sighting is worth dropping whatever else you were doing.</p>
+  <p class="note"><b>How it gets harder.</b> Each cat holds more than the last &mdash; ten items to start, up to forty &mdash; the hat shrinks, and the other things spread out in size until the inside is a proper jumble. From the third cat there are also shapes that read as a hat for half a second and are not. <b>Pick-ups shine</b>, so you always know one when you pass it. <b>The lens ring warms up</b> when the hat is close &mdash; a confirmation rather than a compass, since it only reads within about a lens and a half. <b>Every cat is a different animal:</b> six builds, six coats and five resting faces, which is a hundred and eighty combinations before you count the ears.</p>
 </div>
 </main>
 
@@ -117,6 +113,6 @@
 
 <script src="js/script.js?v=8"></script>
 <script src="js/leaderboard.js?v=1"></script>
-<script src="js/cats.js?v=6"></script>
+<script src="js/hats.js?v=1"></script>
 </body>
 </html>

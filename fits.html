@@ -11,8 +11,9 @@
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="css/styles.css?v=8">
-<link rel="stylesheet" href="css/fits.css?v=1">
+<link rel="stylesheet" href="css/styles.css?v=9">
+<link rel="stylesheet" href="css/board.css?v=1">
+<link rel="stylesheet" href="css/fits.css?v=2">
 </head>
 <body>
 
@@ -72,6 +73,17 @@
           <div class="final" id="final-score">0</div>
           <div class="final-label">Final score</div>
         </div>
+        <div class="entry" id="entry" hidden>
+          <p id="entry-msg">High score! Enter your initials.</p>
+          <div class="entry-row">
+            <input id="initials" maxlength="3" autocomplete="off" spellcheck="false" autocapitalize="characters" autocorrect="off" inputmode="text" aria-label="Your initials, three characters">
+            <button class="btn btn-sm" id="submit-score" type="button">Enter</button>
+          </div>
+        </div>
+        <div class="board" id="board" hidden>
+          <h3 id="board-title">High scores</h3>
+          <ol id="board-list"></ol>
+        </div>
         <button class="btn" id="start">Start</button>
       </div>
     </div>
@@ -95,6 +107,7 @@
 </footer>
 
 <script src="js/script.js?v=8"></script>
-<script src="js/fits.js?v=1"></script>
+<script src="js/leaderboard.js?v=1"></script>
+<script src="js/fits.js?v=2"></script>
 </body>
 </html>
