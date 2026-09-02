@@ -53,7 +53,7 @@
   <header class="game-head">
     <p class="eyebrow">A small diversion</p>
     <h1>Hat in the Cat</h1>
-    <p>Cats contain multitudes, and one of them is a hat. Your cursor is a small x-ray lens &mdash; sweep it over the cat to see what is in there, and when you find the hat, <strong>press and hold</strong> to pull it out. Hold on the wrong thing and it costs you time, so be sure before you commit. Sixty seconds, as many cats as you can get through.</p>
+    <p>Cats contain multitudes, and one of them is a hat. Your cursor is a small x-ray lens &mdash; sweep it over the cat to see what is in there, and when you find the hat, <strong>hold still on it</strong> to pull it out. Hold on the wrong thing and it costs you time, so be sure before you commit. Sixty seconds, as many cats as you can get through.</p>
   </header>
 
   <div class="hud">
@@ -65,12 +65,14 @@
   </div>
   <div class="timer-track"><div class="timer-fill" id="timer-fill"></div></div>
 
+  <div class="legend" id="legend"></div>
+
   <div class="stage-wrap">
     <canvas id="stage" tabindex="0" aria-label="X-ray the cat and find the hat"></canvas>
     <div class="overlay" id="overlay">
       <div>
         <h2 id="ov-title">Find the hat</h2>
-        <p id="ov-body">Move the lens over the cat to see inside. Press and hold on the hat to pull it out and move on to the next cat. Holding on anything else costs you four seconds &mdash; and there are things in there worth finding on purpose.</p>
+        <p id="ov-body">Move the lens over the cat to see inside. Hold it still on the hat to pull it out and move on to the next cat &mdash; hold still on anything else and it costs you four seconds. On a phone the lens sits <em>above</em> your finger, so you can see what you are doing.</p>
         <div id="ov-score" hidden>
           <div class="final" id="final-score">0</div>
           <div class="final-label">Final score</div>
@@ -92,9 +94,7 @@
     </div>
   </div>
 
-  <div class="legend" id="legend"></div>
-
-  <p class="note"><b>How it gets harder.</b> Each cat holds more than the last &mdash; ten items to start, up to forty &mdash; the hat shrinks, and the other things spread out in size until the inside is a proper jumble. From the third cat there are also shapes that read as a hat for half a second and are not. <b>Pick-ups shine</b>, so you always know one when you pass it. <b>The lens ring warms up</b> when the hat is close &mdash; a confirmation rather than a compass, since it only reads within about a lens and a half. <b>Every cat is a different animal:</b> six builds, six coats and five resting faces, which is a hundred and eighty combinations before you count the ears.</p>
+  <p class="note"><b>How it gets harder.</b> Each cat holds more than the last &mdash; ten items to start, up to forty &mdash; the hat shrinks, and the other things spread out in size until the inside is a proper jumble. From the third cat there are also shapes that read as a hat for half a second and are not. <b>Pick-ups shine</b>, so you always know one when you pass it. <b>The lens ring warms up</b> when the hat is close &mdash; a confirmation rather than a compass, since it only reads within about a lens and a half. <b>Every cat is a different animal:</b> six builds, six coats and five resting faces, which is a hundred and eighty combinations before you count the ears. <b>On a touch screen</b> the lens rides above your finger with a line joining the two, and the ring fills whenever the lens is resting on something &mdash; no need to lift off and press again.</p>
 </div>
 </main>
 

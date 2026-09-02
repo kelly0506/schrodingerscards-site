@@ -485,20 +485,21 @@ function newRound(){
 function layout(){
   if(!slots.length) return;
   /* Vessel size is bound by width — five of them have to fit across — so the
-     row is pushed out towards the edges for every pixel it can get, and the
-     cat sits closer to them than it used to. That closes the dead band in the
-     middle, which is what made the board look small on a phone. */
-  const baseY=H*0.872, slotW=W*0.188, slotH=H*0.58;
+     row is pushed out to the edges for every pixel it can get. Height is only
+     the binding constraint for the tall narrow ones, so slotH is generous:
+     giving it back does not shrink anything, it just leaves a dead band down
+     the middle of the board. */
+  const baseY=H*0.885, slotW=W*0.193, slotH=H*0.66;
   let px=Infinity;
   slots.forEach(s=>{ px=Math.min(px, slotW/(2*maxHalf(s.def)*s.scale), slotH/(s.def.h*s.scale)); });
   BASEPX=px;
   slots.forEach((s,i)=>{
-    s.x=W*(0.112+i*0.194); s.y=baseY; s.px=px*s.scale;
+    s.x=W*(0.104+i*0.198); s.y=baseY; s.px=px*s.scale;
     s.w=2*maxHalf(s.def)*s.px; s.hpx=s.def.h*s.px;
-    s.span=W*0.194;          // centre to centre: what a label actually has to fit in
+    s.span=W*0.198;          // centre to centre: what a label actually has to fit in
   });
   if(cat){
-    cat.homeX=W/2; cat.homeY=H*0.170;
+    cat.homeX=W/2; cat.homeY=H*0.205;
     cat.nat=natural(cat.B, catArea());
     cat.R=Math.sqrt(catArea())*0.30*cat.B.hr;
     if(cat.stage) cat.stage=stageFor(slots[picked]);

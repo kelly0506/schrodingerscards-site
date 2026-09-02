@@ -45,11 +45,16 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
 .tally div{display:flex;justify-content:space-between;font-size:.86rem;color:var(--text-dim)}
 .tally b{font-family:var(--font-head);font-weight:600;font-variant-numeric:tabular-nums;color:var(--text)}
 
-.legend{margin-top:24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(184px,1fr));gap:9px}
-.lg{padding:11px 13px;border:1px solid var(--border);border-radius:11px;background:var(--bg-alt);display:flex;gap:11px;align-items:center}
-.lg canvas{flex:0 0 auto;width:34px;height:34px}
-.lg b{display:block;font-family:var(--font-head);font-size:.79rem;font-weight:600;line-height:1.25}
-.lg span{font-size:.72rem;color:var(--text-faint)}
+/* The key sits above the board, not below it. Underneath, it was pushed off
+   screen by the board itself, so you could see the timer or the key but never
+   both — and the key is what tells you a shining thing is worth grabbing. */
+.legend{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+.lg{flex:1 1 auto;min-width:0;padding:6px 10px 6px 7px;border:1px solid var(--border);border-radius:9px;
+  background:var(--bg-alt);display:flex;gap:8px;align-items:center}
+.lg canvas{flex:0 0 auto;width:26px;height:26px}
+.lg b{display:block;font-family:var(--font-head);font-size:.74rem;font-weight:600;line-height:1.2;white-space:nowrap}
+.lg span{font-size:.66rem;color:var(--text-faint);line-height:1.2;display:block;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
 .note{margin-top:24px;padding-left:16px;border-left:2px solid var(--border);color:var(--text-faint);font-size:.87rem;max-width:74ch}
 .note b{color:var(--text-dim);font-weight:500}
 
@@ -64,12 +69,17 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
   .game-head p{display:none}
   .hud{gap:14px;margin-bottom:8px}
   .stat strong{font-size:1.2rem}
+  /* Square board, so the width cap is also the height cap — on a short phone
+     that is what keeps the key, the timer and the whole cat on one screen. */
+  .stage-wrap{max-width:min(100%, calc(100dvh - 292px));margin:0 auto}
   canvas#stage{aspect-ratio:1/1;border-radius:14px}
   .overlay{padding:18px;border-radius:14px}
   .overlay p{font-size:.86rem;margin-bottom:14px}
-  .legend{grid-template-columns:repeat(2,1fr);gap:7px;margin-top:16px}
-  .lg{padding:9px 10px;gap:9px}
-  .lg canvas{width:28px;height:28px}
+  .legend{gap:5px;margin-bottom:9px}
+  .lg{flex:1 1 44%;padding:5px 7px 5px 5px;gap:6px}
+  .lg canvas{width:22px;height:22px}
+  .lg b{font-size:.68rem}
+  .lg span{font-size:.6rem}
   .note{margin-top:18px;font-size:.82rem}
 }
 
@@ -79,12 +89,12 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
    game against a clock. The stage is capped to what the viewport can show,
    and on a short window the introduction stands down to give it more room. */
 @media (min-width: 641px) {
-  .stage-wrap { max-width: min(100%, max(430px, (100dvh - 366px) * 4 / 3)); margin: 0 auto; }
+  .stage-wrap { max-width: min(100%, max(430px, (100dvh - 500px) * 4 / 3)); margin: 0 auto; }
 }
 @media (min-width: 641px) and (max-height: 860px) {
   .game-main { padding-top: calc(var(--header-h) + 26px); padding-bottom: 56px; }
   .game-head { margin-bottom: 14px; }
   .game-head h1 { font-size: 1.7rem; margin-bottom: 0; }
   .game-head p { display: none; }
-  .stage-wrap { max-width: min(100%, max(430px, (100dvh - 232px) * 4 / 3)); }
+  .stage-wrap { max-width: min(100%, max(430px, (100dvh - 284px) * 4 / 3)); }
 }

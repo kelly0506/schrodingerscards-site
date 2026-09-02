@@ -334,6 +334,7 @@ function drawCat(t){
 const ROUND=60, PENALTY=4, BOOST=6, HOLD=1.8, HOLD_POWER=0.7;
 let score=0, level=1, hats=0, timeLeft=ROUND, running=false, over=false;
 let mx=-999, my=-999, lensR=1, lensBoost=0, holding=null, holdT=0, flash=null;
+let fx=-999, fy=-999, touchMode=false, downNow=false, lastLx=0, lastLy=0;
 let levelStart=0, misses=0, powers=0, celebrate=null;
 const CHEER=1.05;   // how long the cat gets to enjoy itself
 const baseLens=()=>Math.min(W,H)*0.115;
@@ -441,6 +442,14 @@ function drawXray(t){
   }
   ctx.restore();
   ctx.restore();
+  /* On touch, join the finger to the lens so the offset reads as deliberate. */
+  if(touchMode && fy>-500){
+    ctx.strokeStyle='rgba(169,247,228,.45)'; ctx.lineWidth=2; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(mx,my+R+4); ctx.lineTo(fx,fy-10); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.strokeStyle='rgba(169,247,228,.55)'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(fx,fy,9,0,TAU); ctx.stroke();
+  }
   /* the ring. It warms towards gold only when the hat is genuinely close —
      a confirmation you are in the right region, not a compass to follow. */
   const d=hat&&!hat.gone ? Math.hypot(hat.x-mx,hat.y-my) : 1e9;
@@ -561,15 +570,22 @@ function frame(now){
   }
   else if(mx>-500) drawXray(t);
 
-  if(holding){
-    /* the hold only counts while the lens stays on the thing */
-    if(Math.hypot(holding.x-mx,holding.y-my) > holding.r*1.25){ holding=null; holdT=0; }
-    else {
-      holdT+=dt;
-      const need=holding.isPower?HOLD_POWER:HOLD;
-      if(holdT>=need) resolve(holding);
+  /* Hold to pull something out, judged every frame rather than only at the
+     moment of the press. On a phone the finger is both the lens and the
+     button, so requiring a fresh press meant lifting off and stabbing at a
+     spot you could no longer see. Now you sweep to it and hold still: the ring
+     fills while the lens rests on one thing, and unwinds if you drift off. */
+  if(downNow && !celebrate){
+    const o=objAt(mx,my);
+    const moved=Math.hypot(mx-lastLx,my-lastLy);
+    if(o!==holding){ holding=o; holdT=0; }
+    else if(holding){
+      if(moved<=2.4) holdT+=dt;
+      else holdT=Math.max(0,holdT-dt*2);
     }
+    if(holding && holdT >= (holding.isPower?HOLD_POWER:HOLD)) resolve(holding);
   }
+  lastLx=mx; lastLy=my;
   if(flash){
     flash.t+=dt;
     const a=1-clamp((flash.t-0.5)/0.6,0,1);
@@ -588,7 +604,10 @@ function frame(now){
   const fill=document.getElementById('timer-fill');
   fill.style.width=(100*clamp(timeLeft/ROUND,0,1))+'%';
   fill.classList.toggle('low',low);
-  if(timeLeft<=0) return endRound();
+  /* Never return without scheduling the next frame. `return endRound()` used
+     to kill the animation loop outright, so the game froze at the end of a
+     round and Play again reset the state with nothing left to draw it. */
+  if(timeLeft<=0) endRound();
   requestAnimationFrame(frame);
 }
 
@@ -614,7 +633,7 @@ function endRound(){
 function start(){
   resize();
   score=0; level=1; hats=0; misses=0; powers=0;
-  timeLeft=ROUND; running=true; over=false; holding=null; holdT=0; flash=null; celebrate=null;
+  timeLeft=ROUND; running=true; over=false; holding=null; holdT=0; flash=null; celebrate=null; downNow=false;
   document.getElementById('score').textContent='0';
   document.getElementById('hats').textContent='0';
   document.getElementById('overlay').hidden=true;
@@ -622,21 +641,38 @@ function start(){
   cv.focus({preventScroll:true});
 }
 
-const pos=e=>{const r=cv.getBoundingClientRect(); mx=e.clientX-r.left; my=e.clientY-r.top;};
+/* A fingertip covers the whole lens, so on touch the lens rides above the
+   finger and a short leader joins the two. A mouse pointer is small enough to
+   sit in the middle of it, so it keeps the lens under the cursor. */
+const pos=e=>{
+  const r=cv.getBoundingClientRect();
+  fx=e.clientX-r.left; fy=e.clientY-r.top;
+  touchMode = e.pointerType==='touch';
+  const base = Math.max(62, lensR*1.30);
+  /* The offset tapers away near the bottom edge. At full offset the lens can
+     only reach 62px above wherever the finger can go, which left the bottom of
+     the cat unreachable without sliding off the canvas entirely. */
+  const off = touchMode ? base*clamp((H-fy)/base, 0, 1) : 0;
+  mx=fx;
+  my=touchMode ? Math.max(lensR+8, fy-off) : fy;
+};
 cv.addEventListener('pointermove',e=>{ pos(e); });
-cv.addEventListener('pointerleave',()=>{ mx=my=-999; holding=null; holdT=0; });
+cv.addEventListener('pointerleave',()=>{ mx=my=fx=fy=-999; downNow=false; holding=null; holdT=0; });
 /* Sweeping the lens with a trackpad would otherwise scroll the page and take
    the timer off screen mid-round. */
 cv.addEventListener('wheel',e=>{ if(running) e.preventDefault(); },{passive:false});
 cv.addEventListener('pointerdown',e=>{
   if(!running||celebrate) return;
-  e.preventDefault(); cv.setPointerCapture?.(e.pointerId);
+  e.preventDefault();
+  /* Capture keeps the lens following a finger that strays off the canvas, but
+     it throws for a pointer the element does not own — and an exception here
+     would abort the handler before the press is even registered. */
+  try { cv.setPointerCapture?.(e.pointerId); } catch {}
   document.body.classList.add('dragging');
   pos(e);
-  const o=objAt(mx,my);
-  if(o){ holding=o; holdT=0; }
+  downNow=true; lastLx=mx; lastLy=my; holding=null; holdT=0;
 });
-const release=()=>{ holding=null; holdT=0; document.body.classList.remove('dragging'); };
+const release=()=>{ downNow=false; holding=null; holdT=0; document.body.classList.remove('dragging'); };
 cv.addEventListener('pointerup',release);
 cv.addEventListener('pointercancel',release);
 document.getElementById('start').addEventListener('click',start);

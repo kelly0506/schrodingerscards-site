@@ -65,7 +65,11 @@ canvas#stage:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
   .hud{gap:14px;margin-bottom:8px}
   .stat strong{font-size:1.2rem}
   .life{width:13px;height:13px}
-  canvas#stage{aspect-ratio:1.26;border-radius:14px}
+  /* The board goes edge to edge on a phone. Twenty-four pixels of page
+     padding is seven per cent of the vessel row, which is worth more to the
+     game than the margin is. */
+  .stage-wrap{margin:0 -12px;max-width:none}
+  canvas#stage{aspect-ratio:1.42;border-radius:14px}
   .overlay{padding:18px;border-radius:14px}
   .overlay p{font-size:.86rem;margin-bottom:14px}
   .note{margin-top:18px;font-size:.82rem}
@@ -77,7 +81,7 @@ canvas#stage:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
    game against a clock. The stage is capped to what the viewport can show,
    and on a short window the introduction stands down to give it more room. */
 @media (min-width: 641px) {
-  .stage-wrap { max-width: min(100%, max(430px, (100dvh - 366px) * 16 / 10)); margin: 0 auto; }
+  .stage-wrap { max-width: min(100%, max(430px, (100dvh - 430px) * 16 / 10)); margin: 0 auto; }
 }
 @media (min-width: 641px) and (max-height: 860px) {
   .game-main { padding-top: calc(var(--header-h) + 26px); padding-bottom: 56px; }
