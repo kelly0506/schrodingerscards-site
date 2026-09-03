@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chonk — a game | Schrödinger's Cards</title>
+<meta name="description" content="A small browser game from Schrödinger's Cards: eat your way up the food chain from a 350g kitten to the 900kg at which a cat cannot hold himself together, and mind the black hole you leave behind.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="css/styles.css?v=10">
+<link rel="stylesheet" href="css/board.css?v=2">
+<link rel="stylesheet" href="css/chonk.css?v=1">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header" id="site-header">
+  <div class="wrap header-inner">
+    <div class="logo">
+      <!-- The mark is the way in to the games. Deliberately unlabelled to
+           anyone looking at the page; still named for screen readers. -->
+      <a class="logo-mark" href="arcade.html" aria-label="Games">
+        <img src="assets/favicon.svg" width="34" height="34" alt="">
+      </a>
+      <a class="logo-text" href="index.html#top">Schrödinger's<em>Cards</em></a>
+    </div>
+
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html#story">Our Story</a>
+      <a href="index.html#carry">What We Carry</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="index.html#visit">Visit Us</a>
+      <a href="guide.html">Collection Guide</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+
+    <div class="header-actions">
+      <a class="btn btn-ghost" href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">Shop on eBay</a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="main-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="game-main">
+<div class="game-wrap">
+  <header class="game-head">
+    <p class="eyebrow">A small diversion</p>
+    <h1>Chonk</h1>
+    <p>A cat eats his way up a food chain. Nine lanes of traffic run across the board and everything in them is either smaller than him, in which case it is lunch, or bigger, in which case it wears red spikes and costs a life. He is weighed in kilograms &mdash; from a 350g kitten to the 900kg at which he cannot hold himself together, and when he reaches that he goes supernova and leaves a black hole exactly where he was standing. The hole is hungry, and it never stops eating.</p>
+  </header>
+
+  <div class="hud">
+    <div class="stat"><span>Score</span><strong id="score">0</strong></div>
+    <div class="stat"><span>Weight</span><strong id="weight">350 g</strong></div>
+    <div class="stat"><span>Eaten</span><strong id="eaten">0</strong></div>
+    <div class="hud-spacer"></div>
+    <div class="stat"><span>Lives</span><strong id="lives">9</strong></div>
+  </div>
+
+  <div class="charge">
+    <div class="charge-label"><span id="growlabel">Toward critical mass</span><span id="zone">Nothing to fear yet</span></div>
+    <div class="charge-track"><div class="charge-fill" id="grow-fill"></div></div>
+  </div>
+
+  <div class="stage-wrap">
+    <canvas id="stage" tabindex="0" aria-label="A cat eating its way up a food chain"></canvas>
+    <div class="overlay" id="overlay">
+      <div>
+        <h2 id="ov-title">Chonk</h2>
+        <p id="ov-body">Eat your way up the food chain. Anything without red spikes is lunch; anything with them costs a life. Get to 900kg and see what happens.</p>
+        <div id="ov-score" hidden></div>
+        <div id="ov-final" hidden>
+          <div class="final" id="final-score">0</div>
+          <div class="final-label">Final score</div>
+        </div>
+        <div class="entry" id="entry" hidden>
+          <p id="entry-msg">You made the board. Enter your initials.</p>
+          <div class="entry-row">
+            <input id="initials" maxlength="3" autocomplete="off" spellcheck="false" autocapitalize="characters" autocorrect="off" inputmode="text" aria-label="Your initials, three characters">
+            <button class="btn btn-sm" id="submit-score" type="button">Enter</button>
+          </div>
+        </div>
+        <div class="board" id="board" hidden>
+          <h3 id="board-title">High scores</h3>
+          <ol id="board-list"></ol>
+        </div>
+        <div class="ov-actions">
+          <button class="btn" id="go" type="button">Start</button>
+          <button class="btn btn-ghost" id="see-board" type="button" aria-expanded="false" aria-controls="board">High scores</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note"><b>Moving.</b> Drag him, or use the arrow keys &mdash; both work, and he answers immediately. He turns to face the way he is going, and a full-grown cat is slower than a kitten, but only by about a third. <b>Eating.</b> Anything at all without red spikes is safe to swallow, and everything is worth its weight: a crumb is 20g and a cow is 260kg, so the last stretch to critical mass is about finding something enormous rather than eating another hundred mice. <b>Red spikes</b> cost you a life, whether they belong to a wasp or to a goose that is simply too big &mdash; and a hazard becomes edible once you are 30% bigger than it, at which point the ring comes off. <b>Power&#8209;ups</b> ride the lanes like everything else, glow, and are always safe: a heart, a shield that takes the next hit, longer whiskers, catnip that makes nothing dangerous for five seconds, cream, and yarn that drops the whole board to a third speed. <b>Critical mass.</b> Past 92% the meter goes red and says so; at 900kg he collapses, and what is left is a black hole. <b>The hole</b> pulls everything, including you, and every mouthful it swallows makes it a little wider. Crossing its edge ends the run. After a collapse the board <b>stops dead and points at him</b> &mdash; click or press a key when you have found him.</p>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p>&copy; <span id="year"></span> Schrödinger's Cards LLC. Jacksonville, Texas.</p>
+    <div class="footer-links">
+      <a href="gallery.html">Gallery</a>
+      <a href="guide.html">Collection Guide</a>
+      <a href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">eBay</a>
+      <a href="https://www.facebook.com/profile.php?id=61594026205359" target="_blank" rel="noopener">Facebook</a>
+      <a href="mailto:booth151.jtx@gmail.com">Email</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/script.js?v=8"></script>
+<script src="js/leaderboard.js?v=2"></script>
+<script src="js/chonk.js?v=1"></script>
+</body>
+</html>

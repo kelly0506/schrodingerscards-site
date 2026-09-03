@@ -1,0 +1,84 @@
+/* ============================================================
+   Chonk — the game
+   Depends on css/styles.css for tokens and the button base, and on
+   css/board.css for the leaderboard panel and the initials entry.
+   Self-contained otherwise, matching how the other five games are built.
+   ============================================================ */
+
+:root { --gold: #ffd88a; }
+
+.game-main { padding-top: calc(var(--header-h) + 56px); padding-bottom: 90px; }
+.game-wrap { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+.game-head { margin-bottom: 26px; }
+.game-head h1 {
+  font-family: var(--font-head);
+  font-size: clamp(1.9rem, 5vw, 2.7rem);
+  line-height: 1.08; letter-spacing: -.025em; margin-bottom: 14px;
+}
+.game-head p { color: var(--text-dim); font-size: 1rem; max-width: 64ch; }
+
+.hud{display:flex;align-items:flex-end;gap:22px;margin-bottom:12px;flex-wrap:wrap}
+.stat{display:flex;flex-direction:column;gap:2px}
+.stat span{font-family:var(--font-head);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint)}
+.stat strong{font-family:var(--font-head);font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.hud-spacer{flex:1}
+
+/* The weight meter is the game's clock: it is how close he is to collapsing,
+   and the right-hand caption says what the board is doing to you while he
+   gets there. It is logarithmic, because a crumb is 20g and a cow is 260kg
+   and a linear bar would sit at nothing for the whole first minute. */
+.charge{margin-bottom:14px}
+.charge-label{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:5px}
+.charge-label span{font-family:var(--font-head);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint)}
+.charge-track{height:10px;border-radius:999px;background:var(--bg-alt);border:1px solid var(--border);overflow:hidden}
+.charge-fill{height:100%;width:0;border-radius:999px;
+  background:linear-gradient(90deg,#7dd8ff,#b48bff 55%,#ffd88a);
+  transition:width .08s linear}
+
+/* Critical mass: the meter goes hot and says so, so the supernova is never
+   something that merely happens to you. */
+.charge-fill.crit{
+  background:linear-gradient(90deg,#ffd88a,#ff9d5a 55%,#ff5a5a);
+  animation:critpulse 1s ease-in-out infinite}
+@keyframes critpulse{0%,100%{opacity:1}50%{opacity:.5}}
+#zone.crit{color:var(--gold);font-weight:700}
+@media (prefers-reduced-motion:reduce){ .charge-fill.crit{animation:none} }
+
+.stage-wrap{position:relative}
+canvas#stage{display:block;width:100%;aspect-ratio:16/10;border:1px solid var(--border);border-radius:18px;
+  background:radial-gradient(120% 80% at 50% 0%,rgba(125,216,255,.05),transparent 60%),var(--surface);
+  /* A drag game cannot let the browser take the gesture for panning, so this
+     is `none` rather than the `manipulation` the tapping games use. */
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-touch-callout:none}
+canvas#stage:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+.overlay{position:absolute;inset:0;display:grid;place-items:center;padding:28px;border-radius:18px;
+  background:rgba(10,13,24,.9);backdrop-filter:blur(5px);text-align:center;overflow-y:auto}
+.overlay[hidden]{display:none}
+.overlay h2{font-family:var(--font-head);font-size:clamp(1.4rem,4vw,2rem);letter-spacing:-.02em;margin-bottom:12px}
+.overlay p{color:var(--text-dim);font-size:.94rem;max-width:50ch;margin:0 auto 20px}
+.overlay .final{font-family:var(--font-head);font-size:3.2rem;font-weight:700;line-height:1;
+  font-variant-numeric:tabular-nums;color:var(--gold)}
+.overlay .final-label{font-family:var(--font-head);font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--text-faint);margin-bottom:18px}
+.ov-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+.note{margin-top:18px;color:var(--text-dim);font-size:.86rem;line-height:1.7;max-width:72ch}
+.note b{color:var(--text)}
+
+@media (max-width:640px){
+  .game-main{padding-top:calc(var(--header-h) + 34px)}
+  .game-wrap{padding:0 16px}
+  /* Taller than it is wide on a phone: the lanes run across, so height is
+     what gives you room to dodge between them. */
+  canvas#stage{aspect-ratio:4/5}
+  .overlay{padding:18px;border-radius:14px}
+  .overlay p{font-size:.86rem;margin-bottom:14px}
+  .hud{gap:14px}
+  .stat strong{font-size:1.25rem}
+  .charge-label{gap:10px}
+  .charge-label span{font-size:.6rem}
+}

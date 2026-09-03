@@ -189,7 +189,53 @@
       ctx.lineTo(cx+Math.cos(a+0.3)*r*1.9,cy+Math.sin(a+0.3)*r*1.55); ctx.stroke(); }
   }
 
-  const ART={cats:artCats,fits:artFits,hats:artHats,chaos:artChaos,static:artStatic};
+  /* Chonk: an enormous cat, and the hole taking a cow off him. */
+  function artChonk(ctx,W,H){
+    const hx=W*0.74, hy=H*0.52, hr=26;
+    /* the hole's reach, drawn as the fall-off it actually is */
+    const g=ctx.createRadialGradient(hx,hy,hr,hx,hy,hr*3.4);
+    g.addColorStop(0,'rgba(180,139,255,.30)');
+    g.addColorStop(1,'rgba(180,139,255,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(hx,hy,hr*3.4,0,7); ctx.fill();
+
+    /* the cow, mid-swallow: wound round, squeezed thin, most of the way gone */
+    ctx.save();
+    ctx.translate(hx-hr*1.15,hy-hr*0.55);
+    ctx.rotate(-0.62);
+    ctx.fillStyle='#f2d9c4';
+    ctx.beginPath(); ctx.ellipse(0,0,26,7,0,0,7); ctx.fill();
+    ctx.fillStyle='rgba(20,24,48,.20)';
+    ctx.beginPath(); ctx.ellipse(4,-1,7,3,0,0,7); ctx.fill();
+    ctx.restore();
+    /* and the strand it leaves behind */
+    ctx.strokeStyle='rgba(242,217,196,.5)'; ctx.lineWidth=2; ctx.lineCap='round';
+    ctx.beginPath(); ctx.arc(hx,hy,hr*1.75,-2.5,-0.9); ctx.stroke();
+    ctx.strokeStyle='rgba(242,217,196,.22)'; ctx.lineWidth=1.4;
+    ctx.beginPath(); ctx.arc(hx,hy,hr*2.35,-2.2,-1.2); ctx.stroke();
+
+    /* the hole itself: black, with a hot rim */
+    ctx.fillStyle='#05060c'; ctx.beginPath(); ctx.arc(hx,hy,hr,0,7); ctx.fill();
+    ctx.strokeStyle='rgba(255,216,138,.85)'; ctx.lineWidth=2.6;
+    ctx.beginPath(); ctx.arc(hx,hy,hr,0,7); ctx.stroke();
+
+    /* the cat, far too big, leaning away from it */
+    const cx=W*0.30, cy=H*0.60, r=52, fur=FUR[1];
+    ctx.fillStyle=fur;
+    ctx.beginPath(); ctx.ellipse(cx,cy+r*0.30,r*0.98,r*0.76,0,0,7); ctx.fill();
+    /* stubby legs, lost in the bulk of him */
+    for(const lx of [-0.52,-0.18,0.18,0.52]){
+      ctx.beginPath();
+      ctx.ellipse(cx+lx*r*0.92,cy+r*0.94,r*0.13,r*0.16,0,0,7); ctx.fill();
+    }
+    /* tail */
+    ctx.strokeStyle=fur; ctx.lineWidth=r*0.17; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(cx-r*0.92,cy+r*0.38);
+    ctx.quadraticCurveTo(cx-r*1.55,cy+r*0.10,cx-r*1.38,cy-r*0.48); ctx.stroke();
+    head(ctx,cx+r*0.44,cy-r*0.36,r*0.46,fur,1.34);
+  }
+
+  const ART={cats:artCats,fits:artFits,hats:artHats,chaos:artChaos,static:artStatic,
+             chonk:artChonk};
   document.querySelectorAll('canvas.tile-art').forEach(cv=>{
     const ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
     ctx.clearRect(0,0,W,H);
