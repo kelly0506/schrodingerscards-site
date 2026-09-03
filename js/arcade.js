@@ -49,30 +49,153 @@
     ctx.beginPath(); ctx.arc(cx,cy,62,0,7); ctx.stroke();
   }
 
-  /* If I Fits I Sits: a cat that has taken the shape of the jar it is in. */
+  /* If I Fits I Sits: the test tube, which is the vessel that shows the joke
+     best — it is the narrowest one in the game, so the cat has to go absurdly
+     tall and thin to hold the same volume. Rounded at the bottom and open at
+     the top, with the cat poured in and his head sticking out. */
   function artFits(ctx,W,H){
-    const cx=W*0.5, floorY=H*0.90, hh=H*0.60, hw=W*0.15;
-    const wall=t=>hw*(1-0.10*Math.max(0,t-0.86)*6);
+    const cx=W*0.5, rimY=H*0.09, floorY=H*0.94;
+    const hw=W*0.085;                       // the tube is genuinely narrow
+    const bulb=hw;                          // the round bottom
+    const bodyBot=floorY-bulb;
+
+    /* the glass, as one closed path: straight sides, half-round base */
+    const glass=()=>{
+      ctx.beginPath();
+      ctx.moveTo(cx-hw,rimY);
+      ctx.lineTo(cx-hw,bodyBot);
+      ctx.arc(cx,bodyBot,bulb,Math.PI,0,true);
+      ctx.lineTo(cx+hw,rimY);
+    };
+
+    /* the cat, filling it: a column that stops just under the rim, with the
+       same round bottom so he reads as poured in rather than dropped in */
+    const fillTop=rimY+H*0.155;
+    ctx.save();
+    glass(); ctx.closePath(); ctx.clip();
     ctx.fillStyle=FUR[3];
-    ctx.beginPath();
-    for(let i=0;i<=40;i++){const t=i/40; ctx.lineTo(cx-wall(t), floorY-t*hh);}
-    for(let i=40;i>=0;i--){const t=i/40; ctx.lineTo(cx+wall(t), floorY-t*hh);}
-    ctx.closePath(); ctx.fill();
-    ctx.strokeStyle='rgba(10,13,24,.28)'; ctx.lineWidth=2; ctx.stroke();
-    /* paw pads pressed against the front */
+    ctx.fillRect(cx-hw,fillTop,hw*2,floorY-fillTop);
+    /* paw pads pressed flat against the glass */
     ctx.fillStyle='rgba(255,197,212,.9)';
     for(const s of [-1,1]){
-      const px=cx+s*hw*0.42, py=floorY-hh*0.34;
-      ctx.beginPath(); ctx.ellipse(px,py,7,5.6,0,0,7); ctx.fill();
-      for(const [dx,dy] of [[-0.68,-0.50],[-0.22,-0.80],[0.22,-0.80],[0.68,-0.50]]){
-        ctx.beginPath(); ctx.arc(px+dx*9,py+dy*9,2.4,0,7); ctx.fill(); }
+      const px=cx+s*hw*0.46, py=fillTop+H*0.20;
+      ctx.beginPath(); ctx.ellipse(px,py,5.4,4.4,0,0,7); ctx.fill();
+      for(const [dx,dy] of [[-0.68,-0.52],[-0.22,-0.82],[0.22,-0.82],[0.68,-0.52]]){
+        ctx.beginPath(); ctx.arc(px+dx*7,py+dy*7,1.9,0,7); ctx.fill(); }
     }
-    head(ctx,cx,floorY-hh-6,30,FUR[3],1.42);
-    ctx.strokeStyle='#3a4170'; ctx.lineWidth=3.2; ctx.lineJoin='round'; ctx.lineCap='round';
+    /* the tail, curled against the inside of the glass */
+    ctx.strokeStyle=FUR[3]; ctx.lineWidth=hw*0.42; ctx.lineCap='round';
     ctx.beginPath();
-    for(let i=40;i>=0;i--){const t=i/40,X=cx-wall(t),Y=floorY-t*hh; i===40?ctx.moveTo(X,Y):ctx.lineTo(X,Y);}
-    for(let i=0;i<=40;i++){const t=i/40; ctx.lineTo(cx+wall(t), floorY-t*hh);}
+    ctx.moveTo(cx+hw*0.30,floorY-H*0.10);
+    ctx.quadraticCurveTo(cx-hw*0.85,floorY-H*0.05,cx-hw*0.10,floorY-H*0.015);
     ctx.stroke();
+    ctx.restore();
+
+    /* his head, up out of the open top and far too big for the tube */
+    head(ctx,cx,fillTop-H*0.062,W*0.074,FUR[3],1.42);
+
+    /* the glass over the top of him: a highlight down one side, a soft
+       tint, then the outline and the rim */
+    ctx.save();
+    glass(); ctx.closePath(); ctx.clip();
+    ctx.fillStyle='rgba(190,225,255,.13)';
+    ctx.fillRect(cx-hw,rimY,hw*2,floorY-rimY);
+    ctx.fillStyle='rgba(255,255,255,.30)';
+    ctx.fillRect(cx-hw*0.72,rimY,hw*0.34,floorY-rimY);
+    ctx.restore();
+
+    ctx.strokeStyle='rgba(198,228,255,.80)'; ctx.lineWidth=2.6;
+    ctx.lineJoin='round'; ctx.lineCap='round';
+    glass(); ctx.stroke();
+    /* the rolled lip at the mouth of the tube */
+    ctx.lineWidth=3.4;
+    ctx.beginPath();
+    ctx.ellipse(cx,rimY,hw*1.12,hw*0.30,0,0,7);
+    ctx.stroke();
+  }
+
+  /* On a Roll: the roll seen as the cylinder it is, the sheet coming off it,
+     and the cat who did this looking pleased about it. */
+  function artRoll(ctx,W,H){
+    const bx=W*0.66, capY=H*0.17, rx=W*0.105, ry=H*0.075;
+    const bodyTop=capY, bodyBot=H*0.70;
+    const PAPER='#f3ecd9', SHADE='#dccca1';
+
+    /* the body of the roll, with the shading that makes it read round */
+    ctx.fillStyle=PAPER;
+    ctx.fillRect(bx-rx,bodyTop,rx*2,bodyBot-bodyTop);
+    const g=ctx.createLinearGradient(bx-rx,0,bx+rx,0);
+    g.addColorStop(0,'rgba(0,0,0,.30)');
+    g.addColorStop(0.5,'rgba(255,255,255,.10)');
+    g.addColorStop(1,'rgba(0,0,0,.30)');
+    ctx.fillStyle=g; ctx.fillRect(bx-rx,bodyTop,rx*2,bodyBot-bodyTop);
+    /* the perforations, and the one square that matters */
+    ctx.strokeStyle='rgba(20,24,48,.20)'; ctx.lineWidth=1.4;
+    for(let i=1;i<4;i++){
+      const y=bodyTop+(bodyBot-bodyTop)*i/4;
+      ctx.beginPath(); ctx.moveTo(bx-rx,y); ctx.quadraticCurveTo(bx,y+6,bx+rx,y); ctx.stroke();
+    }
+    const tY=bodyTop+(bodyBot-bodyTop)*0.52;
+    ctx.fillStyle='#ffd88a';
+    ctx.beginPath();
+    ctx.moveTo(bx-rx,tY-16); ctx.quadraticCurveTo(bx,tY-10,bx+rx,tY-16);
+    ctx.lineTo(bx+rx,tY+16); ctx.quadraticCurveTo(bx,tY+22,bx-rx,tY+16);
+    ctx.closePath(); ctx.fill();
+    /* the star on it */
+    ctx.fillStyle=INK;
+    ctx.beginPath();
+    for(let i=0;i<10;i++){
+      const a=-Math.PI/2+i*Math.PI/5, r=i%2?5:12;
+      ctx.lineTo(bx+Math.cos(a)*r, tY+Math.sin(a)*r);
+    }
+    ctx.closePath(); ctx.fill();
+    /* the selector sitting on it */
+    ctx.strokeStyle='#fff'; ctx.lineWidth=2.4;
+    ctx.strokeRect(bx-rx,tY-15,rx*2,30);
+
+    /* the end cap: the spiral that says this is a roll and not a pipe */
+    ctx.save();
+    ctx.beginPath(); ctx.ellipse(bx,capY,rx,ry,0,0,7); ctx.clip();
+    ctx.fillStyle=PAPER; ctx.fillRect(bx-rx,capY-ry,rx*2,ry*2);
+    ctx.strokeStyle='#b8a06a'; ctx.lineWidth=Math.max(1,rx*0.10);
+    for(let i=0;i<4;i++){ ctx.beginPath(); ctx.ellipse(bx,capY,rx*(0.34+i*0.20),ry*(0.34+i*0.20),0,0,7); ctx.stroke(); }
+    ctx.fillStyle='#8a7d55'; ctx.beginPath(); ctx.ellipse(bx,capY,rx*0.26,ry*0.26,0,0,7); ctx.fill();
+    ctx.restore();
+    ctx.strokeStyle='rgba(20,24,48,.32)'; ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.ellipse(bx,capY,rx,ry,0,0,7); ctx.stroke();
+
+    /* the sheet coming off the bottom, and the folded heap it lands in */
+    ctx.fillStyle=PAPER;
+    ctx.beginPath();
+    ctx.moveTo(bx-rx,bodyBot);
+    ctx.quadraticCurveTo(bx-rx+7,H*0.80,bx-rx-2,H*0.885);
+    ctx.lineTo(bx+rx-2,H*0.885);
+    ctx.quadraticCurveTo(bx+rx+7,H*0.80,bx+rx,bodyBot);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle='rgba(20,24,48,.18)'; ctx.lineWidth=1.2; ctx.stroke();
+    for(let i=0;i<5;i++){
+      const y=H*0.885+i*5.2, w=rx*(1.02+i*0.05), sk=(i%2?1:-1)*w*0.09;
+      ctx.fillStyle=i%2?PAPER:SHADE;
+      ctx.beginPath();
+      ctx.moveTo(bx-w+sk,y+5); ctx.lineTo(bx+w+sk,y+5);
+      ctx.lineTo(bx+w-sk,y); ctx.lineTo(bx-w-sk,y);
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle='rgba(20,24,48,.16)'; ctx.lineWidth=1; ctx.stroke();
+    }
+
+    /* the culprit, reaching for the roll */
+    const cx=W*0.24, cy=H*0.70, r=40, fur=FUR[3];
+    ctx.fillStyle=fur;
+    ctx.beginPath(); ctx.ellipse(cx,cy+r*0.34,r*0.86,r*0.70,0,0,7); ctx.fill();
+    ctx.strokeStyle=fur; ctx.lineWidth=r*0.17; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(cx-r*0.80,cy+r*0.50);
+    ctx.quadraticCurveTo(cx-r*1.40,cy+r*0.16,cx-r*1.20,cy-r*0.36); ctx.stroke();
+    /* the paw up on the paper */
+    ctx.lineWidth=r*0.16;
+    ctx.beginPath(); ctx.moveTo(cx+r*0.60,cy-r*0.12);
+    ctx.quadraticCurveTo(bx-rx*1.5,cy-r*0.70,bx-rx-4,tY+18); ctx.stroke();
+    ctx.fillStyle=fur; ctx.beginPath(); ctx.arc(bx-rx-4,tY+18,r*0.15,0,7); ctx.fill();
+    head(ctx,cx+r*0.30,cy-r*0.52,r*0.50,fur,1.36);
   }
 
   /* Hat in the Cat: a cat with the lens over it, hat showing through. */
@@ -235,7 +358,7 @@
   }
 
   const ART={cats:artCats,fits:artFits,hats:artHats,chaos:artChaos,static:artStatic,
-             chonk:artChonk};
+             chonk:artChonk,roll:artRoll};
   document.querySelectorAll('canvas.tile-art').forEach(cv=>{
     const ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
     ctx.clearRect(0,0,W,H);

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>On a Roll — a game | Schrödinger's Cards</title>
+<meta name="description" content="A small browser game from Schrödinger's Cards: a cat has found the toilet roll. Unspool it hunting the one square that matters, and stop dead on it before you go too far.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="css/styles.css?v=11">
+<link rel="stylesheet" href="css/board.css?v=2">
+<link rel="stylesheet" href="css/on-a-roll.css?v=1">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header" id="site-header">
+  <div class="wrap header-inner">
+    <div class="logo">
+      <!-- The mark is the way in to the games. Deliberately unlabelled to
+           anyone looking at the page; still named for screen readers. -->
+      <a class="logo-mark" href="arcade.html" aria-label="Games">
+        <img src="assets/favicon.svg" width="34" height="34" alt="">
+      </a>
+      <a class="logo-text" href="index.html#top">Schrödinger's<em>Cards</em></a>
+    </div>
+
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html#story">Our Story</a>
+      <a href="index.html#carry">What We Carry</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="index.html#visit">Visit Us</a>
+      <a href="guide.html">Collection Guide</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+
+    <div class="header-actions">
+      <a class="btn btn-ghost" href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">Shop on eBay</a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="main-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="game-main">
+<div class="game-wrap">
+  <header class="game-head">
+    <p class="eyebrow">A small diversion</p>
+    <h1>On a Roll</h1>
+    <p>A cat has found the toilet roll and there is no talking him out of it. Somewhere down the paper is a single square carrying the symbol you were shown, and the job is to unspool the roll and stop dead on that square before you run past it. Hold to spin, tap to get it moving, hold again to stop &mdash; and mind what else is hidden in the paper, because a skull ends the run outright no matter how many lives you have left.</p>
+  </header>
+
+  <div class="hud">
+    <div class="stat"><span>Score</span><strong id="score">0</strong></div>
+    <div class="stat"><span>Level</span><strong id="level">1</strong></div>
+    <div class="stat"><span>Clock</span><strong id="time">0.0</strong></div>
+    <div class="hud-spacer"></div>
+    <div class="stat"><span>Lives</span><strong id="lives">9</strong></div>
+  </div>
+
+  <div class="charge">
+    <div class="charge-label"><span>Speed</span><span>Hold to spin &middot; hold again to stop</span></div>
+    <div class="charge-track"><div class="charge-fill" id="speed-fill"></div></div>
+  </div>
+
+  <div class="stage-wrap">
+    <canvas id="stage" tabindex="0" aria-label="A cat unrolling a toilet roll, hunting for one square"></canvas>
+    <div class="banner" id="banner"><p></p></div>
+    <div class="overlay" id="overlay">
+      <div>
+        <h2 id="ov-title">On a Roll</h2>
+        <p id="ov-body">Hold to spin the roll, tap to get it moving faster, and hold again to stop it. Find the square carrying the symbol and stop dead on it.</p>
+        <div id="ov-final" hidden>
+          <div class="final" id="final-score">0</div>
+          <div class="final-label">Final score</div>
+        </div>
+        <div class="entry" id="entry" hidden>
+          <p id="entry-msg">You made the board. Enter your initials.</p>
+          <div class="entry-row">
+            <input id="initials" maxlength="3" autocomplete="off" spellcheck="false" autocapitalize="characters" autocorrect="off" inputmode="text" aria-label="Your initials, three characters">
+            <button class="btn btn-sm" id="submit-score" type="button">Enter</button>
+          </div>
+        </div>
+        <div class="board" id="board" hidden>
+          <h3 id="board-title">High scores</h3>
+          <ol id="board-list"></ol>
+        </div>
+        <div class="ov-actions">
+          <button class="btn" id="go" type="button">Start</button>
+          <button class="btn btn-ghost" id="see-board" type="button" aria-expanded="false" aria-controls="board">High scores</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="find">
+    <div class="find-icon"><canvas id="find-icon" width="32" height="32" aria-hidden="true"></canvas></div>
+    <p><b>Find this.</b> It changes every level. Stop with the gold box sitting completely on its square.</p>
+  </div>
+
+  <p class="note"><b>The control.</b> Press and hold and the roll spins, building speed the longer you hold it; let go and it coasts down on its own. A quick <b>tap</b> adds speed too, so mashing gets it moving fast &mdash; and pressing and <b>holding</b> while it is already moving is the brake. Tap to go faster, hold to stop; that never changes, so the brake still works in the middle of a mash. <b>Landing.</b> The gold box is the same size at every level, but the paper squares shrink as you go &mdash; level one is a true square more than three times the height of the box, and by the late levels it is barely taller than it. The square has to cover the box completely. <b>Overshooting</b> does not stop the roll dead: it keeps coasting, about three times faster than an ordinary landing, and the miss lands when it finally settles. <b>What is in the paper.</b> Everything has to be stopped on to count &mdash; running over it does nothing. A clock is a few seconds back and a pink heart is a life; a cracked heart costs a life, a broken clock costs seven seconds, a mushroom sets him tripping for six seconds, and the silver &ldquo;?&rdquo; is a coin flip between twelve seconds and two lives. A <b>skull</b> ends the run on the spot. <b>Scoring.</b> A hundred points a level multiplied by how deep you are, plus five for every second still on the clock, so a fast clear is worth far more than a cautious one.</p>
+
+  <div class="legend">
+    <div class="legend-row"><span class="legend-swatch" style="background:#ffd88a"></span>The symbol &mdash; different each level</div>
+    <div class="legend-row"><span class="legend-swatch" style="background:#7dd8ff"></span>Clock &mdash; a few seconds back</div>
+    <div class="legend-row"><span class="legend-swatch" style="background:#ff8fd0"></span>Heart &mdash; one life back</div>
+    <div class="legend-row"><span class="legend-swatch" style="background:#5c2430"></span>Cracked heart &mdash; costs a life</div>
+    <div class="legend-row"><span class="legend-swatch" style="background:#5c3a1a"></span>Broken clock &mdash; costs seven seconds</div>
+    <div class="legend-row"><span class="legend-swatch" style="background:#3a1016"></span>Skull &mdash; ends the run</div>
+    <div class="legend-row"><span class="legend-swatch" style="background:#e0b3ff"></span>Mushroom &mdash; he starts tripping</div>
+    <div class="legend-row"><span class="legend-swatch" style="background:#e8e8f0"></span>Silver &ldquo;?&rdquo; &mdash; a gamble, big or bad</div>
+  </div>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p>&copy; <span id="year"></span> Schrödinger's Cards LLC. Jacksonville, Texas.</p>
+    <div class="footer-links">
+      <a href="gallery.html">Gallery</a>
+      <a href="guide.html">Collection Guide</a>
+      <a href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">eBay</a>
+      <a href="https://www.facebook.com/profile.php?id=61594026205359" target="_blank" rel="noopener">Facebook</a>
+      <a href="mailto:booth151.jtx@gmail.com">Email</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/script.js?v=9"></script>
+<script src="js/leaderboard.js?v=2"></script>
+<script src="js/on-a-roll.js?v=1"></script>
+</body>
+</html>
