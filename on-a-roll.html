@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>On a Roll — a game | Schrödinger's Cards</title>
-<meta name="description" content="A small browser game from Schrödinger's Cards: a cat has found the toilet roll. Unspool it hunting the one square that matters, and stop dead on it before you go too far.">
+<meta name="description" content="A small browser game from Schrödinger's Cards: a cat is shredding the toilet roll for the sheer joy of it. Unspool it hunting the one square that matters, and stop dead on it before you tear past.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;500&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="css/styles.css?v=11">
 <link rel="stylesheet" href="css/board.css?v=2">
-<link rel="stylesheet" href="css/on-a-roll.css?v=1">
+<link rel="stylesheet" href="css/on-a-roll.css?v=2">
 </head>
 <body>
 
@@ -53,9 +53,11 @@
   <header class="game-head">
     <p class="eyebrow">A small diversion</p>
     <h1>On a Roll</h1>
-    <p>A cat has found the toilet roll and there is no talking him out of it. Somewhere down the paper is a single square carrying the symbol you were shown, and the job is to unspool the roll and stop dead on that square before you run past it. Hold to spin, tap to get it moving, hold again to stop &mdash; and mind what else is hidden in the paper, because a skull ends the run outright no matter how many lives you have left.</p>
   </header>
 
+  <p class="lede">A cat has decided the day needs ruining, and the toilet roll is how he intends to do it. Somewhere down the paper is one square carrying the symbol you were shown, and the job is to unspool the roll and stop dead on that square before you go tearing past it. Hold to spin, tap to build speed, hold again to stop &mdash; and mind what else is buried in the paper, because a skull ends the run outright however many lives you have left.</p>
+
+  <div class="play">
   <div class="hud">
     <div class="stat"><span>Score</span><strong id="score">0</strong></div>
     <div class="stat"><span>Level</span><strong id="level">1</strong></div>
@@ -75,7 +77,7 @@
     <div class="overlay" id="overlay">
       <div>
         <h2 id="ov-title">On a Roll</h2>
-        <p id="ov-body">Hold to spin the roll, tap to get it moving faster, and hold again to stop it. Find the square carrying the symbol and stop dead on it.</p>
+        <p id="ov-body">Hold to spin the roll, tap to build speed, and hold again to stop it. Find the square carrying the symbol and stop dead on it.</p>
         <div id="ov-final" hidden>
           <div class="final" id="final-score">0</div>
           <div class="final-label">Final score</div>
@@ -98,13 +100,9 @@
       </div>
     </div>
   </div>
-
-  <div class="find">
-    <div class="find-icon"><canvas id="find-icon" width="32" height="32" aria-hidden="true"></canvas></div>
-    <p><b>Find this.</b> It changes every level. Stop with the gold box sitting completely on its square.</p>
   </div>
 
-  <p class="note"><b>The control.</b> Press and hold and the roll spins, building speed the longer you hold it; let go and it coasts down on its own. A quick <b>tap</b> adds speed too, so mashing gets it moving fast &mdash; and pressing and <b>holding</b> while it is already moving is the brake. Tap to go faster, hold to stop; that never changes, so the brake still works in the middle of a mash. <b>Landing.</b> The gold box is the same size at every level, but the paper squares shrink as you go &mdash; level one is a true square more than three times the height of the box, and by the late levels it is barely taller than it. The square has to cover the box completely. <b>Overshooting</b> does not stop the roll dead: it keeps coasting, about three times faster than an ordinary landing, and the miss lands when it finally settles. <b>What is in the paper.</b> Everything has to be stopped on to count &mdash; running over it does nothing. A clock is a few seconds back and a pink heart is a life; a cracked heart costs a life, a broken clock costs seven seconds, a mushroom sets him tripping for six seconds, and the silver &ldquo;?&rdquo; is a coin flip between twelve seconds and two lives. A <b>skull</b> ends the run on the spot. <b>Scoring.</b> A hundred points a level multiplied by how deep you are, plus five for every second still on the clock, so a fast clear is worth far more than a cautious one.</p>
+  <p class="note"><b>The symbol.</b> The one you are hunting sits in the corner of the play area and changes every level. <b>The control.</b> Press and hold and the roll spins, building speed the longer you hold it; let go and it coasts down on its own. A quick <b>tap</b> adds speed too, so mashing gets it moving fast &mdash; and pressing and <b>holding</b> while it is already moving is the brake. Tap to go faster, hold to stop; that never changes, so the brake still works in the middle of a mash. <b>Landing.</b> The gold box is the same size at every level, but the paper squares shrink as you go &mdash; level one is a true square more than three times the height of the box, and by the late levels it is barely taller than it. The square has to cover the box completely. <b>Overshooting</b> does not stop the roll dead: it keeps coasting, about three times faster than an ordinary landing, and the miss lands when it finally settles. <b>What is in the paper.</b> Everything has to be stopped on to count &mdash; running over it does nothing. A clock is a few seconds back and a pink heart is a life; a cracked heart costs a life, a broken clock costs seven seconds, a mushroom sets him tripping for six seconds, and the silver &ldquo;?&rdquo; is a coin flip between twelve seconds and two lives. A <b>skull</b> ends the run on the spot. <b>Scoring.</b> A hundred points a level multiplied by how deep you are, plus five for every second still on the clock, so a fast clear is worth far more than a cautious one.</p>
 
   <div class="legend">
     <div class="legend-row"><span class="legend-swatch" style="background:#ffd88a"></span>The symbol &mdash; different each level</div>
@@ -134,6 +132,6 @@
 
 <script src="js/script.js?v=9"></script>
 <script src="js/leaderboard.js?v=2"></script>
-<script src="js/on-a-roll.js?v=1"></script>
+<script src="js/on-a-roll.js?v=2"></script>
 </body>
 </html>

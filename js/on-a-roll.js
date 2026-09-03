@@ -375,10 +375,6 @@ function makeGame(){
     timeEl.textContent=g.timeLeft.toFixed(1);
     timeEl.classList.toggle('danger', g.timeLeft<6);
     timeEl.classList.toggle('warn', g.timeLeft>=6&&g.timeLeft<12);
-    const fc=document.getElementById('find-icon'), fctx=fc.getContext('2d');
-    fctx.clearRect(0,0,32,32);
-    ctx0=fctx; fctx.fillStyle=COLORS.gold;
-    ICONS[g.lvl.targetIcon](16,16,12);
   }
   function syncSpeed(){
     document.getElementById('speed-fill').style.width=(clamp(g.vel/P.VMAX,0,1)*100)+'%';
@@ -999,7 +995,28 @@ function makeGame(){
     }
 
     ctx.restore();
+    drawFindChip(W,H);
     if(g.shake>0) g.shake=Math.max(0,g.shake-0.05);
+  }
+
+  /* The symbol to hunt, parked in the empty top-left of the stage. It lives
+     on the canvas rather than in a row beside it so that it cannot end up
+     scrolled off on a phone while the roll is still in view. Drawn after
+     draw()'s restore, so the tripping wobble never touches it. */
+  function drawFindChip(W,H){
+    if(!g.lvl) return;
+    const h=W*0.150, w=W*0.315, x=W*0.030, y=W*0.030;
+    ctx.save();
+    ctx.fillStyle='rgba(10,13,24,.82)';
+    roundRect(x,y,w,h,h*0.30); ctx.fill();
+    ctx.strokeStyle=COLORS.border; ctx.lineWidth=1; ctx.stroke();
+    ctx.fillStyle=COLORS.textDim;
+    ctx.font='700 '+(h*0.30)+'px "Space Grotesk",sans-serif';
+    ctx.textAlign='left'; ctx.textBaseline='middle';
+    ctx.fillText('FIND', x+h*0.30, y+h*0.34);
+    ctx0=ctx; ctx.fillStyle=COLORS.gold;
+    ICONS[g.lvl.targetIcon](x+w*0.74, y+h*0.50, h*0.32);
+    ctx.restore();
   }
 
   /* ---------------- input: the one mechanic ----------------

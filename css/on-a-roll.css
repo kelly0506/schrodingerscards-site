@@ -5,7 +5,14 @@
    Self-contained otherwise, matching how the other six games are built.
    ============================================================ */
 
-:root { --gold: #ffd88a; --paper: #f3ecd9; }
+:root {
+  --gold: #ffd88a; --paper: #f3ecd9;
+  /* Everything above the roll that still has to be on screen with it: the
+     fixed site header, the stat row and the speed bar. The stage is sized
+     from whatever is left, so the clock, the speed bar and the whole play
+     area are always visible together rather than one scrolling off. */
+  --stage-chrome: 210px;
+}
 
 .game-main { padding-top: calc(var(--header-h) + 56px); padding-bottom: 90px; }
 .game-wrap { max-width: 900px; margin: 0 auto; padding: 0 24px; }
@@ -15,7 +22,7 @@
   font-size: clamp(1.9rem, 5vw, 2.7rem);
   line-height: 1.08; letter-spacing: -.025em; margin-bottom: 14px;
 }
-.game-head p { color: var(--text-dim); font-size: 1rem; max-width: 64ch; }
+.lede { color: var(--text-dim); font-size: 1rem; max-width: 64ch; margin-bottom: 26px; }
 
 .hud{display:flex;align-items:flex-end;gap:22px;margin-bottom:12px;flex-wrap:wrap}
 .stat{display:flex;flex-direction:column;gap:2px}
@@ -39,10 +46,16 @@
 
 /* The roll is drawn as a tall cylinder, so the stage is twice as tall as it
    is wide — that height is the runway, and it is what gives you time to see
-   a square coming before it reaches the selector. Capped against the
-   viewport as well as in pixels so the whole roll stays on screen on a
-   short laptop display rather than running off the bottom. */
-.stage-wrap{position:relative;width:min(390px,44vh,100%);margin:0 auto}
+   a square coming before it reaches the selector. The width is derived from
+   the height the viewport can actually spare, so the proportions never
+   change; the roll just gets narrower on a short screen instead of running
+   off the bottom of it. dvh rather than vh because a phone's address bar
+   is part of the height that goes away. */
+.stage-wrap{
+  position:relative;margin:0 auto;
+  width:min(390px, 100%, calc((100vh - var(--stage-chrome)) / 2));
+  width:min(390px, 100%, calc((100dvh - var(--stage-chrome)) / 2));
+}
 canvas#stage{display:block;width:100%;aspect-ratio:1/2;border:1px solid var(--border);border-radius:18px;
   background:radial-gradient(120% 60% at 50% 0%,rgba(125,216,255,.05),transparent 60%),var(--surface);
   /* Press-and-hold IS the control, so the browser cannot be allowed to take
@@ -66,13 +79,6 @@ canvas#stage:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .banner.lose p{color:#ff5a5a}
 @media (prefers-reduced-motion:reduce){ .banner{transition:none} }
 
-/* The symbol you are hunting, redrawn each level next to the stage. */
-.find{display:flex;align-items:center;gap:12px;justify-content:center;margin:14px auto 0;max-width:390px}
-.find-icon{width:42px;height:42px;border-radius:10px;background:var(--bg-alt);border:1px solid var(--border);
-  display:flex;align-items:center;justify-content:center;flex:none}
-.find p{margin:0;font-size:.84rem;color:var(--text-dim)}
-.find b{color:var(--text)}
-
 .overlay{position:absolute;inset:0;display:grid;place-items:center;padding:24px;border-radius:18px;
   background:rgba(10,13,24,.9);backdrop-filter:blur(5px);text-align:center;overflow-y:auto}
 .overlay[hidden]{display:none}
@@ -92,15 +98,27 @@ canvas#stage:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .legend-swatch{width:14px;height:14px;border-radius:4px;flex:none;border:1px solid rgba(255,255,255,.10)}
 
 @media (max-width:640px){
-  .game-main{padding-top:calc(var(--header-h) + 34px)}
+  .game-main{padding-top:calc(var(--header-h) + 20px);padding-bottom:60px}
   .game-wrap{padding:0 16px}
-  /* On a phone the viewport cap would leave the roll tiny, so width wins
-     and the page simply scrolls. */
-  .stage-wrap{width:min(390px,100%)}
+  /* The description is the one part that does not have to be on screen with
+     the roll, so on a phone it drops below the game and the play area comes
+     first. Everything else keeps its reading order. */
+  .game-wrap{display:flex;flex-direction:column}
+  .game-head{order:1;margin-bottom:12px}
+  .play{order:2}
+  .lede{order:3;margin:22px 0 0}
+  .note{order:4}
+  .legend{order:5}
+  /* Tighter rows above the stage buy height back for the roll itself. */
+  :root{ --stage-chrome:190px; }
+  .hud{gap:14px;margin-bottom:8px}
+  .stat span{font-size:.6rem}
+  .stat strong{font-size:1.15rem}
+  .charge{margin-bottom:10px}
+  .charge-label{gap:10px;margin-bottom:4px}
+  .charge-label span{font-size:.58rem}
+  .charge-track{height:8px}
   .overlay{padding:16px;border-radius:14px}
   .overlay p{font-size:.85rem;margin-bottom:14px}
-  .hud{gap:14px}
-  .stat strong{font-size:1.25rem}
-  .charge-label{gap:10px}
-  .charge-label span{font-size:.6rem}
+  .note{margin-top:16px}
 }
