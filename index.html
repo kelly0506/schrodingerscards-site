@@ -11,7 +11,7 @@
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="css/styles.css?v=10">
+<link rel="stylesheet" href="css/styles.css?v=11">
 </head>
 <body>
 
@@ -179,7 +179,7 @@
         <dl class="visit-details">
           <div>
             <dt>Location</dt>
-            <dd><span class="booth">Booth 151</span>Treasure Cove Mall<br>118 E Commerce St<br>Jacksonville, TX 75766</dd>
+            <dd><button class="booth booth-open" type="button" aria-haspopup="dialog"><span class="booth-label">Booth 151</span><span class="booth-hint">see it on the mall map</span></button>Treasure Cove Mall<br>118 E Commerce St<br>Jacksonville, TX 75766</dd>
           </div>
           <div>
             <dt>Hours</dt>
@@ -272,7 +272,21 @@
   </div>
 </footer>
 
-<script src="js/script.js?v=8"></script>
+<!-- The mall map, opened from the "Booth 151" line above. A native <dialog>
+     brings Esc-to-close, the backdrop and focus handling with it, so this
+     needs far less script than the gallery's hand-rolled lightbox. -->
+<dialog class="booth-dialog" id="booth-dialog" aria-label="Where to find Booth 151">
+  <form method="dialog">
+    <button class="booth-dialog-close" aria-label="Close">&times;</button>
+  </form>
+  <figure>
+    <img src="assets/booth-map.webp" width="1170" height="907"
+         alt="First-floor map of Treasure Cove Mall. Booth 151 is circled in red along the front wall, just left of the front door and the checkout counter.">
+    <figcaption>We're on the front wall, just left of the front door &mdash; circled in red.</figcaption>
+  </figure>
+</dialog>
+
+<script src="js/script.js?v=9"></script>
 <script src="js/carry-wave.js?v=3"></script>
 </body>
 </html>

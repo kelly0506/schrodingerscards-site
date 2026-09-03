@@ -23,3 +23,17 @@ const yearEl = document.getElementById('year');
 if (yearEl) {
   yearEl.textContent = new Date().getFullYear();
 }
+
+// The "Booth 151" line opens the mall map
+const boothOpen = document.querySelector('.booth-open');
+const boothDialog = document.getElementById('booth-dialog');
+
+if (boothOpen && boothDialog) {
+  boothOpen.addEventListener('click', () => boothDialog.showModal());
+
+  // Clicking the backdrop closes it. The dialog itself fills its own box, so
+  // a click landing on the <dialog> element is a click outside the content.
+  boothDialog.addEventListener('click', (e) => {
+    if (e.target === boothDialog) boothDialog.close();
+  });
+}
