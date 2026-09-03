@@ -1313,14 +1313,13 @@ function exitFree(){
    other three; only the store id and the local key are per-game, which is what
    keeps the four boards independent.
 
-   The id is empty because api.restful-api.dev meters anonymous callers at 50
-   requests a day and the allowance was exhausted when this shipped, so the
-   store could not be created. With no id the shared module skips the network
-   entirely and keeps scores in this browser under "Your best runs" — which is
-   the same thing it does for any visitor whose allowance has run out. Drop the
-   id in when there is one and it becomes a shared board with no other change. */
+   The store took three attempts across the day to create: api.restful-api.dev
+   meters anonymous callers at 50 requests per 24 hours, and the allowance was
+   exhausted both when this game shipped and again while the free-play physics
+   was being tested. If the allowance is spent, the shared module falls back to
+   this browser's own scores under "Your best runs" rather than breaking. */
 const Board = makeBoard({
-  id: '',
+  id: 'ff808181a061cdc401a064bc867108de',
   localKey: 'catastrophe-board',
   storeName: 'schrodingerscards-catastrophe-highscores'
 });
