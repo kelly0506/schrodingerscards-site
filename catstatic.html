@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catstatic — a game | Schrödinger's Cards</title>
+<meta name="description" content="A small browser game from Schrödinger's Cards: skid a cat across the carpet until his fur stands on end, then collect the balloons the static will hold. Nine rooms, and the time you save is the score.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="css/styles.css?v=10">
+<link rel="stylesheet" href="css/board.css?v=2">
+<link rel="stylesheet" href="css/catstatic.css?v=1">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header" id="site-header">
+  <div class="wrap header-inner">
+    <div class="logo">
+      <!-- The mark is the way in to the games. Deliberately unlabelled to
+           anyone looking at the page; still named for screen readers. -->
+      <a class="logo-mark" href="arcade.html" aria-label="Games">
+        <img src="assets/favicon.svg" width="34" height="34" alt="">
+      </a>
+      <a class="logo-text" href="index.html#top">Schrödinger's<em>Cards</em></a>
+    </div>
+
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html#story">Our Story</a>
+      <a href="index.html#carry">What We Carry</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="index.html#visit">Visit Us</a>
+      <a href="guide.html">Collection Guide</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+
+    <div class="header-actions">
+      <a class="btn btn-ghost" href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">Shop on eBay</a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="main-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="game-main">
+<div class="game-wrap">
+  <header class="game-head">
+    <p class="eyebrow">A small diversion</p>
+    <h1>Catstatic</h1>
+    <p>Press and drag the cat across the carpet. Friction charges his fur until it is standing on end, and charged fur holds balloons &mdash; the expensive colours need more of it than the cheap ones. The charge leaks away the moment you leave the rug, so the room is a route rather than a playground. Nine rooms, one clock, and the seconds you save are worth more than the balloons.</p>
+  </header>
+
+  <div class="hud">
+    <div class="stat"><span>Score</span><strong id="score">0</strong></div>
+    <div class="stat"><span>Room</span><strong id="level">1/9</strong></div>
+    <div class="stat"><span>Balloons</span><strong id="left">0</strong></div>
+    <div class="hud-spacer"></div>
+    <div class="stat"><span>Seconds</span><strong id="clock">32</strong></div>
+  </div>
+
+  <div class="charge">
+    <div class="charge-label"><span>Static charge</span><span>drag him across the carpet</span></div>
+    <div class="charge-track"><div class="charge-fill" id="charge-fill"></div></div>
+    <div class="charge-ticks">
+      <i style="left:2%;color:#ff8fd0">PINK</i>
+      <i style="left:32%;color:#7dd8ff">BLUE</i>
+      <i style="left:60%;color:#b48bff">PURPLE</i>
+      <i style="left:90%;color:#ffd88a">GOLD</i>
+    </div>
+  </div>
+
+  <div class="stage-wrap">
+    <canvas id="stage" tabindex="0" aria-label="A cat, some carpets and a room full of balloons"></canvas>
+    <div class="overlay" id="overlay">
+      <div>
+        <h2 id="ov-title">Catstatic</h2>
+        <p id="ov-body">Skid him across the carpet until his fur stands on end, then collect the balloons it will hold. Nine rooms, one clock, and the time you save is the score.</p>
+        <div id="ov-score" hidden></div>
+        <div id="ov-final" hidden>
+          <div class="final" id="final-score">0</div>
+          <div class="final-label">Final score</div>
+        </div>
+        <div class="entry" id="entry" hidden>
+          <p id="entry-msg">You made the board. Enter your initials.</p>
+          <div class="entry-row">
+            <input id="initials" maxlength="3" autocomplete="off" spellcheck="false" autocapitalize="characters" autocorrect="off" inputmode="text" aria-label="Your initials, three characters">
+            <button class="btn btn-sm" id="submit-score" type="button">Enter</button>
+          </div>
+        </div>
+        <div class="board" id="board" hidden>
+          <h3 id="board-title">High scores</h3>
+          <ol id="board-list"></ol>
+        </div>
+        <div class="ov-actions">
+          <button class="btn" id="go" type="button">Start</button>
+          <button class="btn btn-ghost" id="see-board" type="button" aria-expanded="false" aria-controls="board">High scores</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note"><b>Charging.</b> Only carpet charges you, and only while you are actually moving across it &mdash; parking on a rug does nothing. <b>Shag</b> charges roughly twice as fast as an ordinary <b>rug</b>, and a thin <b>mat</b> is slower than either. The charge always leaks, so a charged cat is a temporary cat. <b>Balloons</b> cost charge to pick up, and the colour is the price. Roughly one in five has something rattling about inside it. Collected balloons ride above you on strings and pull you upward, so a full cat steers like a balloon himself. <b>The radiators are grounded</b> &mdash; touch one while charged and the lot goes to earth in a bang, costing you the meter and a second off the clock. <b>Lightning rods</b> hand you a full charge if you stand under one and keep working, but the wind&#8209;up leaves you standing still. <b>Scoring</b> pays the seconds you did <em>not</em> spend on a room, multiplied by the room number, so a brisk room is worth more than the balloons in it. <b>The scissors</b> cut two balloons loose and cost you two seconds; they get quicker every room, and a second pair joins later on. <b>The magnet</b> pulls harder the more charged you are.</p>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p>&copy; <span id="year"></span> Schrödinger's Cards LLC. Jacksonville, Texas.</p>
+    <div class="footer-links">
+      <a href="gallery.html">Gallery</a>
+      <a href="guide.html">Collection Guide</a>
+      <a href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">eBay</a>
+      <a href="https://www.facebook.com/profile.php?id=61594026205359" target="_blank" rel="noopener">Facebook</a>
+      <a href="mailto:booth151.jtx@gmail.com">Email</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/script.js?v=8"></script>
+<script src="js/leaderboard.js?v=2"></script>
+<script src="js/catstatic.js?v=4"></script>
+</body>
+</html>

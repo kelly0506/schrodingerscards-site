@@ -1,15 +1,15 @@
 /* ============================================================
-   Static Cats — three mockups on one page.
-   Depends on css/styles.css for tokens and the button base.
-   This is a prototype page, not a shipped game: it carries a mode
-   picker the real game would not have.
+   Catstatic — the game
+   Depends on css/styles.css for tokens and the button base, and on
+   css/board.css for the leaderboard panel and the initials entry.
+   Self-contained otherwise, matching how the other four games are built.
    ============================================================ */
 
 :root { --gold: #ffd88a; }
 
 .game-main { padding-top: calc(var(--header-h) + 56px); padding-bottom: 90px; }
 .game-wrap { max-width: 900px; margin: 0 auto; padding: 0 24px; }
-.game-head { margin-bottom: 22px; }
+.game-head { margin-bottom: 26px; }
 .game-head h1 {
   font-family: var(--font-head);
   font-size: clamp(1.9rem, 5vw, 2.7rem);
@@ -17,30 +17,16 @@
 }
 .game-head p { color: var(--text-dim); font-size: 1rem; max-width: 64ch; }
 
-/* ---- the picker ---- */
-.mode-pick{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.mode-pick button{
-  font-family:var(--font-head);font-size:.82rem;font-weight:600;
-  padding:10px 16px;border-radius:999px;cursor:pointer;
-  background:var(--surface);color:var(--text-dim);
-  border:1px solid var(--border);transition:.15s}
-.mode-pick button:hover{color:var(--text);border-color:var(--accent)}
-.mode-pick button.on{background:var(--accent);border-color:var(--accent);color:#0a0d18}
-.mode-card{
-  border:1px solid var(--border);border-radius:14px;padding:14px 16px;
-  background:var(--bg-alt);margin-bottom:16px}
-.mode-card h2{font-family:var(--font-head);font-size:1.05rem;margin-bottom:6px}
-.mode-card p{color:var(--text-dim);font-size:.9rem;margin:0;max-width:70ch}
-
-/* ---- hud ---- */
-.hud{display:flex;align-items:flex-end;gap:22px;margin-bottom:10px;flex-wrap:wrap}
+.hud{display:flex;align-items:flex-end;gap:22px;margin-bottom:12px;flex-wrap:wrap}
 .stat{display:flex;flex-direction:column;gap:2px}
 .stat span{font-family:var(--font-head);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint)}
 .stat strong{font-family:var(--font-head);font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
 .hud-spacer{flex:1}
 
-/* The charge meter is the game's main readout, so it gets a whole bar rather
-   than a number: you are meant to watch it out of the corner of your eye. */
+/* The charge meter is the game's main readout, so it gets a bar rather than a
+   number: it is meant to be read out of the corner of your eye while you are
+   watching the cat. The ticks say what each balloon colour costs, which saves
+   a legend. */
 .charge{margin-bottom:14px}
 .charge-label{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
 .charge-label span{font-family:var(--font-head);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint)}
@@ -48,16 +34,15 @@
 .charge-fill{height:100%;width:0;border-radius:999px;
   background:linear-gradient(90deg,#7dd8ff,#b48bff 55%,#ffd88a);
   transition:width .08s linear}
-/* The tier marks say what the colours cost without a legend to read. */
 .charge-ticks{position:relative;height:14px;margin-top:4px}
 .charge-ticks i{position:absolute;top:0;transform:translateX(-50%);
-  font-family:var(--font-head);font-size:.6rem;font-style:normal;letter-spacing:.1em}
+  font-family:var(--font-head);font-size:.6rem;font-style:normal;font-weight:600;letter-spacing:.1em}
 
 .stage-wrap{position:relative}
 canvas#stage{display:block;width:100%;aspect-ratio:16/10;border:1px solid var(--border);border-radius:18px;
   background:radial-gradient(120% 80% at 50% 0%,rgba(125,216,255,.05),transparent 60%),var(--surface);
-  /* A swipe game cannot let the browser take the gesture for panning, so
-     this is `none` rather than the `manipulation` the other games use. */
+  /* A drag game cannot let the browser take the gesture for panning, so this
+     is `none` rather than the `manipulation` the tapping games use. */
   touch-action:none;
   user-select:none;
   -webkit-user-select:none;
@@ -68,11 +53,12 @@ canvas#stage:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
   background:rgba(10,13,24,.9);backdrop-filter:blur(5px);text-align:center;overflow-y:auto}
 .overlay[hidden]{display:none}
 .overlay h2{font-family:var(--font-head);font-size:clamp(1.4rem,4vw,2rem);letter-spacing:-.02em;margin-bottom:12px}
-.overlay p{color:var(--text-dim);font-size:.94rem;max-width:52ch;margin:0 auto 20px}
+.overlay p{color:var(--text-dim);font-size:.94rem;max-width:50ch;margin:0 auto 20px}
 .overlay .final{font-family:var(--font-head);font-size:3.2rem;font-weight:700;line-height:1;
   font-variant-numeric:tabular-nums;color:var(--gold)}
 .overlay .final-label{font-family:var(--font-head);font-size:.66rem;letter-spacing:.16em;
   text-transform:uppercase;color:var(--text-faint);margin-bottom:18px}
+.ov-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 
 .note{margin-top:18px;color:var(--text-dim);font-size:.86rem;line-height:1.7;max-width:72ch}
 .note b{color:var(--text)}
@@ -80,6 +66,8 @@ canvas#stage:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 @media (max-width:640px){
   .game-main{padding-top:calc(var(--header-h) + 34px)}
   .game-wrap{padding:0 16px}
+  /* Taller than it is wide on a phone, so there is room to skid a cat around
+     without your thumb covering half the room. */
   canvas#stage{aspect-ratio:4/5}
   .overlay{padding:18px;border-radius:14px}
   .overlay p{font-size:.86rem;margin-bottom:14px}
