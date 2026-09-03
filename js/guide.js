@@ -828,9 +828,9 @@ const CONTACT = {
 
 const CONTACT_PITCH = {
   reseller: {
-    h: 'We are the other side of this transaction',
-    p: 'Selling as a lot means selling to a shop, and that is what we do. Tell us roughly what you have and we will come back with a real number — or tell you honestly when you would do better selling it yourself. No obligation either way.',
-    btn: 'Send us the details'
+    h: 'Still have questions?',
+    p: 'Tell us roughly what you have and we will get back to you.',
+    btn: 'Get in touch'
   },
   evaluate: {
     h: 'This is the part we can help with',
