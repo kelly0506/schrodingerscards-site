@@ -827,26 +827,9 @@ const CONTACT = {
 };
 
 const CONTACT_PITCH = {
-  reseller: {
-    h: 'Still have questions?',
-    p: 'Tell us roughly what you have and we will get back to you.',
-    btn: 'Get in touch'
-  },
-  evaluate: {
-    h: 'This is the part we can help with',
-    p: 'Working out what a collection actually is, before deciding anything, is exactly what we spent months doing with our own. Tell us roughly what you have and we will help you place it — free, and with no expectation that you sell it to us.',
-    btn: 'Ask us to take a look'
-  },
-  individual: {
-    h: 'Happy to be a second opinion',
-    p: 'Selling it yourself is the right call here, and we are not going to talk you out of it. If you want a sanity check on a price, a read on condition, or somewhere to move the bulk you do not want to list, just ask.',
-    btn: 'Ask us a question'
-  },
-  grade: {
-    h: 'Get a second look before you submit',
-    p: 'Grading is the one decision here you cannot undo cheaply, and the most common way it goes wrong is a card that was not the grade its owner thought. If you want another set of eyes on your candidates first, send them over.',
-    btn: 'Ask us about your cards'
-  }
+  h: 'Still have questions?',
+  p: 'Tell us roughly what you have and we will get back to you.',
+  btn: 'Get in touch'
 };
 
 /* A short machine-written précis of the run, sent with the form so the
@@ -873,15 +856,14 @@ function answerSummary(state, p) {
 
 function contactBlock(state, f, p) {
   const key = p.ranked[0].key;
-  const pitch = CONTACT_PITCH[key] || CONTACT_PITCH.evaluate;
   const summary = answerSummary(state, p);
   const subject = 'Collection guide — ' + PATH_META[key].label;
 
   return `<section class="rec-contact" id="rec-contact">
     <div class="rec-contact-copy">
       <p class="eyebrow">Talk to us</p>
-      <h2>${pitch.h}</h2>
-      <p>${pitch.p}</p>
+      <h2>${CONTACT_PITCH.h}</h2>
+      <p>${CONTACT_PITCH.p}</p>
       <ul class="rec-contact-list">
         <li><span>Email</span><a href="mailto:${CONTACT.email}?subject=${encodeURIComponent(subject)}">${CONTACT.email}</a></li>
         <li><span>In person</span>Booth 151, Treasure Cove Mall<br>118 E Commerce St, Jacksonville, TX<br>Tuesday&ndash;Saturday, 10am&ndash;5pm</li>
@@ -907,7 +889,7 @@ function contactBlock(state, f, p) {
       <label for="rc-message">Anything you want to add</label>
       <textarea id="rc-message" name="message" rows="4" placeholder="Which sets or eras, anything already graded, and photos if you have them — all useful, none of it required."></textarea>
 
-      <button type="submit" class="btn btn-primary">${pitch.btn}</button>
+      <button type="submit" class="btn btn-primary">${CONTACT_PITCH.btn}</button>
     </form>
   </section>`;
 }
