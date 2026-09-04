@@ -423,8 +423,69 @@
     head(ctx,cx+r*0.42,cy-r*0.32,r*0.42,fur,1.4);
   }
 
+
+  /* Best in Shed: a cat mid-groom, three snarls on her and the brush coming in. */
+  function artShed(ctx,W,H){
+    /* the warm pool of a grooming table under a cold room */
+    const pool=ctx.createRadialGradient(W*0.46,H*0.72,10,W*0.46,H*0.72,W*0.5);
+    pool.addColorStop(0,'rgba(240,180,106,.18)');
+    pool.addColorStop(1,'rgba(240,180,106,0)');
+    ctx.fillStyle=pool; ctx.fillRect(0,0,W,H);
+
+    const cx=W*0.44, cy=H*0.62, r=52, fur='#f0b46a';
+    ctx.fillStyle='rgba(0,0,0,.28)';
+    ctx.beginPath(); ctx.ellipse(cx,cy+r*0.92,r*1.25,r*0.2,0,0,7); ctx.fill();
+
+    /* tail, then the body it belongs to */
+    ctx.strokeStyle='#c98940'; ctx.lineWidth=r*0.3; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(cx+r*1.0,cy+r*0.35);
+    ctx.quadraticCurveTo(cx+r*1.9,cy+r*0.2,cx+r*1.6,cy-r*0.6); ctx.stroke();
+    const body=ctx.createLinearGradient(cx-r,cy-r,cx+r,cy+r);
+    body.addColorStop(0,fur); body.addColorStop(1,'#bd7c31');
+    ctx.fillStyle=body;
+    ctx.beginPath(); ctx.ellipse(cx,cy+r*0.16,r*1.12,r*0.86,0,0,7); ctx.fill();
+    ctx.fillStyle='rgba(246,227,196,.7)';
+    ctx.beginPath(); ctx.ellipse(cx,cy+r*0.42,r*0.6,r*0.48,0,0,7); ctx.fill();
+
+    /* three snarls, each in the colour of the tool that beats it */
+    const snarl=(sx,sy,sr,col)=>{
+      ctx.strokeStyle=col; ctx.lineWidth=sr*0.18; ctx.lineCap='round';
+      for(let i=0;i<11;i++){ const a=i/11*7+sr;
+        ctx.beginPath();
+        ctx.moveTo(sx+Math.cos(a)*sr*0.6,sy+Math.sin(a)*sr*0.6);
+        ctx.lineTo(sx+Math.cos(a)*sr*1.3,sy+Math.sin(a)*sr*1.3); ctx.stroke(); }
+      const g=ctx.createRadialGradient(sx-sr*0.3,sy-sr*0.3,sr*0.15,sx,sy,sr);
+      g.addColorStop(0,'rgba(255,255,255,.55)'); g.addColorStop(1,col);
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(sx,sy,sr,0,7); ctx.fill();
+      /* the grain you have to follow */
+      ctx.save(); ctx.beginPath(); ctx.arc(sx,sy,sr*0.9,0,7); ctx.clip();
+      ctx.translate(sx,sy); ctx.rotate(0.5);
+      ctx.strokeStyle='rgba(255,255,255,.9)'; ctx.lineWidth=sr*0.14;
+      for(let i=-2;i<=2;i++){ ctx.beginPath();
+        ctx.moveTo(-sr,i*sr*0.34); ctx.lineTo(sr,i*sr*0.34); ctx.stroke(); }
+      ctx.restore();
+    };
+    snarl(cx-r*0.62,cy+r*0.30,r*0.30,'#b48bff');
+    snarl(cx+r*0.52,cy+r*0.12,r*0.26,'#f0b46a');
+    snarl(cx+r*0.10,cy+r*0.62,r*0.23,'#7dd8ff');
+
+    head(ctx,cx-r*0.28,cy-r*0.86,r*0.62,fur,1.5);
+
+    /* the brush, coming in from the right at a working angle */
+    ctx.save();
+    ctx.translate(W*0.83,H*0.36); ctx.rotate(0.62);
+    ctx.fillStyle='#a8763f';
+    ctx.beginPath(); ctx.roundRect(-30,-11,60,22,7); ctx.fill();
+    ctx.fillStyle='#7a5230';
+    ctx.beginPath(); ctx.roundRect(-11,9,22,30,7); ctx.fill();
+    ctx.strokeStyle='#eef0fb'; ctx.lineWidth=4; ctx.lineCap='round';
+    for(let i=0;i<7;i++){ ctx.beginPath();
+      ctx.moveTo(-25+i*8,-11); ctx.lineTo(-25+i*8,-27); ctx.stroke(); }
+    ctx.restore();
+  }
+
   const ART={cats:artCats,fits:artFits,hats:artHats,chaos:artChaos,static:artStatic,
-             chonk:artChonk,roll:artRoll,catwalk:artCatwalk};
+             chonk:artChonk,roll:artRoll,catwalk:artCatwalk,shed:artShed};
   document.querySelectorAll('canvas.tile-art').forEach(cv=>{
     const ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
     ctx.clearRect(0,0,W,H);

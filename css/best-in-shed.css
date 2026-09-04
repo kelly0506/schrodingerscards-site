@@ -1,0 +1,196 @@
+/* ============================================================
+   Best in Shed — the game
+   Depends on css/styles.css for tokens and the button base, and on
+   css/board.css for the leaderboard panel and the initials entry.
+   Self-contained otherwise, matching how the other eight games are built.
+   ============================================================ */
+
+:root {
+  --gold: #ffd88a;
+  /* The three tools, and the snarl each one beats. Colour IS the pairing:
+     an amber snarl wants the amber brush. Everything in the game that has
+     to say "these two go together" says it with these. */
+  --t-brush: #f0b46a;
+  --t-comb:  #b48bff;
+  --t-mitt:  #7dd8ff;
+  --ouch: #ff6b7d;
+  --good: #6ee7a8;
+  /* Everything that has to be on screen with the cat: the fixed site header,
+     the stat row and the tool row underneath. The stage is sized from what is
+     left, so the clock and the whole cat are visible together on a phone
+     rather than one of them scrolling off. */
+  --stage-chrome: 244px;
+}
+
+.game-main { padding-top: calc(var(--header-h) + 56px); padding-bottom: 90px; }
+.game-wrap { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+.game-head { margin-bottom: 26px; }
+.game-head h1 {
+  font-family: var(--font-head);
+  font-size: clamp(1.9rem, 5vw, 2.7rem);
+  line-height: 1.08; letter-spacing: -.025em; margin-bottom: 14px;
+}
+.lede { color: var(--text-dim); font-size: 1rem; max-width: 64ch; margin-bottom: 26px; }
+
+/* ---------- stat row ---------- */
+.hud{display:flex;align-items:center;gap:18px;margin-bottom:12px;flex-wrap:nowrap}
+.stat{display:flex;flex-direction:column;gap:2px}
+.stat span{font-family:var(--font-head);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint)}
+.stat strong{font-family:var(--font-head);font-size:1.35rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.stat strong.low{color:var(--ouch)}
+.timebar{flex:1;min-width:40px;height:8px;border-radius:999px;background:var(--bg-alt);border:1px solid var(--border);overflow:hidden}
+.timebar i{display:block;height:100%;width:100%;border-radius:999px;
+  background:linear-gradient(90deg,#7dd8ff,#b48bff);transition:width .1s linear}
+.timebar.low i{background:var(--ouch)}
+
+/* ---------- the stage ----------
+   The canvas is 600 x 640 internally and never changes; the element is sized
+   from the height the viewport can actually spare so the proportions hold and
+   the cat just gets smaller on a short screen. dvh rather than vh because a
+   phone's address bar is part of the height that goes away. */
+.stage-wrap{
+  position:relative;margin:0 auto;
+  width:min(520px, 100%, calc((100vh - var(--stage-chrome)) * 0.9375));
+  width:min(520px, 100%, calc((100dvh - var(--stage-chrome)) * 0.9375));
+  /* A two-finger tap on a trackpad was opening the context menu mid-stroke,
+     and a fast drag was selecting the page text underneath. Neither gesture
+     means anything here, so neither is allowed to happen. */
+  user-select:none;-webkit-user-select:none;
+  -webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;
+  overscroll-behavior:contain;
+}
+canvas#stage{display:block;width:100%;aspect-ratio:600/640;
+  border:1px solid var(--border);border-radius:18px;
+  background:radial-gradient(120% 90% at 50% 40%,#171c34,#0c1020 70%);
+  /* Dragging IS the control, so the browser cannot take the gesture for
+     panning, nor fire a long-press menu on top of it. */
+  touch-action:none;cursor:crosshair;
+  user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+canvas#stage:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* ---------- the tools ----------
+   Under the stage rather than beside it: this is mostly played with a thumb,
+   and the bottom of the screen is where a thumb already is. */
+.toolbar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.tool{display:flex;align-items:center;gap:9px;padding:9px 11px;text-align:left;
+  background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--tc);
+  border-radius:12px;color:var(--text);font:inherit;cursor:pointer;
+  transition:border-color .15s ease,background .15s ease}
+.tool:hover{border-color:var(--tc)}
+.tool[aria-pressed="true"]{border-color:var(--tc);background:rgba(255,255,255,.06)}
+.tool canvas{width:34px;height:34px;flex:none}
+.tool b{display:block;font-family:var(--font-head);font-size:.82rem;font-weight:600;line-height:1.2}
+.tool em{font-style:normal;display:block;font-size:.68rem;color:var(--tc)}
+
+/* ---------- the overlay ----------
+   One overlay does every screen: the story cards, the lesson hand-off, each
+   cat's bio, the accessory pick, and the leaderboard at the very end. Only
+   the pieces that belong to the current screen are shown. */
+.overlay{position:absolute;inset:0;display:flex;flex-direction:column;padding:20px 18px;border-radius:18px;
+  background:rgba(10,13,24,.93);backdrop-filter:blur(5px);text-align:center;overflow-y:auto}
+.overlay>div{margin:auto 0;width:100%}
+.overlay[hidden]{display:none}
+.overlay h2{font-family:var(--font-head);font-size:clamp(1.02rem,3.2vw,1.42rem);letter-spacing:-.02em;margin-bottom:8px}
+.overlay p{color:var(--text-dim);font-size:.86rem;max-width:42ch;margin:0 auto 11px}
+.overlay .final{font-family:var(--font-head);font-size:2.8rem;font-weight:700;line-height:1;
+  font-variant-numeric:tabular-nums;color:var(--gold)}
+.overlay .final-label{font-family:var(--font-head);font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--text-faint);margin-bottom:18px}
+.overlay input{user-select:text;-webkit-user-select:text}
+
+/* her, saying something */
+.ov-scene{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
+.ov-scene[hidden]{display:none}
+.ov-scene canvas{width:120px;height:136px;flex:none}
+.ov-scene .ov-words{display:grid;gap:8px;max-width:36ch;text-align:left}
+.ov-say{font-family:var(--font-head);font-style:italic;color:var(--t-brush);font-size:.9rem;margin:0}
+.ov-scene h2, .ov-scene p{text-align:left;margin-left:0;margin-right:0}
+
+/* the story-card progress dots */
+.ov-dots{display:flex;gap:6px;justify-content:center;margin-bottom:11px}
+.ov-dots[hidden]{display:none}
+.ov-dots i{width:7px;height:7px;border-radius:50%;background:var(--border)}
+.ov-dots i.on{background:var(--t-brush)}
+
+/* the bio card that opens each round */
+.ov-bio{display:grid;grid-template-columns:120px minmax(0,1fr);gap:14px;align-items:center;
+  max-width:470px;margin:0 auto 12px;text-align:left}
+.ov-bio[hidden]{display:none}
+.ov-bio canvas{width:120px;height:128px;background:var(--bg-alt);border:1px solid var(--border);border-radius:14px}
+.bio-txt{display:grid;gap:6px}
+.bio-breed{font-family:var(--font-head);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--t-brush)}
+.bio-name{font-family:var(--font-head);font-size:1.3rem;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+.bio-txt p{font-size:.83rem;max-width:none;margin:0;color:var(--text-dim)}
+.bio-facts{border-left:2px solid var(--t-comb);padding-left:10px;display:grid;gap:4px}
+.bio-facts b{font-family:var(--font-head);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim)}
+.bio-facts span{font-size:.76rem;color:var(--text-faint);line-height:1.45}
+
+/* which tool beats which snarl */
+.ov-key{display:grid;gap:5px;max-width:400px;margin:0 auto 12px}
+.ov-key[hidden]{display:none}
+.key-row{display:grid;grid-template-columns:30px 1fr 16px 30px 1fr;gap:7px;align-items:center;
+  background:var(--bg-alt);border:1px solid var(--border);border-radius:10px;padding:5px 8px;text-align:left}
+.key-row canvas{width:30px;height:30px}
+.key-row b{display:block;font-family:var(--font-head);font-weight:600;font-size:.78rem}
+.key-row em{font-style:normal;display:block;font-size:.66rem;color:var(--text-faint)}
+.key-row .arw{color:var(--text-faint);text-align:center;font-size:.9rem}
+.key-row>div{min-width:0;overflow-wrap:anywhere}
+
+/* the accessory you earn for a clean sweep */
+.ov-prizes{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:8px;
+  max-width:440px;margin:0 auto 14px}
+.ov-prizes[hidden]{display:none}
+.prize{background:var(--bg-alt);border:1px solid var(--border);border-radius:12px;padding:7px 4px 5px;
+  display:grid;gap:2px;justify-items:center;color:var(--text);font:inherit;cursor:pointer;
+  transition:border-color .15s ease,transform .15s ease}
+.prize:hover{border-color:var(--t-brush);transform:translateY(-2px)}
+.prize canvas{width:52px;height:41px}
+.prize b{font-family:var(--font-head);font-size:.66rem;font-weight:600}
+
+.verdict{font-family:var(--font-head);font-size:1rem}
+.verdict.great{color:var(--good)} .verdict.ok{color:var(--accent)}
+.verdict.bad{color:var(--t-brush)} .verdict.grim{color:var(--ouch)}
+
+.note{margin-top:18px;color:var(--text-dim);font-size:.86rem;line-height:1.7;max-width:72ch}
+.note b{color:var(--text)}
+
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:14px;max-width:72ch}
+.legend-row{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--text-dim)}
+.legend-swatch{width:14px;height:14px;border-radius:4px;flex:none;border:1px solid rgba(255,255,255,.10)}
+
+@media (max-width:640px){
+  .game-main{padding-top:calc(var(--header-h) + 20px);padding-bottom:60px}
+  .game-wrap{padding:0 16px;display:flex;flex-direction:column}
+  /* The description does not have to be on screen with the cat, so on a phone
+     it drops below the game and the play area comes first. */
+  .game-head{order:1;margin-bottom:12px}
+  .play{order:2}
+  .lede{order:3;margin:22px 0 0}
+  .note{order:4}
+  :root{ --stage-chrome:232px; }
+  .hud{gap:11px;margin-bottom:8px}
+  .stat span{font-size:.55rem;letter-spacing:.1em}
+  .stat strong{font-size:1.1rem}
+  .toolbar{gap:6px;margin-top:10px}
+  .tool{padding:7px 8px;gap:7px;flex-direction:column;align-items:flex-start}
+  .tool canvas{width:30px;height:30px}
+  .tool b{font-size:.72rem}
+  .tool em{font-size:.62rem}
+  .overlay{padding:14px 12px;border-radius:14px}
+  .overlay h2{margin-bottom:8px}
+  .overlay p{font-size:.82rem;margin-bottom:11px}
+  .ov-scene{gap:11px;margin-bottom:10px}
+  .ov-scene canvas{width:96px;height:109px}
+  .ov-bio{grid-template-columns:92px minmax(0,1fr);gap:10px}
+  .ov-bio canvas{width:92px;height:98px}
+  .bio-name{font-size:1.05rem}
+  .bio-txt p{font-size:.78rem}
+  .bio-facts span{font-size:.71rem}
+  .key-row{grid-template-columns:28px 1fr 12px 28px 1fr;gap:5px;padding:5px 7px}
+  .key-row canvas{width:28px;height:28px}
+  .key-row b{font-size:.7rem} .key-row em{font-size:.62rem}
+  .ov-prizes{grid-template-columns:repeat(auto-fit,minmax(68px,1fr));gap:6px}
+  .prize canvas{width:44px;height:35px}
+  .prize b{font-size:.6rem}
+  .note{margin-top:16px}
+}
