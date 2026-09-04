@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catwalk — a game | Schrödinger's Cards</title>
+<meta name="description" content="A small browser game from Schrödinger's Cards: keep a cat balanced along a winding beam through nine biomes, choosing forks in the road, launching across gaps, and grabbing power-ups you did not ask for.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="css/styles.css?v=11">
+<link rel="stylesheet" href="css/board.css?v=2">
+<link rel="stylesheet" href="css/catwalk.css?v=1">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header" id="site-header">
+  <div class="wrap header-inner">
+    <div class="logo">
+      <!-- The mark is the way in to the games. Deliberately unlabelled to
+           anyone looking at the page; still named for screen readers. -->
+      <a class="logo-mark" href="arcade.html" aria-label="Games">
+        <img src="assets/favicon.svg" width="34" height="34" alt="">
+      </a>
+      <a class="logo-text" href="index.html#top">Schrödinger's<em>Cards</em></a>
+    </div>
+
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html#story">Our Story</a>
+      <a href="index.html#carry">What We Carry</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="index.html#visit">Visit Us</a>
+      <a href="guide.html">Collection Guide</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+
+    <div class="header-actions">
+      <a class="btn btn-ghost" href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">Shop on eBay</a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="main-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="game-main">
+<div class="game-wrap">
+  <header class="game-head">
+    <p class="eyebrow">A small diversion</p>
+    <h1>Catwalk</h1>
+  </header>
+
+  <p class="lede">One long, winding beam and nine lives. Drag to keep a cat balanced as the road narrows, curves, splits into two lanes that meet back up, and — deeper in — opens into gaps you have to line up a ramp to clear. Nine biomes run sky to core: Rooftops, Treetops, a garden fence, a bookshelf, an attic, a basement, a storm drain, a crystal cave, and finally the Core itself. Every fall costs a life and drops you into the next one.</p>
+
+  <div class="play">
+  <div class="hud">
+    <div class="stat"><span>Score</span><strong id="score">0</strong></div>
+    <div class="stat"><span>Biome</span><strong id="biome">1</strong></div>
+    <div class="hud-spacer"></div>
+    <div class="stat"><span>Lives</span><strong id="lives">9</strong></div>
+  </div>
+  <div class="statusRow" id="statusRow"></div>
+
+  <div class="stage-wrap">
+    <canvas id="stage" tabindex="0" aria-label="A cat balancing along a winding beam"></canvas>
+    <div class="tapPrompt" id="tapPrompt">Tap or drag to keep walking</div>
+    <div class="banner" id="banner"><p></p></div>
+    <div class="overlay" id="overlay">
+      <div>
+        <h2 id="ov-title">A Windy Road. 9 Lives. Where Will You End Up?</h2>
+        <p id="ov-body">Drag anywhere (or ←/→) to steer — it always moves him relative to where he already is, so a stray tap never yanks him across the beam. In the later biomes, line up on the narrow ramp before a gap to launch across it, and watch for roads that split in two.</p>
+        <div id="ov-final" hidden>
+          <div class="final" id="final-score">0</div>
+          <div class="final-label">Feet walked</div>
+        </div>
+        <div class="entry" id="entry" hidden>
+          <p id="entry-msg">You made the board. Enter your initials.</p>
+          <div class="entry-row">
+            <input id="initials" maxlength="3" autocomplete="off" spellcheck="false" autocapitalize="characters" autocorrect="off" inputmode="text" aria-label="Your initials, three characters">
+            <button class="btn btn-sm" id="submit-score" type="button">Enter</button>
+          </div>
+        </div>
+        <div class="board" id="board" hidden>
+          <h3 id="board-title">High scores</h3>
+          <ol id="board-list"></ol>
+        </div>
+        <div class="ov-actions">
+          <button class="btn" id="go" type="button">Start walking</button>
+          <button class="btn btn-ghost" id="see-board" type="button" aria-expanded="false" aria-controls="board">High scores</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <p class="note"><b>Moving.</b> Drag anywhere on the beam, or use the arrow keys — dragging always moves him relative to wherever he already is, so a stray tap or a mouse that drifted mid-fall never yanks him somewhere dangerous. <b>Teetering.</b> Lean too far off center and he starts to wobble; pull back before the wobble runs out, or he falls. <b>Forks.</b> From the very first biome, the road can split into two lanes that run apart and rejoin — both are equally real, so whichever one you're standing on is the ground under his feet. In the later biomes some forks don't rejoin at all: one lane narrows away into nothing, and picking it is an unrecoverable fall. <b>Gaps and ramps.</b> Deeper in, the beam sometimes opens into a real gap. Stay on the narrow ramp leading up to it and he launches across on his own; drift off the ramp and the ordinary edge-teeter catches you before you even reach the edge. <b>Power&#8209;ups</b> ride the beam as glowing tokens: a shield blocks the next fall (you'll see a bubble around him while it's active), a lightning bolt speeds the whole beam up, butter makes his paws slip, and a skull costs a life outright — that last one tends to sit dead center, so it's hard to avoid by accident. A spinning purple cube is a mystery: pop it and it reveals a random effect, good or bad. <b>Falling</b> costs a life and drops you into the next biome down, but your total distance keeps climbing — a fall never resets your score, only the difficulty ramp within that biome. <b>Between biomes</b> the beam stops dead and waits for you to tap or drag again, so you always get a beat to find your footing before it starts moving.</p>
+
+  <div class="legend">
+    <div class="legend-row"><span class="legend-swatch" style="background:#7ec8ff"></span>Shield &mdash; blocks the next fall</div>
+    <div class="legend-row"><span class="legend-swatch" style="background:#ffe066"></span>Speed &mdash; the beam moves faster for a bit</div>
+    <div class="legend-row"><span class="legend-swatch" style="background:#bff0ff"></span>Slippery &mdash; his paws lose their grip</div>
+    <div class="legend-row"><span class="legend-swatch" style="background:#ff5470"></span>Skull &mdash; costs a life outright</div>
+    <div class="legend-row"><span class="legend-swatch" style="background:#b98bff"></span>Mystery cube &mdash; a random effect, good or bad</div>
+  </div>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p>&copy; <span id="year"></span> Schrödinger's Cards LLC. Jacksonville, Texas.</p>
+    <div class="footer-links">
+      <a href="gallery.html">Gallery</a>
+      <a href="guide.html">Collection Guide</a>
+      <a href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">eBay</a>
+      <a href="https://www.facebook.com/profile.php?id=61594026205359" target="_blank" rel="noopener">Facebook</a>
+      <a href="mailto:booth151.jtx@gmail.com">Email</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/script.js?v=9"></script>
+<script src="js/leaderboard.js?v=2"></script>
+<script src="js/catwalk.js?v=1"></script>
+</body>
+</html>

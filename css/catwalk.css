@@ -1,0 +1,128 @@
+/* ============================================================
+   Catwalk — the game
+   Depends on css/styles.css for tokens and the button base, and on
+   css/board.css for the leaderboard panel and the initials entry.
+   Self-contained otherwise, matching how the other seven games are built.
+   ============================================================ */
+
+:root {
+  --gold: #ffd88a;
+  /* Everything above the beam that still has to be on screen with it: the
+     fixed site header, the stat row and the status row. The stage is sized
+     from whatever is left, so the whole play area and the life count are
+     always visible together rather than one scrolling off. */
+  --stage-chrome: 210px;
+}
+
+.game-main { padding-top: calc(var(--header-h) + 56px); padding-bottom: 90px; }
+.game-wrap { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+.game-head { margin-bottom: 26px; }
+.game-head h1 {
+  font-family: var(--font-head);
+  font-size: clamp(1.9rem, 5vw, 2.7rem);
+  line-height: 1.08; letter-spacing: -.025em; margin-bottom: 14px;
+}
+.lede { color: var(--text-dim); font-size: 1rem; max-width: 64ch; margin-bottom: 26px; }
+
+.hud{display:flex;align-items:flex-end;gap:22px;margin-bottom:8px;flex-wrap:wrap}
+.stat{display:flex;flex-direction:column;gap:2px}
+.stat span{font-family:var(--font-head);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint)}
+.stat strong{font-family:var(--font-head);font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.hud-spacer{flex:1}
+
+/* Active power-up countdowns. Only ever one line of text, but it reserves
+   its height either way so the stage does not jump when one appears. */
+.statusRow{
+  min-height: 1.3em; margin-bottom: 10px; text-align: center;
+  font-family: var(--font-head); font-size: .82rem; letter-spacing: .02em;
+  color: var(--text-dim);
+}
+
+/* Drawn as tall as it is wide twice over, so the beam has real runway ahead
+   of you — that height is what gives you time to see a fork or a gap coming
+   before it reaches the cat. The width is derived from whatever height the
+   viewport can actually spare, so the proportions never change; the beam
+   just gets narrower on a short screen instead of running off the bottom
+   of it. dvh rather than vh because a phone's address bar is part of the
+   height that goes away. */
+.stage-wrap{
+  position:relative;margin:0 auto;
+  width:min(390px, 100%, calc((100vh - var(--stage-chrome)) * 9 / 16));
+  width:min(390px, 100%, calc((100dvh - var(--stage-chrome)) * 9 / 16));
+}
+canvas#stage{display:block;width:100%;aspect-ratio:9/16;border:1px solid var(--border);border-radius:18px;
+  background:var(--surface);
+  /* A drag game cannot let the browser take the gesture for panning, so this
+     is `none` rather than the `manipulation` the tapping games use. */
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-touch-callout:none}
+canvas#stage:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* Between-biome and power-up messages. A quick line of flavor text is not
+   worth covering the beam with the full overlay, so it gets a strip along
+   the bottom that clears itself after a beat. */
+.banner{position:absolute;inset:auto 12px 12px 12px;padding:10px 14px;border-radius:12px;
+  background:rgba(10,13,24,.92);border:1px solid var(--border);backdrop-filter:blur(3px);
+  text-align:center;opacity:0;transform:translateY(6px);pointer-events:none;
+  transition:opacity .18s ease,transform .18s ease;z-index:6}
+.banner.show{opacity:1;transform:translateY(0)}
+.banner p{margin:0;font-family:var(--font-head);font-size:.86rem;letter-spacing:-.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Shown only between biomes, while the beam is stopped and waiting for the
+   player to act — see the note in js/catwalk.js on why it pauses there. */
+.tapPrompt{
+  position:absolute;left:50%;top:60%;transform:translate(-50%,-50%);
+  font-family:var(--font-head);font-weight:600;font-size:.82rem;color:var(--text);
+  background:rgba(10,13,24,.7);padding:8px 16px;border-radius:999px;
+  opacity:0;pointer-events:none;transition:opacity .2s ease;white-space:nowrap;z-index:6;
+}
+.tapPrompt.show{opacity:1;animation:tapPromptPulse 1.4s ease-in-out infinite}
+@keyframes tapPromptPulse{
+  0%,100%{transform:translate(-50%,-50%) scale(1)}
+  50%{transform:translate(-50%,-50%) scale(1.05)}
+}
+@media (prefers-reduced-motion:reduce){ .banner, .tapPrompt{transition:none;animation:none} }
+
+.overlay{position:absolute;inset:0;display:grid;place-items:center;padding:24px;border-radius:18px;
+  background:rgba(10,13,24,.9);backdrop-filter:blur(5px);text-align:center;overflow-y:auto;z-index:7}
+.overlay[hidden]{display:none}
+.overlay h2{font-family:var(--font-head);font-size:clamp(1.2rem,4.4vw,1.7rem);line-height:1.25;letter-spacing:-.02em;margin-bottom:12px;text-wrap:balance}
+.overlay p{color:var(--text-dim);font-size:.9rem;max-width:38ch;margin:0 auto 18px}
+.overlay .final{font-family:var(--font-head);font-size:2.8rem;font-weight:700;line-height:1;
+  font-variant-numeric:tabular-nums;color:var(--gold)}
+.overlay .final-label{font-family:var(--font-head);font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--text-faint);margin-bottom:18px}
+.ov-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+.note{margin-top:18px;color:var(--text-dim);font-size:.86rem;line-height:1.7;max-width:72ch}
+.note b{color:var(--text)}
+
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:14px;max-width:72ch}
+.legend-row{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--text-dim)}
+.legend-swatch{width:14px;height:14px;border-radius:4px;flex:none;border:1px solid rgba(255,255,255,.10)}
+
+@media (max-width:640px){
+  .game-main{padding-top:calc(var(--header-h) + 20px);padding-bottom:60px}
+  .game-wrap{padding:0 16px}
+  /* The description is the one part that does not have to be on screen with
+     the beam, so on a phone it drops below the game and the play area comes
+     first. Everything else keeps its reading order. */
+  .game-wrap{display:flex;flex-direction:column}
+  .game-head{order:1;margin-bottom:12px}
+  .play{order:2}
+  .lede{order:3;margin:22px 0 0}
+  .note{order:4}
+  .legend{order:5}
+  /* Tighter rows above the stage buy height back for the beam itself. */
+  :root{ --stage-chrome:172px; }
+  .hud{gap:14px;margin-bottom:6px}
+  .stat span{font-size:.6rem}
+  .stat strong{font-size:1.15rem}
+  .statusRow{font-size:.76rem;margin-bottom:6px}
+  .overlay{padding:16px;border-radius:14px}
+  .overlay p{font-size:.85rem;margin-bottom:14px}
+  .note{margin-top:16px}
+}

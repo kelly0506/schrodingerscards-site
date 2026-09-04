@@ -357,8 +357,74 @@
     head(ctx,cx+r*0.44,cy-r*0.36,r*0.46,fur,1.34);
   }
 
+  /* Catwalk: a winding beam climbing off toward the rooftops, with the cat
+     mid-teeter partway up it. */
+  function artCatwalk(ctx,W,H){
+    const g=ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,'#3a5a8c'); g.addColorStop(1,'#8fb8dc');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+
+    /* chimneys, far background */
+    ctx.fillStyle='rgba(36,52,74,.5)';
+    ctx.fillRect(W*0.78,H*0.14,W*0.05,H*0.20);
+    ctx.fillRect(W*0.762,H*0.11,W*0.086,H*0.045);
+    ctx.fillRect(W*0.06,H*0.08,W*0.042,H*0.15);
+    ctx.fillRect(W*0.045,H*0.055,W*0.072,H*0.038);
+
+    /* a bird, the same trick as a wave: two shallow arcs */
+    ctx.strokeStyle='rgba(20,24,48,.4)'; ctx.lineWidth=2.2;
+    ctx.beginPath();
+    ctx.moveTo(W*0.56,H*0.12);
+    ctx.quadraticCurveTo(W*0.585,H*0.085,W*0.61,H*0.12);
+    ctx.quadraticCurveTo(W*0.635,H*0.085,W*0.66,H*0.12);
+    ctx.stroke();
+
+    /* the beam: a winding ribbon built from a centerline and a half-width at
+       each point, filled as one polygon exactly the way the game draws it */
+    const pts=[
+      [0.14,0.95,0.115],[0.16,0.80,0.105],[0.24,0.66,0.095],
+      [0.34,0.58,0.088],[0.30,0.42,0.078],[0.20,0.32,0.068],
+      [0.26,0.18,0.06],[0.42,0.10,0.052],[0.60,0.05,0.046]
+    ];
+    const left=[],right=[];
+    for(const [fx,fy,fhw] of pts){ left.push([fx-fhw,fy]); right.push([fx+fhw,fy]); }
+    ctx.beginPath();
+    ctx.moveTo(left[0][0]*W,left[0][1]*H);
+    for(const [x,y] of left) ctx.lineTo(x*W,y*H);
+    for(let i=right.length-1;i>=0;i--) ctx.lineTo(right[i][0]*W,right[i][1]*H);
+    ctx.closePath();
+    const bg=ctx.createLinearGradient(0,0,W,0);
+    bg.addColorStop(0,'#8a7860'); bg.addColorStop(0.5,'#c7ab86'); bg.addColorStop(1,'#8a7860');
+    ctx.fillStyle=bg; ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,.25)'; ctx.lineWidth=1.6; ctx.stroke();
+
+    /* plank seams, so it reads as a beam rather than a ribbon of paper */
+    ctx.strokeStyle='rgba(0,0,0,.18)'; ctx.lineWidth=1.4;
+    for(let i=1;i<pts.length-1;i++){
+      const [fx,fy,fhw]=pts[i];
+      ctx.beginPath();
+      ctx.moveTo((fx-fhw+0.01)*W,fy*H);
+      ctx.lineTo((fx+fhw-0.01)*W,fy*H);
+      ctx.stroke();
+    }
+
+    /* the cat, leaning into a teeter partway up */
+    const cx=W*0.27, cy=H*0.545, r=30, fur='#e2793b';
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(-0.18);
+    ctx.fillStyle=fur;
+    ctx.beginPath(); ctx.ellipse(0,4,r*0.55,r*0.38,0,0,7); ctx.fill();
+    ctx.fillStyle='#f7dcc0';
+    ctx.beginPath(); ctx.ellipse(0,7,r*0.3,r*0.22,0,0,7); ctx.fill();
+    ctx.strokeStyle=fur; ctx.lineWidth=6; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(-r*0.5,2); ctx.quadraticCurveTo(-r*1.05,-6,-r*0.85,-r*0.7); ctx.stroke();
+    ctx.restore();
+    head(ctx,cx+r*0.42,cy-r*0.32,r*0.42,fur,1.4);
+  }
+
   const ART={cats:artCats,fits:artFits,hats:artHats,chaos:artChaos,static:artStatic,
-             chonk:artChonk,roll:artRoll};
+             chonk:artChonk,roll:artRoll,catwalk:artCatwalk};
   document.querySelectorAll('canvas.tile-art').forEach(cv=>{
     const ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
     ctx.clearRect(0,0,W,H);
