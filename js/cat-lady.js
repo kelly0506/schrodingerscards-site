@@ -134,7 +134,11 @@
       'That is the angry tail. I know the angry tail.',
       'Gentle! She is a show cat as of Tuesday!',
       'Oh, she felt that one in her ancestors.',
-      'You have made an enemy and she has all day.'],
+      'You have made an enemy and she has all day.',
+      'That noise is going to live in my head, you know.',
+      'She is filing that away. She files everything.',
+      'Easy! Easy. She has done nothing to deserve you.',
+      'You will be paying for that at four in the morning.'],
     tear: ['Well. We will comb something over it.',
       'That patch has a name now and the name is your fault.',
       'The judges have seen worse. The judges have not, actually.',
@@ -166,13 +170,70 @@
       text: 'Brush the snarls out before the buzzer. Pull too hard and she yelps and you lose seconds. Pull harder than that and the fur comes out for good, and it stays out all the way to judging.' }
   ];
 
+  /* Five bands, five lines each. One fixed line per band meant two cats in the
+     same band always said exactly the same thing, and with five cats that
+     happened nearly every run. Lines are drawn without repeating within a run. */
   const JUDGE = [
-    { min: 245, line: 'Best in show material. Frankly a relief.', stars: 5 },
-    { min: 205, line: 'Very tidy. Very tidy indeed.', stars: 4 },
-    { min: 160, line: 'Adequate. The judges have seen worse.', stars: 3 },
-    { min: 110, line: 'The judges would like a word.', stars: 2 },
-    { min: -999, line: 'The judges are calling someone.', stars: 1 }
+    { min: 245, stars: 5, lines: [
+      'Best in show material. Frankly a relief.',
+      'Not one knot on her. The judges look annoyed.',
+      'Textbook. Somebody has been practising.',
+      'Immaculate. The rosette is a formality.',
+      'A judge asked to touch her. That never happens.' ] },
+    { min: 205, stars: 4, lines: [
+      'Very tidy. Very tidy indeed.',
+      'Clean work. A judge nodded, which is rare.',
+      'Well turned out. No notes worth reading aloud.',
+      'Handsome, and faintly smug about it.',
+      'Nearly flawless, and she knows exactly that.' ] },
+    { min: 160, stars: 3, lines: [
+      'Adequate. The judges have seen worse.',
+      'Presentable, from the correct angle.',
+      'Fine. Nobody wrote anything down.',
+      'Acceptable. A judge shrugged and moved on.',
+      'Middling, but she carries it well enough.' ] },
+    { min: 110, stars: 2, lines: [
+      'The judges would like a word.',
+      'There has been some conferring.',
+      'A judge made a small noise. Not a good one.',
+      'Points deducted. Several points.',
+      'One judge has quietly closed her folder.' ] },
+    { min: -999, stars: 1, lines: [
+      'The judges are calling someone.',
+      'That is not a cat, that is a grievance.',
+      'A judge has left the table entirely.',
+      'The scoring system was not built for this.',
+      'There is talk of a refund. For the judges.' ] }
   ];
+
+  /* The banner under the title card, and her verdict on the whole run. */
+  const PAGEANT_SUBS = [
+    'Five cats. One rosette. No refunds.',
+    'Five cats, none of them consenting.',
+    'Doors at seven. Grievances from six.',
+    'Judging is final. Judging is also unkind.',
+    'No refunds, no appeals, no dignity.',
+    'Five cats, one rosette, and a great deal of hair.'
+  ];
+  const RUN_LINES = {
+    high: ['"We are getting a bigger shelf."',
+           '"Photographs. I want photographs of this."',
+           '"I am having this framed and you cannot stop me."'],
+    mid:  ['"Respectable. We will be back."',
+           '"Not a disaster, not a triumph. A Tuesday."',
+           '"We will train over the winter. All of us."'],
+    low:  ['"Next year. Next year we start earlier."',
+           '"Nobody says the word shed on the way home."',
+           '"Well. They all came home, at least."']
+  };
+
+  /* Draws from a pool without repeating anything already used this run. */
+  function pickFresh(pool, used) {
+    const left = pool.filter(l => !used.has(l));
+    const line = pick(left.length ? left : pool);
+    used.add(line);
+    return line;
+  }
 
   /* ---------------- state ---------------- */
   let LV = 0, phase = 'story', storyStep = 0, tutDone = false;
@@ -183,7 +244,8 @@
   let catLayer = null, lastT = 0;
   let mood = 'calm', moodTimer = 0, earFlat = 0, blink = 0, blinkTimer = 2;
   let tutBeat = 0, tutCaption = '', tutYelped = false, tutHold = -1, tutUnlocked = false;
-  let bark = '', barkTimer = 0, lowWarned = false, lastBark = '', lockNag = 0;
+  let bark = '', barkTimer = 0, lowWarned = false, lockNag = 0;
+  const recentBarks = [];
   let run = [null, null, null, null, null];
   let pg = null;
 
@@ -891,10 +953,14 @@
 
   /* ---------------- feedback ---------------- */
   function setMood(m, secs) { mood = m; moodTimer = secs; }
+  /* Remembers the last few lines rather than only the previous one — with
+     pools this small, avoiding one repeat still repeated constantly. */
   function say(pool) {
-    let line = pick(pool);
-    for (let i = 0; i < 3 && line === lastBark; i++) line = pick(pool);
-    lastBark = line; bark = line; barkTimer = 2.6;
+    const fresh = pool.filter(l => !recentBarks.includes(l));
+    const line = pick(fresh.length ? fresh : pool);
+    recentBarks.push(line);
+    if (recentBarks.length > 6) recentBarks.shift();
+    bark = line; barkTimer = 2.6;
   }
   function yelp(t, cost, hiss) {
     timeLeft = Math.max(0, timeLeft - cost);
@@ -1071,17 +1137,22 @@
   }
   function judgeFor(s) { return JUDGE.find(j => s >= j.min); }
 
+
   /* ---------------- the pageant ---------------- */
   function startPageant() {
     phase = 'pageant';
     hideOverlay();
+    const used = new Set();
     const cards = run.map((res, i) => {
       const r = res || { left: 0, patches: 0, prize: null };
       const s = scoreOf(r);
-      return { lv: i, res: r, score: s, judge: judgeFor(s),
+      const band = judgeFor(s);
+      return { lv: i, res: r, score: s,
+        judge: { stars: band.stars, line: pickFresh(band.lines, used) },
         canvas: (r.patchList && r.patchList.length) ? buildCatCanvas(i, r.patchList, 4242 + i * 17) : cleanLayer(i), shown: 0 };
     });
-    pg = { step: 0, t: 0, cards, total: 0, tally: 0, typed: 0, done: false };
+    pg = { step: 0, t: 0, cards, total: 0, tally: 0, typed: 0, done: false,
+           sub: pick(PAGEANT_SUBS) };
   }
   function previewPageant() {
     run = CATS.map((C, i) => {
@@ -1158,7 +1229,7 @@
       ctx.fillStyle = '#eef0fb'; ctx.font = '700 40px "Space Grotesk", sans-serif';
       ctx.fillText('JUDGING', W / 2, 300);
       ctx.fillStyle = '#a8adcf'; ctx.font = '300 19px Sora, sans-serif';
-      ctx.fillText('Five cats. One rosette. No refunds.', W / 2, 336);
+      ctx.fillText(P.sub, W / 2, 336);
       ctx.globalAlpha = 1;
       return;
     }
@@ -1546,7 +1617,7 @@
 
   const board = makeBoard({
     id: 'ff808181a067127101a06e6e91c314ae',
-    localKey: 'best-in-shed-board',
+    localKey: 'cat-lady-board',
     storeName: 'Best in Shed high scores'
   });
   let finalTotal = 0;
@@ -1667,9 +1738,8 @@
     resetOverlay();
     ovScene.hidden = false;
     ovTitle.textContent = finalTotal >= 1000 ? 'Best in Shed' : 'The judges have decided';
-    ovSay.textContent = finalTotal >= 1000 ? '"We are getting a bigger shelf."'
-      : finalTotal >= 750 ? '"Respectable. We will be back."'
-      : '"Next year. Next year we start earlier."';
+    ovSay.textContent = pick(finalTotal >= 1000 ? RUN_LINES.high
+      : finalTotal >= 750 ? RUN_LINES.mid : RUN_LINES.low);
     ovText.textContent = PREVIEW
       ? 'Preview run — these five were scored at random, so nothing is going on the board.'
       : 'Five cats, one rosette, no refunds.';

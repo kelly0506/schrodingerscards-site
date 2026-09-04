@@ -30,6 +30,10 @@
   font-size: clamp(1.9rem, 5vw, 2.7rem);
   line-height: 1.08; letter-spacing: -.025em; margin-bottom: 14px;
 }
+/* The exclamation mark is a cat: the dot is her head, and the eyes are real
+   holes punched with a mask so the glyph works on any background it lands on.
+   Sized in em and painted with currentColor, so it tracks the heading. */
+.bang{display:inline-block;height:.88em;width:auto;vertical-align:baseline;margin-left:.1em}
 .lede { color: var(--text-dim); font-size: 1rem; max-width: 64ch; margin-bottom: 26px; }
 
 /* ---------- stat row ---------- */
