@@ -1120,7 +1120,7 @@ function toStart(){
   game.stop();
   game.reset(true);
   $('ov-title').textContent = 'On a Roll';
-  $('ov-body').textContent = 'Hold to spin the roll, tap to get it moving faster, and hold again to stop it. Find the square carrying the symbol and stop dead on it.';
+  $('ov-body').textContent = 'Tap to go faster, hold to stop. Find the square carrying the symbol in the corner and stop dead on it.';
   $('ov-final').hidden = true;
   $('entry').hidden = true;
   $('board').hidden = true;

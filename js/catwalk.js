@@ -1485,7 +1485,7 @@ function newRun(){
 function toStart(){
   game.state = 'ready';
   $('ov-title').textContent = 'A Windy Road. 9 Lives. Where Will You End Up?';
-  $('ov-body').textContent = 'Drag anywhere (or ←/→) to steer — it always moves him relative to where he already is, so a stray tap never yanks him across the beam. In the later biomes, line up on the narrow ramp before a gap to launch across it, and watch for roads that split in two.';
+  $('ov-body').textContent = 'Drag anywhere (or ←/→) to keep him on the beam. Some forks rejoin, and some narrow away to nothing.';
   $('ov-final').hidden = true;
   $('entry').hidden = true;
   $('board').hidden = true;

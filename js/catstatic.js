@@ -1249,7 +1249,7 @@ function toStart(){
   w.mode='cling'; w.catch='cling';
   w.running=false; w.over=false;
   $('ov-title').textContent='Catstatic';
-  $('ov-body').textContent='Skid him across the carpet until his fur stands on end, then collect the balloons it will hold. Nine rooms, one clock, and the time you save is the score.';
+  $('ov-body').textContent='Skid him across the carpet until his fur stands on end, then collect the balloons the charge will hold. Nine rooms, one clock.';
   $('ov-final').hidden=true; $('entry').hidden=true; $('board').hidden=true;
   $('go').textContent='Start';
   $('go').onclick=newGame;

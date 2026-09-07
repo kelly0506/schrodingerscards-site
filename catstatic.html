@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="css/styles.css?v=11">
 <link rel="stylesheet" href="css/board.css?v=2">
-<link rel="stylesheet" href="css/catstatic.css?v=1">
+<link rel="stylesheet" href="css/catstatic.css?v=2">
 </head>
 <body>
 
@@ -53,7 +53,6 @@
   <header class="game-head">
     <p class="eyebrow">A small diversion</p>
     <h1>Catstatic</h1>
-    <p>Press and drag the cat across the carpet. Friction charges his fur until it is standing on end, and charged fur holds balloons &mdash; the expensive colours need more of it than the cheap ones. The charge leaks away the moment you leave the rug, so the room is a route rather than a playground. Nine rooms, one clock, and the seconds you save are worth more than the balloons.</p>
   </header>
 
   <div class="hud">
@@ -80,7 +79,7 @@
     <div class="overlay" id="overlay">
       <div>
         <h2 id="ov-title">Catstatic</h2>
-        <p id="ov-body">Skid him across the carpet until his fur stands on end, then collect the balloons it will hold. Nine rooms, one clock, and the time you save is the score.</p>
+        <p id="ov-body">Skid him across the carpet until his fur stands on end, then collect the balloons the charge will hold. Nine rooms, one clock.</p>
         <div id="ov-score" hidden></div>
         <div id="ov-final" hidden>
           <div class="final" id="final-score">0</div>
@@ -105,7 +104,7 @@
     </div>
   </div>
 
-  <p class="note"><b>Charging.</b> Only carpet charges you, and only while you are actually moving across it &mdash; parking on a rug does nothing. <b>Shag</b> charges roughly twice as fast as an ordinary <b>rug</b>, and a thin <b>mat</b> is slower than either. The charge always leaks, so a charged cat is a temporary cat. <b>Balloons</b> cost charge to pick up, and the colour is the price. Roughly one in five has something rattling about inside it. Collected balloons ride above you on strings and pull you upward, so a full cat steers like a balloon himself. <b>The radiators are grounded</b> &mdash; touch one while charged and the lot goes to earth in a bang, costing you the meter and a second off the clock. <b>Lightning rods</b> hand you a full charge if you stand under one and keep working, but the wind&#8209;up leaves you standing still. <b>Scoring</b> pays the seconds you did <em>not</em> spend on a room, multiplied by the room number, so a brisk room is worth more than the balloons in it. <b>The scissors</b> cut two balloons loose and cost you two seconds; they get quicker every room, and a second pair joins later on. <b>The magnet</b> pulls harder the more charged you are.</p>
+  <p class="note">Charge only builds while you are moving on carpet, and it always leaks away. The score is the seconds you did not spend, so a brisk room beats a thorough one.</p>
 </div>
 </main>
 
@@ -124,6 +123,6 @@
 
 <script src="js/script.js?v=9"></script>
 <script src="js/leaderboard.js?v=2"></script>
-<script src="js/catstatic.js?v=4"></script>
+<script src="js/catstatic.js?v=5"></script>
 </body>
 </html>

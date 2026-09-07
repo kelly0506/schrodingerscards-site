@@ -17,7 +17,6 @@
   font-size: clamp(1.9rem, 5vw, 2.7rem);
   line-height: 1.08; letter-spacing: -.025em; margin-bottom: 14px;
 }
-.game-head p { color: var(--text-dim); font-size: 1rem; max-width: 64ch; }
 
 .hud{display:flex;align-items:flex-end;gap:22px;margin-bottom:14px;flex-wrap:wrap}
 .stat{display:flex;flex-direction:column;gap:2px}
@@ -61,7 +60,6 @@ canvas#stage:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
   .game-head{margin-bottom:12px}
   .game-head h1{font-size:1.5rem;margin-bottom:0}
   .game-head .eyebrow{margin-bottom:6px}
-  .game-head p{display:none}
   .hud{gap:14px;margin-bottom:8px}
   .stat strong{font-size:1.2rem}
   .life{width:13px;height:13px}
@@ -87,6 +85,5 @@ canvas#stage:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
   .game-main { padding-top: calc(var(--header-h) + 26px); padding-bottom: 56px; }
   .game-head { margin-bottom: 14px; }
   .game-head h1 { font-size: 1.7rem; margin-bottom: 0; }
-  .game-head p { display: none; }
   .stage-wrap { max-width: min(100%, max(430px, (100dvh - 232px) * 16 / 10)); }
 }

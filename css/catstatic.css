@@ -15,7 +15,6 @@
   font-size: clamp(1.9rem, 5vw, 2.7rem);
   line-height: 1.08; letter-spacing: -.025em; margin-bottom: 14px;
 }
-.game-head p { color: var(--text-dim); font-size: 1rem; max-width: 64ch; }
 
 .hud{display:flex;align-items:flex-end;gap:22px;margin-bottom:12px;flex-wrap:wrap}
 .stat{display:flex;flex-direction:column;gap:2px}
