@@ -8,7 +8,7 @@
 :root { --gold: #ffd88a; }
 
 .game-main { padding-top: calc(var(--header-h) + 56px); padding-bottom: 90px; }
-.game-wrap { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+.game-wrap, .game-extra { max-width: 900px; margin: 0 auto; padding: 0 24px; }
 .game-head { margin-bottom: 26px; }
 .game-head h1 {
   font-family: var(--font-head);
@@ -63,13 +63,9 @@ canvas#stage:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .note b{color:var(--text)}
 
 @media (max-width:640px){
-  .game-main{padding-top:calc(var(--header-h) + 34px)}
-  .game-wrap{padding:0 16px}
   /* Taller than it is wide on a phone, so there is room to skid a cat around
      without your thumb covering half the room. */
   canvas#stage{aspect-ratio:4/5}
   .overlay{padding:18px;border-radius:14px}
   .overlay p{font-size:.86rem;margin-bottom:14px}
-  .hud{gap:14px}
-  .stat strong{font-size:1.25rem}
 }

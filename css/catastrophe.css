@@ -8,7 +8,7 @@
 [hidden]{display:none!important}
 
 .game-main { padding-top: calc(var(--header-h) + 52px); padding-bottom: 84px; }
-.game-wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+.game-wrap, .game-extra { max-width: 960px; margin: 0 auto; padding: 0 24px; }
 .game-head { margin-bottom: 22px; }
 .game-head h1 {
   font-family: var(--font-head);
@@ -72,17 +72,8 @@ canvas#stage:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
   .game-head h1 { font-size: 1.7rem; margin-bottom: 0; }
   .stage-wrap { max-width: min(100%, max(430px, (100dvh - 236px) * 15 / 10)); }
 }
-@media (max-width: 640px) {
-  .game-main { padding-top: calc(var(--header-h) + 16px); padding-bottom: 44px; }
-  .game-wrap { padding: 0 12px; }
-  .game-head { margin-bottom: 12px; }
-  .game-head h1 { font-size: 1.5rem; margin-bottom: 0; }
-  .game-head .eyebrow { margin-bottom: 6px; }
-  .hud { gap: 14px; }
-  .stat strong { font-size: 1.2rem; }
-  .stage-wrap { margin: 0 -12px; max-width: none; }
+@media (max-width:640px){
   canvas#stage { aspect-ratio: 1.34; border-radius: 11px; }
-  .note { margin-top: 18px; font-size: .82rem; }
 }
 
 /* ---------- free play ----------
@@ -117,7 +108,7 @@ body.dragging{user-select:none;-webkit-user-select:none}
   .hud-free ~ .stage-wrap { max-width: min(100%, max(400px, (100dvh - 318px) * 15 / 10)); }
 }
 
-@media (max-width: 640px) {
+@media (max-width:640px){
   .free-bar{padding:10px 12px;gap:10px}
   .free-bar p{font-size:.8rem;min-width:0}
   .free-actions{width:100%}

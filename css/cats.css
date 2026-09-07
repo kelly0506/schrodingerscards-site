@@ -6,7 +6,7 @@
 :root { --gold: #ffd88a; }
 
 .game-main { padding-top: calc(var(--header-h) + 56px); padding-bottom: 90px; }
-.game-wrap { max-width: 780px; margin: 0 auto; padding: 0 24px; }
+.game-wrap, .game-extra { max-width: 780px; margin: 0 auto; padding: 0 24px; }
 .game-head { margin-bottom: 26px; }
 .game-head h1 {
   font-family: var(--font-head);
@@ -30,8 +30,8 @@
 .timer-fill{height:100%;width:100%;background:var(--gradient);border-radius:999px}
 .timer-fill.low{background:linear-gradient(120deg,#ffd88a,#ff9d9d)}
 
-.field-wrap{position:relative}
-canvas#field{display:block;width:100%;aspect-ratio:1/1;border:1px solid var(--border);border-radius:18px;
+.stage-wrap{position:relative}
+canvas#stage{display:block;width:100%;aspect-ratio:1/1;border:1px solid var(--border);border-radius:18px;
   background:radial-gradient(120% 90% at 50% 0%,rgba(180,139,255,.05),transparent 60%),var(--surface);
   cursor:none;
   /* Holding a finger on a canvas otherwise starts a native text selection
@@ -49,7 +49,7 @@ body.dragging, body.dragging *{
   user-select:none !important;
   -webkit-user-select:none !important;
   -webkit-touch-callout:none !important}
-canvas#field:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+canvas#stage:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
 .overlay{position:absolute;inset:0;display:grid;place-items:center;padding:28px;border-radius:18px;
   background:rgba(10,13,24,.88);backdrop-filter:blur(5px);text-align:center;overflow-y:auto}

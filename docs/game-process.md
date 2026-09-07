@@ -147,7 +147,13 @@ Checklist:
       registered in the `ART` map in `js/arcade.js`.
 - [ ] Arcade header count updated ("Nine small games…").
 - [ ] **`?v=` bumped** on every file touched, in every page referencing it.
+- [ ] **Phone fit measured, not eyeballed** (`docs/games.md` §6): at a phone
+      width, `canvas.bottom <= innerHeight` and horizontal overflow is 0. The
+      HUD, any meter and the whole play area share one screen.
 - [ ] Played on a phone.
+- [ ] **Leaderboards unmoved** — `git diff -- js/ | grep -E 'makeBoard|localKey|storeName|ff808181'`
+      comes back empty on any change that was not deliberately about scores.
+      Changing one of those strings orphans every score on that board.
 - [ ] Committed and **pushed**. A change Kelly cannot see on the live site reads
       as not done.
 - [ ] Told her it is live, by name.

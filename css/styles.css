@@ -687,3 +687,86 @@ h2 {
 @media (max-width: 560px) {
   .cb-actions .btn { flex: 1; }
 }
+
+/* ---------- Game layout on phones ----------
+   One rule for all nine games. Most play happens on a phone, so the play area,
+   the HUD above it and any meter have to be on screen together without
+   scrolling.
+
+   How it works: .game-wrap becomes a flex column exactly one viewport tall.
+   Everything in it keeps its natural height except the stage, which takes
+   whatever is left over. The canvas keeps whatever aspect-ratio its own
+   stylesheet gives it and is centred in that space, so the element box always
+   matches the drawn area and pointer maths stays correct.
+
+   The note and the reference legend live in .game-extra, a sibling that sits
+   below the fold — they are reading matter, not play.
+
+   Do NOT reintroduce per-game `calc(100dvh - 404px)` sizing. Those numbers
+   were measured by hand, went stale whenever a HUD row changed, and are what
+   this replaces. The browser measures the chrome now; we do not. */
+@media (max-width: 640px) {
+  main.game-main {
+    padding-top: calc(var(--header-h) + 8px);
+    padding-bottom: 16px;
+  }
+  .game-main .game-wrap {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - var(--header-h) - 24px);
+    height: calc(100dvh - var(--header-h) - 24px);
+    padding: 0 12px;
+  }
+  /* Everything keeps its own height; only the stage flexes. */
+  .game-wrap > * { flex: 0 0 auto; }
+
+  /* The title band is decoration on a phone. Dropping the eyebrow and
+     shrinking the heading is worth about 50px of play area. */
+  .game-wrap .game-head { margin-bottom: 8px; }
+  .game-wrap .game-head .eyebrow { display: none; }
+  .game-wrap .game-head h1 { font-size: 1.35rem; margin-bottom: 0; }
+
+  .game-wrap .hud { gap: 12px; margin-bottom: 6px; }
+  .game-wrap .stat span { font-size: .58rem; }
+  .game-wrap .stat strong { font-size: 1.1rem; }
+
+  /* The three newest games wrap hud + meters + stage in .play; the older six
+     hang them straight off .game-wrap. Both work: whichever box contains the
+     stage grows, and the stage grows inside it. */
+  .game-wrap .play {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .game-wrap .play > * { flex: 0 0 auto; }
+
+  /* min-height:0 is the load-bearing part — without it a flex item refuses to
+     shrink below its content and the canvas pushes off the bottom of the
+     screen, which is the bug this whole block exists to fix. */
+  .game-wrap .stage-wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  /* width/height auto with both maxes is the "contain" pattern: the canvas
+     shrinks to fit the box and keeps the aspect-ratio its own stylesheet
+     sets. height:100% here instead would break the ratio on any square or
+     landscape board, because max-width would clamp the width without
+     reducing the height to match. */
+  .stage-wrap canvas#stage {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .game-extra { padding: 14px 12px 0; }
+  .game-extra .note { margin-top: 0; font-size: .8rem; line-height: 1.6; }
+}

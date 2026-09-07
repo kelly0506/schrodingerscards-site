@@ -15,14 +15,13 @@
 }
 
 .game-main { padding-top: calc(var(--header-h) + 56px); padding-bottom: 90px; }
-.game-wrap { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+.game-wrap, .game-extra { max-width: 900px; margin: 0 auto; padding: 0 24px; }
 .game-head { margin-bottom: 26px; }
 .game-head h1 {
   font-family: var(--font-head);
   font-size: clamp(1.9rem, 5vw, 2.7rem);
   line-height: 1.08; letter-spacing: -.025em; margin-bottom: 14px;
 }
-.lede { color: var(--text-dim); font-size: 1rem; max-width: 64ch; margin-bottom: 26px; }
 
 .hud{display:flex;align-items:flex-end;gap:22px;margin-bottom:8px;flex-wrap:wrap}
 .stat{display:flex;flex-direction:column;gap:2px}
@@ -105,24 +104,7 @@ canvas#stage:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .legend-swatch{width:14px;height:14px;border-radius:4px;flex:none;border:1px solid rgba(255,255,255,.10)}
 
 @media (max-width:640px){
-  .game-main{padding-top:calc(var(--header-h) + 20px);padding-bottom:60px}
-  .game-wrap{padding:0 16px}
-  /* The description is the one part that does not have to be on screen with
-     the beam, so on a phone it drops below the game and the play area comes
-     first. Everything else keeps its reading order. */
-  .game-wrap{display:flex;flex-direction:column}
-  .game-head{order:1;margin-bottom:12px}
-  .play{order:2}
-  .lede{order:3;margin:22px 0 0}
-  .note{order:4}
-  .legend{order:5}
-  /* Tighter rows above the stage buy height back for the beam itself. */
-  :root{ --stage-chrome:172px; }
-  .hud{gap:14px;margin-bottom:6px}
-  .stat span{font-size:.6rem}
-  .stat strong{font-size:1.15rem}
   .statusRow{font-size:.76rem;margin-bottom:6px}
   .overlay{padding:16px;border-radius:14px}
   .overlay p{font-size:.85rem;margin-bottom:14px}
-  .note{margin-top:16px}
 }

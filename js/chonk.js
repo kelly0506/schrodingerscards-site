@@ -1455,7 +1455,7 @@ const boardUI = attachBoardUI(Board, () => w.score);
 function toStart(){
   w.running=false; w.over=false; w.armed=true; w.locate=0;
   $('ov-title').textContent='Chonk';
-  $('ov-body').textContent='Eat your way up the food chain. Anything without red spikes is lunch; anything with them costs a life.';
+  $('ov-body').textContent='Eat anything without red spikes. Grow big enough and the spikes come off.';
   $('ov-final').hidden=true; $('entry').hidden=true; $('board').hidden=true;
   $('go').textContent='Start';
   $('go').onclick=newGame;

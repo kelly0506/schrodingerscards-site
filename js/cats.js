@@ -27,7 +27,7 @@ const RARITIES = [
 ];
 const byKey = Object.fromEntries(RARITIES.map(r => [r.key, r]));
 
-const cv = document.getElementById('field');
+const cv = document.getElementById('stage');
 let ctx = cv.getContext('2d');
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 

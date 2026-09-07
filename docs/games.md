@@ -70,14 +70,22 @@ it is the smallest complete example. In order:
 2. `.skip-link`
 3. `header.site-header` — identical on all pages, including the logo mark that
    links to `arcade.html` with `aria-label="Games"` and no visible label.
-4. `main.game-main > .game-wrap` containing:
+4. `main.game-main > .game-wrap` — **the one-screen box** (see §6):
    - `header.game-head` — `p.eyebrow` ("A small diversion") + `<h1>`. **No lede
      paragraph.**
    - `.hud` — `.stat` blocks; whatever the game counts.
+   - any meter (`.charge`, `.timer-track`, `.statusRow`, …).
    - `.stage-wrap` — `<canvas id="stage">` + `.overlay#overlay`.
-   - `p.note` — see §5.
-5. `footer.site-footer` — identical on all pages.
-6. Scripts, in this order: `script.js` → `leaderboard.js` → `<slug>.js`.
+
+   The three newest games (On a Roll, Catwalk, Cat Lady!) wrap the hud, the
+   meters and the stage in a `.play` div. Both shapes work — the shared CSS
+   grows whichever box holds the stage — but `.play` is preferred for new games.
+5. `main.game-main > .game-extra` — **below the fold**: `p.note`, and a
+   reference `.legend` if the game has one. Sibling of `.game-wrap`, not a child.
+   Hat in the Cat is the exception: its legend is played from, so it stays
+   inside `.game-wrap`, above the stage.
+6. `footer.site-footer` — identical on all pages.
+7. Scripts, in this order: `script.js` → `leaderboard.js` → `<slug>.js`.
 
 The overlay markup inside `#overlay` is **load-bearing** — `attachBoardUI()`
 finds its elements by id and will not wire up without them:
@@ -117,6 +125,23 @@ const boardUI = attachBoardUI(Board, () => currentScore);
 
 To add a board for a new game, POST a new object to the store to get a fresh
 `id`; never reuse another game's.
+
+### Never change a shipped board's id, localKey or storeName
+
+Changing any of the three orphans every score already on that board — the old
+document is still on the store but nothing points at it any more, and the
+players who set those scores have no way to get them back. There is no admin UI
+and no undo.
+
+This matters because layout and copy work touches the same files. Renaming
+things is fine *around* a `makeBoard({...})` call; the three strings inside it
+are frozen once a game is live. After any refactor, confirm nothing moved:
+
+```sh
+git diff -- js/ | grep -E '^[-+].*(makeBoard|localKey|storeName|ff808181)'
+```
+
+Empty output means every board still points where it did.
 
 ---
 
@@ -161,7 +186,66 @@ copies say the same thing. All eight currently agree; keep it that way.
 
 ---
 
-## 6. Conventions inside a game's JS
+## 6. The phone layout standard
+
+**Most play happens on a phone.** The rule is that the play area, the HUD above
+it and any meter are on screen together, without scrolling. Anything the player
+reads rather than plays goes below the fold.
+
+It is implemented once, in `css/styles.css` under `@media (max-width: 640px)`.
+Individual games do not implement layout — they only declare their shape.
+
+How it works:
+
+- `.game-wrap` becomes a flex column exactly one viewport tall
+  (`calc(100dvh - var(--header-h) - 24px)`, with a `100vh` line above it as
+  fallback).
+- Everything in it keeps its natural height; only the stage flexes.
+  `min-height: 0` on `.stage-wrap` is load-bearing — without it a flex item
+  refuses to shrink below its content and the canvas pushes off the bottom of
+  the screen.
+- The canvas is sized `width:auto; height:auto; max-width:100%; max-height:100%`
+  — the "contain" pattern. It shrinks to fit and keeps the `aspect-ratio` the
+  game's own stylesheet sets, so the element box always matches the drawn area
+  and pointer maths stays correct.
+- The eyebrow is hidden and the `<h1>` drops to 1.35rem. That alone is worth
+  about 50px of play area.
+- `.game-extra` (note + reference legend) sits after `.game-wrap` and scrolls
+  below the fold.
+
+**What a new game must declare:** an `aspect-ratio` on `canvas#stage`, and
+optionally a different one inside `@media (max-width:640px)` if a portrait shape
+suits the phone better. That is all.
+
+### Two mistakes to not repeat
+
+- **Do not hand-measure the chrome.** Six games used to size the stage with
+  `calc(100dvh - 404px)` and similar. Every one of those numbers was measured by
+  hand, and every one went stale the moment a HUD row changed. Three other games
+  had no height awareness at all and simply ran off the bottom of the screen.
+  The browser measures the chrome now; we do not.
+- **Do not set `height: 100%` on the canvas.** It looks equivalent to `auto` and
+  is not: `max-width` then clamps the width without reducing the height to
+  match, which silently breaks the aspect ratio on any square or landscape
+  board. It shipped that way for about ten minutes and was caught by measuring,
+  not by looking.
+
+### Measuring it
+
+Fit is a number, not an opinion. In the console on a phone-width viewport:
+
+```js
+const c = document.querySelector('canvas#stage').getBoundingClientRect();
+({ fits: c.bottom <= innerHeight + 1,
+   hOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+   pctOfScreen: Math.round(c.height / innerHeight * 100) })
+```
+
+`fits` must be true and `hOverflow` must be 0 on every game. As of 2026-09-07
+the play area is 43–73% of the screen (If I Fits I Sits is the low one — its
+landscape row of five vessels is width-bound on a phone).
+
+## 7. Conventions inside a game's JS
 
 - One classic `<script>`, no modules, no imports. Top-level `const`/`let` are
   therefore reachable by name from the console and from CDP — which the test
@@ -188,7 +272,7 @@ copies say the same thing. All eight currently agree; keep it that way.
 
 ---
 
-## 7. Cache busting
+## 8. Cache busting
 
 Every `<link>` and `<script>` carries `?v=N`. **Bumping it is not optional** —
 GitHub Pages serves these with long cache lifetimes and Kelly will not see the
@@ -197,10 +281,10 @@ change otherwise.
 Current versions:
 
 ```
-styles.css v11   board.css v2    arcade.css v1    script.js v9
+styles.css v12   board.css v2    arcade.css v1    script.js v9
 leaderboard.js v2                arcade.js v5     carry-wave.js v3
-cats 7/7   hats 2/2   catastrophe 5/6   catstatic 2/5   chonk 2/2
-on-a-roll 2/3   fits 3/3   catwalk 1/2   cat-lady 1/1      (css/js)
+cats 8/8   hats 3/2   catastrophe 6/6   catstatic 3/5   chonk 3/3
+on-a-roll 3/3   fits 4/3   catwalk 2/2   cat-lady 2/1      (css/js)
 ```
 
 When you edit `css/foo.css` or `js/foo.js`, bump `?v=` for that file in
@@ -209,7 +293,7 @@ When you edit `css/foo.css` or `js/foo.js`, bump `?v=` for that file in
 
 ---
 
-## 8. Common edits, and where they go
+## 9. Common edits, and where they go
 
 | Ask | Go straight to |
 |---|---|
@@ -218,12 +302,13 @@ When you edit `css/foo.css` or `js/foo.js`, bump `?v=` for that file in
 | "change the arcade blurb or tile" | `arcade.html` tile block; art in `js/arcade.js` `ART` map |
 | "the score is wrong" | the `attachBoardUI(Board, () => …)` expression |
 | "colours look off" | tokens in `css/styles.css` `/* Tokens */`, then `css/<slug>.css` |
-| "it breaks on my phone" | the game's own CSS media queries; every game has them |
+| "it breaks on my phone" | §6 first — layout is shared now, not per-game |
+| "the play area is too small" | §6; then the game's `aspect-ratio` on `canvas#stage` |
 | "add a new game" | `docs/game-process.md` |
 
 ---
 
-## 9. Outstanding
+## 10. Outstanding
 
 - `docs/cat-lady-todo.md` — three unbuilt pageant items.
 - Kelly's phone playtest of Cat Lady! (outstanding across several sessions).

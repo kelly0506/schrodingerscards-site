@@ -7,7 +7,7 @@
 :root { --gold: #ffd88a; --warn: #ff9d9d; }
 
 .game-main { padding-top: calc(var(--header-h) + 56px); padding-bottom: 90px; }
-.game-wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+.game-wrap, .game-extra { max-width: 880px; margin: 0 auto; padding: 0 24px; }
 .game-head { margin-bottom: 24px; }
 .game-head h1 {
   font-family: var(--font-head);
@@ -60,16 +60,6 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
 /* Same reasoning as the other game: get the board on screen at a usable size
    on a phone rather than parked below a screenful of introduction. */
 @media (max-width:640px){
-  .game-main{padding-top:calc(var(--header-h) + 16px);padding-bottom:44px}
-  .game-wrap{padding:0 12px}
-  .game-head{margin-bottom:12px}
-  .game-head h1{font-size:1.5rem;margin-bottom:0}
-  .game-head .eyebrow{margin-bottom:6px}
-  .hud{gap:14px;margin-bottom:8px}
-  .stat strong{font-size:1.2rem}
-  /* Square board, so the width cap is also the height cap — on a short phone
-     that is what keeps the key, the timer and the whole cat on one screen. */
-  .stage-wrap{max-width:min(100%, calc(100dvh - 292px));margin:0 auto}
   canvas#stage{aspect-ratio:1/1;border-radius:14px}
   .overlay{padding:18px;border-radius:14px}
   .overlay p{font-size:.86rem;margin-bottom:14px}
@@ -78,7 +68,6 @@ body.dragging,body.dragging *{user-select:none!important;-webkit-user-select:non
   .lg canvas{width:22px;height:22px}
   .lg b{font-size:.68rem}
   .lg span{font-size:.6rem}
-  .note{margin-top:18px;font-size:.82rem}
 }
 
 /* Keep the whole board on screen at once. At 1280x720 the canvas was 624px
