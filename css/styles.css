@@ -123,7 +123,7 @@ body {
   top: 0; left: 0; right: 0;
   height: var(--header-h);
   z-index: 100;
-  background: rgba(10, 13, 24, 0.75);
+  background: rgba(6, 5, 7, 0.85);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
 }
@@ -214,10 +214,10 @@ body {
   --btn-glow: 0 0 0 1px var(--accent), 0 8px 34px -8px rgba(255, 61, 139, 0.7);
   --h1-glow: 0 0 26px rgba(255, 61, 139, 0.42);
   position: relative;
-  /* Shorter than it was: with the three call-to-action buttons gone the
-     hero holds an eyebrow, a headline and a paragraph, and 78vh left it
-     mostly empty. */
-  min-height: min(62vh, 560px);
+  /* Tall enough to breathe, with real space kept under the copy so the lit
+     bar never crowds it - measured at 38px before, which read as compressed. */
+  min-height: min(66vh, 600px);
+  padding-bottom: 40px;
   display: flex;
   align-items: center;
   padding-top: var(--header-h);
@@ -308,8 +308,9 @@ h1 {
 
 /* ---------- Sections ---------- */
 /* Two adjacent sections each contributed 110px, so every seam was 220px of
-   empty black. */
-.section { padding: 58px 0; }
+   empty black. At 58 it was still 116, which is more dead ground than the
+   page earns. 42 puts the seam at 84. */
+.section { padding: 42px 0; }
 .section-alt { background: var(--bg-alt); }
 
 h2 {
@@ -334,6 +335,9 @@ h2 {
   align-items: center;
 }
 .story-copy p, .visit-copy p { color: var(--text-dim); margin-bottom: 18px; }
+/* The trailing margin on the final paragraph was adding 18px of nothing to
+   the bottom of every section it appeared in. */
+.story-copy p:last-child, .visit-copy p:last-child { margin-bottom: 0; }
 
 /* Story visual: quantum box art */
 .box-art {
@@ -712,7 +716,7 @@ h2 {
 }
 .contact-guide-nudge a {
   color: var(--accent);
-  border-bottom: 1px solid rgba(125, 216, 255, 0.4);
+  border-bottom: 1px solid rgba(255, 61, 139, 0.4);
 }
 .contact-guide-nudge a:hover { border-bottom-color: var(--accent); }
 
@@ -723,9 +727,9 @@ h2 {
    Deliberately the first thing you reach by scrolling: the guide is the
    sell-side entry to the funnel and used to be reachable only via the menu. */
 .collection-band {
-  padding: 64px 0;
+  padding: 42px 0;
   background:
-    radial-gradient(80% 140% at 12% 0%, rgba(125, 216, 255, 0.10), transparent 70%),
+    radial-gradient(80% 140% at 12% 0%, rgba(255, 61, 139, 0.09), transparent 70%),
     var(--bg-alt);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);

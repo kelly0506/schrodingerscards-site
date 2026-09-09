@@ -22,11 +22,11 @@
 }
 .game-tile:hover, .game-tile:focus-visible {
   transform: translateY(-3px); border-color: var(--accent);
-  box-shadow: 0 16px 40px -22px rgba(125,216,255,.55);
+  box-shadow: 0 16px 40px -22px rgba(255,61,139,.5);
 }
 .game-tile:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .game-tile canvas { display: block; width: 100%; aspect-ratio: 16/9;
-  background: radial-gradient(120% 90% at 50% 0%, rgba(180,139,255,.07), transparent 62%), var(--bg-alt); }
+  background: radial-gradient(120% 90% at 50% 0%, rgba(255,61,139,.07), transparent 62%), var(--bg-alt); }
 .tile-body { padding: 18px 20px 22px; }
 .tile-body .kind { font-family: var(--font-head); font-size: .62rem; letter-spacing: .16em;
   text-transform: uppercase; color: var(--accent); margin-bottom: 7px; }
