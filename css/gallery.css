@@ -109,7 +109,7 @@
   padding: 5px 10px;
   border-radius: 999px;
   background: var(--gradient);
-  color: #0a0d18;
+  color: var(--on-accent);
 }
 
 /* ---------- Lightbox ---------- */

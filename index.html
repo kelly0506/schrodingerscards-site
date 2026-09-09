@@ -7,11 +7,11 @@
 <meta name="description" content="Schrödinger's Cards is a family-run Pokémon TCG and Magic: The Gathering booth inside Treasure Cove Mall in Jacksonville, Texas, plus online at eBay. Vintage singles, sealed product, and graded cards.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="css/styles.css?v=12">
+<link rel="stylesheet" href="css/styles.css?v=13">
 </head>
 <body>
 
@@ -23,7 +23,7 @@
       <a class="logo-mark" href="arcade.html" aria-label="Games">
         <img src="assets/favicon.svg" width="34" height="34" alt="">
       </a>
-      <a class="logo-text" href="index.html#top">Schrödinger's<em>Cards</em></a>
+      <a class="logo-text" href="index.html#top">Schrödinger's <em>Cards</em></a>
     </div>
 
     <nav class="main-nav" id="main-nav">
@@ -48,21 +48,17 @@
 
   <section class="hero" id="top">
     <div class="hero-field" aria-hidden="true">
-      <span class="orbit orbit-1"></span>
-      <span class="orbit orbit-2"></span>
-      <span class="card-ghost card-ghost-1"></span>
-      <span class="card-ghost card-ghost-2"></span>
-      <span class="card-ghost card-ghost-3"></span>
+      <svg class="neon-ball" viewBox="0 0 200 200">
+        <circle class="neon-line" cx="100" cy="100" r="78" stroke="currentColor"/>
+        <path class="neon-line" d="M22 100h48M130 100h48" stroke="currentColor"/>
+        <circle class="neon-line c2" cx="100" cy="100" r="27" stroke="currentColor"/>
+        <circle class="neon-line c2" cx="100" cy="100" r="12" stroke="currentColor"/>
+      </svg>
     </div>
     <div class="wrap hero-inner">
       <p class="eyebrow">Jacksonville, Texas &middot; Treasure Cove Mall &middot; est. 2026</p>
       <h1>Every pack is a possibility.<br>Open yours.</h1>
       <p class="hero-sub">A family-run collector's booth specializing in Pokémon TCG and Magic: The Gathering — vintage singles, sealed product, and professionally graded cards. Find us inside Treasure Cove Mall, or shop online nationwide.</p>
-      <div class="hero-actions">
-        <a href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener" class="btn btn-primary">Shop Online</a>
-        <a href="guide.html" class="btn btn-outline">What are my cards worth?</a>
-        <a href="#visit" class="btn btn-ghost">Visit the Booth</a>
-      </div>
     </div>
   </section>
 
@@ -79,10 +75,10 @@
           </div>
         </div>
         <ul class="cb-paths">
-          <li><span class="cb-path-n" aria-hidden="true">1</span><strong>Sell it as a lot</strong><span class="cb-path-d">Fastest, lowest number.</span></li>
-          <li><span class="cb-path-n" aria-hidden="true">2</span><strong>Sell it yourself</strong><span class="cb-path-d">More money, a lot more work.</span></li>
-          <li><span class="cb-path-n" aria-hidden="true">3</span><strong>Grade the best cards</strong><span class="cb-path-d">Highest ceiling, months of waiting.</span></li>
-          <li><span class="cb-path-n" aria-hidden="true">4</span><strong>Hold and find out first</strong><span class="cb-path-d">Sometimes the right answer.</span></li>
+          <li><span class="cb-path-n" aria-hidden="true">1</span><strong>Sell the whole lot</strong><span class="cb-path-d">One buyer, less work, expect less money</span></li>
+          <li><span class="cb-path-n" aria-hidden="true">2</span><strong>Sell them individually</strong><span class="cb-path-d">Get the most money, but do the most work</span></li>
+          <li><span class="cb-path-n" aria-hidden="true">3</span><strong>Grade your top cards</strong><span class="cb-path-d">Potential to maximize your cards&rsquo; value, but you&rsquo;ll have to wait</span></li>
+          <li><span class="cb-path-n" aria-hidden="true">4</span><strong>Keep them for now</strong><span class="cb-path-d">Often the best choice, but make sure they are stored properly!</span></li>
         </ul>
       </div>
     </div>
@@ -117,11 +113,9 @@
       <div class="carry-grid" id="carry-grid">
         <article class="carry-card" tabindex="0">
           <div class="carry-icon" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4">
-              <circle cx="16" cy="16" r="13"/>
-              <path d="M3 16h7M22 16h7" stroke-linecap="round"/>
-              <circle cx="16" cy="16" r="5"/>
-            </svg>
+            <svg viewBox="0 0 64 64"><g class="neon-line" stroke="currentColor">
+              <circle cx="32" cy="32" r="24"/><path d="M8 32h13M43 32h13"/>
+              <circle cx="32" cy="32" r="9"/></g></svg>
           </div>
           <h3>Pokémon TCG</h3>
           <div class="carry-body">
@@ -131,9 +125,8 @@
         </article>
         <article class="carry-card" tabindex="0">
           <div class="carry-icon" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 32 32" fill="currentColor">
-              <path d="M16 1.5L17.9 16.2L20.8 5L22.6 17.6L25.8 9.5L26.6 19.5L16 29.5L5.4 19.5L6.2 9.5L9.4 17.6L11.2 5L14.1 16.2Z"/>
-            </svg>
+            <svg viewBox="0 0 64 64"><g class="neon-line" stroke="currentColor">
+              <path d="M32 8l4 24 6-20 4 24 6-14 2 18-22 18-22-18 2-18 6 14 4-24 6 20z"/></g></svg>
           </div>
           <h3>Magic: The Gathering</h3>
           <div class="carry-body">
@@ -142,7 +135,11 @@
           </div>
         </article>
         <article class="carry-card" tabindex="0">
-          <div class="carry-icon" aria-hidden="true">▣</div>
+          <div class="carry-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64"><g class="neon-line" stroke="currentColor">
+              <rect x="14" y="14" width="36" height="36" rx="3"/>
+              <rect x="24" y="24" width="16" height="16" rx="2"/></g></svg>
+          </div>
           <h3>Sealed Product</h3>
           <div class="carry-body">
             <p>Booster packs and boxes across both games, restocked regularly and fairly priced.</p>
@@ -151,12 +148,9 @@
         </article>
         <article class="carry-card" tabindex="0">
           <div class="carry-icon" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2">
-              <rect x="6.5" y="2.5" width="19" height="27" rx="2.6"/>
-              <path d="M6.5 12.5h19"/>
-              <path d="M10.5 6.2h11M10.5 9.2h7" stroke-width="1.7" stroke-linecap="round"/>
-              <rect x="10.5" y="16.5" width="11" height="9.5" rx="1.2" stroke-width="1.7"/>
-            </svg>
+            <svg viewBox="0 0 64 64"><g class="neon-line" stroke="currentColor">
+              <rect x="15" y="6" width="34" height="52" rx="4"/><path d="M15 24h34"/>
+              <rect x="22" y="32" width="20" height="18" rx="2"/></g></svg>
           </div>
           <h3>Graded Cards</h3>
           <div class="carry-body">
@@ -179,7 +173,10 @@
         <dl class="visit-details">
           <div>
             <dt>Location</dt>
-            <dd><button class="booth booth-open" type="button" aria-haspopup="dialog"><span class="booth-label">Booth 151</span><span class="booth-hint">see it on the mall map</span></button>Treasure Cove Mall<br>118 E Commerce St<br>Jacksonville, TX 75766</dd>
+            <dd>
+              <button class="booth booth-open" type="button" aria-haspopup="dialog"><span class="booth-label">Booth 151</span><span class="booth-hint">see it on the mall map</span></button>
+              <address class="visit-addr">Treasure Cove Mall<br>118 E Commerce St<br>Jacksonville, TX 75766</address>
+            </dd>
           </div>
           <div>
             <dt>Hours</dt>
@@ -287,6 +284,6 @@
 </dialog>
 
 <script src="js/script.js?v=9"></script>
-<script src="js/carry-wave.js?v=3"></script>
+<script src="js/carry-wave.js?v=4"></script>
 </body>
 </html>
