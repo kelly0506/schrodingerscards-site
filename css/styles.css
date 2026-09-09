@@ -9,21 +9,48 @@ button { font: inherit; cursor: pointer; }
 
 /* ---------- Tokens ---------- */
 :root {
-  --bg: #0a0d18;
-  --bg-alt: #0f1326;
-  --surface: #141830;
-  --surface-2: #1b2040;
-  --border: #2a2f52;
-  --text: #eef0fb;
-  --text-dim: #a8adcf;
-  --text-faint: #6d7299;
-  --accent: #7dd8ff;
-  --accent-2: #b48bff;
+  /* Near-black rather than navy, and the accent pair comes off the logo's own
+     gradient stops - assets/favicon.svg has been a vapourwave mark all along
+     while the theme argued with it. */
+  --bg: #060507;
+  --bg-alt: #0b0a0d;
+  --surface: #0f0d12;
+  --surface-2: #161219;
+  --border: #241f28;
+  --border-2: #332b38;
+  --text: #f6f2f4;
+  --text-dim: #a79fa8;
+  /* Lifted until it clears 4.5:1 on every ground the site uses. The old
+     site's faint failed too (3.75 on a card), and this colour carries the
+     eyebrows and field labels, which are small enough to need the full
+     ratio rather than the large-text allowance. */
+  --text-faint: #827a88;
+  --accent: #ff3d8b;          /* the lit tube */
+  --accent-2: #3ee7ff;        /* the second, quieter one */
+  --on-accent: #12000a;
   --gradient: linear-gradient(120deg, var(--accent), var(--accent-2));
-  --font-head: 'Space Grotesk', system-ui, sans-serif;
-  --font-body: 'Sora', system-ui, sans-serif;
-  --radius: 16px;
+  --font-head: 'Anton', Impact, system-ui, sans-serif;
+  --font-body: 'Archivo', system-ui, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, monospace;
+  --radius: 2px;
   --header-h: 76px;
+
+  /* ---- THE QUIET SET ----
+     The design is one idea: the shop window is lit and the shop is not. These
+     are the values everything OUTSIDE the hero runs at - the neon is still
+     pink and still glows, but softly. .hero overrides the handful that make it
+     loud, so the split is scope rather than a second copy of the design. */
+  --stroke: 2;
+  --glow-f: drop-shadow(0 0 3px currentColor);
+  --icon-glow: drop-shadow(0 0 2px currentColor);
+  --btn-glow: 0 0 0 1px var(--accent), 0 6px 22px -10px rgba(255, 61, 139, 0.5);
+  --card-glow: 0 0 0 1px var(--accent);
+  --h1-glow: none;
+  /* Small headings drop out of condensed capitals down here. Setting every
+     heading in Anton was doing as much of the shouting as the neon was. */
+  --h3-font: var(--font-body);
+  --h3-case: none;
+  --h3-weight: 600;
 }
 
 body {
@@ -57,20 +84,25 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 13px 26px;
-  border-radius: 999px;
+  padding: 13px 24px;
+  border-radius: var(--radius);
   font-family: var(--font-head);
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-weight: 400;
+  font-size: 0.82rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
   transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease;
   border: 1px solid transparent;
   white-space: nowrap;
 }
 .btn-primary {
-  background: var(--gradient);
-  color: #0a0d18;
+  /* Flat pink, not a gradient. A gradient-filled pill is the single most
+     generic button on the internet and it is what this facelift is leaving. */
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: var(--accent);
 }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -10px rgba(125, 216, 255, 0.5); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: var(--btn-glow); }
 .btn-outline {
   background: transparent;   /* <button> defaults to a light grey; without this the label vanishes */
   border-color: var(--border);
@@ -105,11 +137,19 @@ body {
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
   font-family: var(--font-head);
-  font-weight: 600;
-  font-size: 1.15rem;
+  font-weight: 400;
+  font-size: 1.02rem;
   color: var(--text);
+}
+/* One line, always. Anton is condensed enough that the full name fits beside
+   the mark even on a small phone, and nowrap stops it ever breaking in two. */
+.logo-text {
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+  white-space: nowrap;
 }
 .logo-mark {
   color: var(--accent);
@@ -165,58 +205,88 @@ body {
 
 /* ---------- Hero ---------- */
 .hero {
+  /* ---- THE LOUD SET, scoped ----
+     Full brightness lives here and nowhere else. Everything inside the hero
+     inherits these; everything past its bottom rule inherits the quiet set
+     from :root. The boundary is exactly the rule. */
+  --stroke: 2.6;
+  --glow-f: drop-shadow(0 0 4px currentColor) drop-shadow(0 0 15px currentColor);
+  --btn-glow: 0 0 0 1px var(--accent), 0 8px 34px -8px rgba(255, 61, 139, 0.7);
+  --h1-glow: 0 0 26px rgba(255, 61, 139, 0.42);
   position: relative;
   min-height: min(78vh, 720px);
   display: flex;
   align-items: center;
   padding-top: var(--header-h);
   overflow: hidden;
+  border-bottom: 1px solid var(--border);
   background:
-    radial-gradient(60% 50% at 80% 10%, rgba(180, 139, 255, 0.18), transparent 60%),
-    radial-gradient(50% 40% at 10% 90%, rgba(125, 216, 255, 0.14), transparent 60%),
+    radial-gradient(120% 90% at 12% 108%, rgba(255, 61, 139, 0.20), transparent 62%),
+    radial-gradient(80% 70% at 92% -10%, rgba(62, 231, 255, 0.11), transparent 64%),
     var(--bg);
 }
-.hero-field { position: absolute; inset: 0; pointer-events: none; }
-.orbit {
-  position: absolute;
-  border: 1px solid rgba(125, 216, 255, 0.18);
-  border-radius: 50%;
+/* The scanline wash and the lit bar that closes the hero off. */
+.hero::before {
+  content: "";
+  position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0.3;
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,0.045) 0 1px, transparent 1px 3px);
 }
-.orbit-1 { width: 520px; height: 520px; top: -120px; right: -140px; animation: spin 60s linear infinite; }
-.orbit-2 { width: 340px; height: 340px; top: 30px; right: 10px; border-color: rgba(180, 139, 255, 0.2); animation: spin 40s linear infinite reverse; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.card-ghost {
-  position: absolute;
-  width: 72px;
-  height: 100px;
-  border-radius: 8px;
-  border: 1px solid rgba(238, 240, 251, 0.12);
-  background: linear-gradient(160deg, rgba(125,216,255,0.08), rgba(180,139,255,0.06));
-  animation: float 7s ease-in-out infinite;
+.hero::after {
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: 0; height: 2px; z-index: 2;
+  background: linear-gradient(90deg, transparent, var(--accent) 22%, var(--accent-2) 78%, transparent);
+  box-shadow: 0 0 18px rgba(255, 61, 139, 0.75);
 }
-.card-ghost-1 { top: 22%; right: 18%; animation-delay: 0s; }
-.card-ghost-2 { top: 55%; right: 30%; transform: rotate(-12deg); animation-delay: 1.4s; }
-.card-ghost-3 { top: 38%; right: 6%; transform: rotate(10deg); animation-delay: 2.8s; }
-@keyframes float { 0%, 100% { transform: translateY(0) rotate(var(--r, 0)); } 50% { transform: translateY(-16px); } }
-
-.hero-inner { position: relative; max-width: 720px; }
-.eyebrow {
-  font-family: var(--font-head);
-  font-size: 0.82rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+/* The two spinning orbits and three floating card ghosts are gone. They were
+   four moving things competing for the same corner; one still neon mark says
+   more and asks less. */
+.hero-field { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.neon-ball {
+  position: absolute;
+  right: 5%; top: 9%;
+  width: min(360px, 34vw);
   color: var(--accent);
-  margin-bottom: 18px;
+  opacity: 0.95;
+}
+.neon-ball .c2 { color: var(--accent-2); }
+/* Every drawn mark on the site is bent glass: stroked, never filled, and lit
+   by whichever glow the surrounding scope is running at. */
+.neon-line {
+  fill: none;
+  stroke-width: var(--stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: var(--glow-f);
+}
+/* The measure goes on the headline, NOT on .hero-inner - that element is also
+   .wrap, so shrinking it re-centres the whole block and the copy stops lining
+   up with the logo above it and the sections below. */
+/* width:100% matters: .hero is display:flex, so this element is a flex ITEM,
+   and .wrap's margin:0 auto shrink-wraps and centres it instead of filling the
+   line. Without it the hero copy floats inboard and stops lining up with the
+   logo above and the sections below. */
+.hero-inner { position: relative; z-index: 3; width: 100%; }
+.hero-inner h1 { max-width: 860px; }
+.hero-sub { max-width: 56ch; }
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 14px;
 }
 .eyebrow.center, .section-sub.center { text-align: center; }
 
 h1 {
   font-family: var(--font-head);
-  font-weight: 700;
-  font-size: clamp(2.3rem, 5vw, 3.6rem);
-  line-height: 1.08;
-  letter-spacing: -0.01em;
+  font-weight: 400;
+  font-size: clamp(2.4rem, 6.1vw, 4.1rem);
+  line-height: 1.05;
+  letter-spacing: 0.012em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  text-shadow: var(--h1-glow);
   margin-bottom: 22px;
 }
 
@@ -230,7 +300,9 @@ h1 {
 .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
 
 /* ---------- Sections ---------- */
-.section { padding: 110px 0; }
+/* Two adjacent sections each contributed 110px, so every seam was 220px of
+   empty black. */
+.section { padding: 58px 0; }
 .section-alt { background: var(--bg-alt); }
 
 h2 {
@@ -268,7 +340,7 @@ h2 {
 .box-glow {
   position: absolute;
   inset: -40%;
-  background: radial-gradient(circle at 50% 50%, rgba(125,216,255,0.22), transparent 60%);
+  background: radial-gradient(circle at 50% 50%, rgba(255,61,139,0.18), transparent 60%);
   animation: pulse 5s ease-in-out infinite;
 }
 @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
@@ -285,8 +357,8 @@ h2 {
   position: absolute;
   width: 64px; height: 88px;
   border-radius: 8px;
-  border: 1px solid rgba(238,240,251,0.25);
-  background: linear-gradient(160deg, rgba(125,216,255,0.15), rgba(180,139,255,0.1));
+  border: 1px solid rgba(255,61,139,0.35);
+  background: linear-gradient(160deg, rgba(255,61,139,0.10), rgba(62,231,255,0.07));
   animation: float 6s ease-in-out infinite;
 }
 .box-card-a { top: 30px; left: 40px; transform: rotate(-14deg); }
@@ -309,21 +381,30 @@ h2 {
 .carry-card:hover,
 .carry-card:focus-visible,
 .carry-card.measured {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   border-color: var(--accent);
   background: var(--surface-2);
+  box-shadow: var(--card-glow);
 }
 .carry-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .carry-icon {
   width: 42px; height: 42px;
   display: flex; align-items: center; justify-content: center;
-  border-radius: 10px;
-  background: var(--gradient);
-  color: #0a0d18;
+  background: none;
+  color: var(--accent);
+  filter: var(--icon-glow);
   font-size: 1.1rem;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
-.carry-card h3 { font-family: var(--font-head); font-size: 1.1rem; margin-bottom: 10px; }
+.carry-icon svg { width: 100%; height: 100%; display: block; }
+.carry-card h3 {
+  font-family: var(--h3-font);
+  font-weight: var(--h3-weight);
+  text-transform: var(--h3-case);
+  font-size: 1rem;
+  line-height: 1.2;
+  margin-bottom: 9px;
+}
 .carry-card p { color: var(--text-dim); font-size: 0.95rem; }
 
 /* --- Wave function collapse on the carry tiles ---
@@ -371,7 +452,13 @@ h2 {
   margin-bottom: 8px;
 }
 .visit-details dd { color: var(--text-dim); font-size: 0.95rem; }
+.visit-addr { display: block; font-style: normal; line-height: 1.5; }
+/* Block-level with a fit-content width. As inline-flex the address ran on
+   from the button's right edge and only its later lines dropped underneath,
+   which made the whole location block look broken. */
 .visit-details .booth {
+  display: flex;
+  width: fit-content;
   display: block;
   font-family: var(--font-head);
   font-size: 1.15rem;
@@ -660,8 +747,9 @@ h2 {
   font-size: 0.9rem;
 }
 .cb-paths strong {
-  font-family: var(--font-head);
-  font-weight: 600;
+  font-family: var(--h3-font);
+  font-weight: var(--h3-weight);
+  text-transform: var(--h3-case);
   color: var(--text);
   font-size: 0.98rem;
 }
@@ -670,14 +758,13 @@ h2 {
 .cb-paths strong { grid-area: t; }
 .cb-path-d { grid-area: d; }
 .cb-path-n {
-  font-family: var(--font-head);
-  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  font-size: 1.35rem;
   font-weight: 700;
-  color: var(--accent);
-  border: 1px solid var(--border);
-  border-radius: 7px;
+  color: var(--text-faint);
   text-align: center;
-  padding: 3px 0;
+  padding: 0 4px 0 0;
+  align-self: center;
 }
 
 @media (max-width: 860px) {

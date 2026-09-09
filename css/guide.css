@@ -138,7 +138,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: #0a0d18;
+  background: var(--bg);
   clip-path: polygon(14% 47%, 39% 71%, 86% 22%, 94% 33%, 39% 87%, 6% 56%);
   transform: scale(0.72);
 }
@@ -314,7 +314,7 @@
   white-space: nowrap;
 }
 .tag-good { border-color: var(--accent); color: var(--accent); }
-.tag-mid { border-color: #b48bff; color: #b48bff; }
+.tag-mid { border-color: var(--accent-2); color: var(--accent-2); }
 .tag-warn { border-color: #ffd88a; color: #ffd88a; }
 
 /* Split strategy */

@@ -40,6 +40,14 @@
   if (!cards.length) return;
   grid.classList.add('wave-on');
 
+  /* The two stops come off the CSS custom properties rather than being written
+     in here. They used to be hardcoded, and when the palette changed the wave
+     kept painting in the old blue and lilac while the rest of the page had
+     moved on. Reading them means it cannot drift out of step again. */
+  const rootStyle = getComputedStyle(document.documentElement);
+  const STOP_A = (rootStyle.getPropertyValue('--accent') || '#ff3d8b').trim();
+  const STOP_B = (rootStyle.getPropertyValue('--accent-2') || '#3ee7ff').trim();
+
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
 
@@ -75,8 +83,8 @@
     const mid = h * 0.46;
     const A = h * 0.30 * c.amp;
     const g = ctx.createLinearGradient(0, 0, w, 0);
-    g.addColorStop(0, '#7dd8ff');
-    g.addColorStop(1, '#b48bff');
+    g.addColorStop(0, STOP_A);
+    g.addColorStop(1, STOP_B);
 
     const at = (x) => PARTS.reduce((s, p) =>
       s + p.a * Math.sin(x * p.k + t * p.s * c.drift + c.phase), 0) / 1.83;
