@@ -214,7 +214,10 @@ body {
   --btn-glow: 0 0 0 1px var(--accent), 0 8px 34px -8px rgba(255, 61, 139, 0.7);
   --h1-glow: 0 0 26px rgba(255, 61, 139, 0.42);
   position: relative;
-  min-height: min(78vh, 720px);
+  /* Shorter than it was: with the three call-to-action buttons gone the
+     hero holds an eyebrow, a headline and a paragraph, and 78vh left it
+     mostly empty. */
+  min-height: min(62vh, 560px);
   display: flex;
   align-items: center;
   padding-top: var(--header-h);
@@ -294,10 +297,14 @@ h1 {
   font-size: 1.08rem;
   color: var(--text-dim);
   max-width: 560px;
-  margin-bottom: 34px;
+  margin-bottom: 0;
 }
 
-.hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+/* The gap belongs to the buttons, not to the paragraph above them. The
+   homepage has no hero buttons any more, so a bottom margin on .hero-sub
+   would just be a trailing gap there - but thanks.html still puts a pair
+   of buttons straight after its sub and needs the room. */
+.hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 34px; }
 
 /* ---------- Sections ---------- */
 /* Two adjacent sections each contributed 110px, so every seam was 220px of
