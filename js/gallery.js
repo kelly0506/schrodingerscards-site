@@ -62,7 +62,7 @@ function render(photos, expiryDays) {
 
   if (!visible.length) {
     statusEl.className = 'gallery-status empty';
-    statusEl.textContent = 'No photos up just yet — check back shortly, or come see the booth in person.';
+    statusEl.textContent = 'No photos up just yet: check back shortly, or come see the booth in person.';
     return;
   }
   statusEl.hidden = true;

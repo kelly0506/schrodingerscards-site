@@ -291,9 +291,9 @@ function makeGame(){
   function finalizeOvershoot(){
     g.overshootPending=false;
     g.lives--; g.face='busted'; g.bustedAt=g.t; g.shake=1; g.streak=0;
-    if(g.lives<=0) return endRun('Overshot it — that was the last life.');
+    if(g.lives<=0) return endRun('Overshot it. That was the last life.');
     g.status='lose';
-    announce('lose', `Overshot it — ${g.lives} ${g.lives===1?'life':'lives'} left.`, 1.35);
+    announce('lose', `Overshot it: ${g.lives} ${g.lives===1?'life':'lives'} left.`, 1.35);
   }
 
   /* Between-level messages sit on a strip over the canvas; only the end of
@@ -329,8 +329,8 @@ function makeGame(){
       g.timeLeft-=dt;
       if(g.timeLeft<=0){
         g.timeLeft=0; g.lives--; g.face='busted'; g.bustedAt=g.t; g.shake=1; g.streak=0;
-        if(g.lives<=0) endRun('Out of time — that was the last life.');
-        else { g.status='lose'; announce('lose', `Out of time — ${g.lives} ${g.lives===1?'life':'lives'} left.`, 1.35); }
+        if(g.lives<=0) endRun('Out of time. That was the last life.');
+        else { g.status='lose'; announce('lose', `Out of time: ${g.lives} ${g.lives===1?'life':'lives'} left.`, 1.35); }
         syncHud(); draw(); return;
       }
     }

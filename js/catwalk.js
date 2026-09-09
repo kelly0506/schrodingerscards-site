@@ -74,7 +74,7 @@ const MYSTERY_REVEAL_LABEL = {
   slippery: '🧈 Slippery!', minuslife: '💀 Ouch, -1 life!',
 };
 
-const FALL_LINES = ['WHEEEEE—', 'NOT LIKE THIS', 'THIS IS FINE.', 'PHYSICS WINS AGAIN', 'TUCK AND ROLL!', 'CATASTROPHE.', 'GRAVITY: UNDEFEATED', 'AAAAAAH', 'WELP.', 'NINE LIVES, ONE REGRET'];
+const FALL_LINES = ['WHEEEEE: ', 'NOT LIKE THIS', 'THIS IS FINE.', 'PHYSICS WINS AGAIN', 'TUCK AND ROLL!', 'CATASTROPHE.', 'GRAVITY: UNDEFEATED', 'AAAAAAH', 'WELP.', 'NINE LIVES, ONE REGRET'];
 const AMBIENT_LINES = ['Still going. Impressive.', 'Look at him go.', 'Nine lives, zero chill.', 'Certified beam walker.', 'This cat has no fear.', 'Do not look down.', 'Unbothered. Moisturized. In his lane.'];
 const GAME_OVER_LINES = ['He landed on his tail.', 'Nine lives, well spent.', 'That is going to leave a mark.', 'He will dust himself off. Eventually.', 'A truly heroic wipeout.', 'The beam remains undefeated.'];
 const BUMPER_LINES = ['Bubble wrap engaged!', 'Cannot fall. Physics who?', 'Shielded and smug.'];
@@ -526,7 +526,7 @@ function endGame(){
   game.state = 'gameover';
   const score = Math.round(game.distanceTotal / 10);
   $('ov-title').textContent = pick(GAME_OVER_LINES);
-  $('ov-body').textContent = 'He made it to ' + biome().name + ' — biome ' + (game.biomeIndex + 1) + ' of 9.';
+  $('ov-body').textContent = 'He made it to ' + biome().name + ': biome ' + (game.biomeIndex + 1) + ' of 9.';
   $('final-score').textContent = score;
   $('ov-final').hidden = false;
   $('go').textContent = 'Walk again';

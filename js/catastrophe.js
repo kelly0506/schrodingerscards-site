@@ -1262,7 +1262,7 @@ function endLevel(){
   const last=w.lvl>=LEVELS.length-1;
   if(last) return finish();
   $('ov-title').textContent = c>=70?'Comprehensive':c>=40?'Respectable':'Mostly intact';
-  $('ov-body').textContent = LEVELS[w.lvl+1].name+' — '+LEVELS[w.lvl+1].blurb+
+  $('ov-body').textContent = LEVELS[w.lvl+1].name+': '+LEVELS[w.lvl+1].blurb+
     ' Worth ×'+LEVELS[w.lvl+1].mult+'.';
   $('go').textContent='Next level';
   $('go').onclick=()=>startLevel(w.lvl+1);

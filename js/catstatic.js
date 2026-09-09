@@ -537,7 +537,7 @@ const CATCH={
     label:'The catch grows with the meter. A full cat is a wider cat, which gives the charge a second job.',
     reach(c){ return (14+34*c.charge)*w.S; } },
   cling:{ name:'Cling',
-    label:'As Charged reach, and balloons inside it drift toward you — the magnet from round one, without a ring drawn round it.',
+    label:'As Charged reach, and balloons inside it drift toward you: the magnet from round one, without a ring drawn round it.',
     reach(c){ return (14+34*c.charge)*w.S; }, pull:true }
 };
 function grace(){ return CATCH[w.catch].reach(w.cat); }
@@ -1042,7 +1042,7 @@ function drawBolts(){
 function makeMode(key,name,blurb,catchKey){
   return {
     key, name, blurb, catchKey, decay:0.20, digIn:false,
-    hint:'drag him fast across a carpet to charge — the shag is quickest',
+    hint:'drag him fast across a carpet to charge: the shag is quickest',
     build(level){ buildRoom(level,ROOM); },
     chargeMult(){ return 0; },                 // friction charges, wagging does not
     step(dt){

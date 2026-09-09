@@ -63,7 +63,7 @@
   const CATS = [
     {
       name: 'Marmalade', breed: 'Orange tabby, allegedly',
-      bio: 'Marmalade has been to one pageant before. He was disqualified for eating a rosette — not his rosette. He maintains that he won that day, and no amount of paperwork has changed his mind.',
+      bio: 'Marmalade has been to one pageant before. He was disqualified for eating a rosette, not his rosette. He maintains that he won that day, and no amount of paperwork has changed his mind.',
       fact: 'Has never once landed on his feet. Has never stopped trying.',
       fact2: 'Considers the vacuum cleaner a personal rival. Has fought it four times and lost four times.',
       time: 45, count: 6, clusters: 1, depth: 2, spin: 0.55, heat: 0.40, retighten: 0, furLen: 11,
@@ -102,7 +102,7 @@
     },
     {
       name: 'Pickle', breed: 'Cream point, upright',
-      bio: 'Pickle screams. Not at anything — Pickle screams at 4am at a patch of wall where nothing has ever happened. Three vets have found nothing wrong with him. The wall has been repainted twice.',
+      bio: 'Pickle screams. Not at anything: Pickle screams at 4am at a patch of wall where nothing has ever happened. Three vets have found nothing wrong with him. The wall has been repainted twice.',
       fact: 'Holds the household record for consecutive nights spent inside a paper bag: eleven.',
       fact2: 'Once swept a full glass off a table while maintaining direct eye contact for nine seconds.',
       time: 40, count: 11, clusters: 3, depth: 3, spin: 1.5, heat: 0.52, retighten: 0, furLen: 9,
@@ -143,13 +143,13 @@
       'That patch has a name now and the name is your fault.',
       'The judges have seen worse. The judges have not, actually.',
       'That is coming out of somebody’s deposit.'],
-    locked: ['Not that one — it is pinned under the other. Top first.',
+    locked: ['Not that one. It is pinned under the other. Top first.',
       'You cannot dig under a knot, love, it only tightens.',
       'Wrong end. Take the one sitting on it.'],
     combo: ['Look at you go!', 'That is the wrist! That is exactly the wrist!',
       'Ooh, she likes that. She will never admit it.'],
     clear: ['One down. Do not get cocky.', 'Lovely. Next.', 'See? She is under there somewhere.'],
-    low: ['Judges are lining up! Move!', 'No time, no time, no time —',
+    low: ['Judges are lining up! Move!', 'No time, no time, no time: ',
       'Thirty seconds and she still looks like a mop!'],
     heat: ['Leave it a moment, it is red raw.', 'That spot has had enough. Go somewhere else.']
   };
@@ -1098,14 +1098,14 @@
   let TUT = [];
   function buildTut() {
     TUT = [
-      { cap: 'Match the colour. Purple snarl, purple comb — press 2 or tap the tool. Then stroke ALONG the white arrows, right across and out the other side.',
+      { cap: 'Match the colour. Purple snarl, purple comb: press 2 or tap the tool. Then stroke ALONG the white arrows, right across and out the other side.',
         make: () => [newTangle(258, 430, 40, 'mat')], done: ts => ts.every(t => t.progress >= 1) },
-      { cap: 'Every stroke that lands kicks the grain a random way. Re-read the arrows before each stroke. Amber snarl, amber brush — press 1.',
+      { cap: 'Every stroke that lands kicks the grain a random way. Re-read the arrows before each stroke. Amber snarl, amber brush: press 1.',
         make: () => [newTangle(346, 424, 40, 'fluff')], done: ts => ts.every(t => t.progress >= 1) },
-      { cap: 'This one is pinned under the other. It shows no grain and will not budge. Clear the top one first — then the one underneath opens up.',
+      { cap: 'This one is pinned under the other. It shows no grain and will not budge. Clear the top one first, then the one underneath opens up.',
         make: () => { const u = newTangle(276, 442, 36, 'burr'); u.lockedBy = 1; return [u, newTangle(322, 418, 34, 'fluff')]; },
         done: ts => tutUnlocked || ts.every(t => t.progress >= 1) },
-      { cap: 'Last thing. Drag ACROSS the arrows on purpose. That is what hurting her feels like — she yelps, you lose seconds, and enough of it tears fur out for good.',
+      { cap: 'Last thing. Drag ACROSS the arrows on purpose. That is what hurting her feels like. She yelps, you lose seconds, and enough of it tears fur out for good.',
         make: () => [newTangle(300, 436, 44, 'burr')], done: ts => tutYelped || ts.every(t => t.progress >= 1) }
     ];
   }
@@ -1696,7 +1696,7 @@
       phase = 'prize'; setMood('happy', 99);
       resetOverlay();
       ovScene.hidden = false;
-      ovTitle.textContent = 'Every snarl out — pick her prize';
+      ovTitle.textContent = 'Every snarl out: pick her prize';
       ovSay.textContent = pick(patches.length ? CLEAR_LINES.scuffed : CLEAR_LINES.perfect);
       ovText.textContent = 'One accessory. It stays on her all the way to judging, and the judges do notice.';
       drawLady(ladyCtx, patches.length ? 'excited' : 'pleased');
@@ -1741,7 +1741,7 @@
     ovSay.textContent = pick(finalTotal >= 1000 ? RUN_LINES.high
       : finalTotal >= 750 ? RUN_LINES.mid : RUN_LINES.low);
     ovText.textContent = PREVIEW
-      ? 'Preview run — these five were scored at random, so nothing is going on the board.'
+      ? 'Preview run: these five were scored at random, so nothing is going on the board.'
       : 'Five cats, one rosette, no refunds.';
     drawLady(ladyCtx, finalTotal >= 900 ? 'pleased' : finalTotal >= 600 ? 'excited' : 'horrified');
     ovFinal.hidden = false;

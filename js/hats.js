@@ -618,7 +618,7 @@ function endRound(){
   document.getElementById('ov-body').textContent = hats>=6
     ? 'That is a professional standard of rummaging.'
     : hats>=3 ? 'Solid. The trick is committing to the hold early.'
-    : 'Sweep in lines rather than circles — you miss less that way.';
+    : 'Sweep in lines rather than circles. You miss less that way.';
   document.getElementById('final-score').textContent=score;
   const tally=document.getElementById('tally');
   tally.innerHTML='';
