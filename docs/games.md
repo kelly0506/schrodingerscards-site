@@ -1,6 +1,6 @@
 # The arcade — reference
 
-Everything you need to edit a game without reading it first. Nine games live at
+Everything you need to edit a game without reading it first. Ten games live at
 `schrodingerscards.com`, reachable only from `arcade.html`, which is reachable
 only from the logo mark in the top-left of every page.
 
@@ -25,7 +25,7 @@ Pages publishes `main` on push.
 
 ---
 
-## 2. The nine games
+## 2. The ten games
 
 Ordered as they appear in `arcade.html`.
 
@@ -40,6 +40,7 @@ Ordered as they appear in `arcade.html`.
 | If I Fits I Sits | `fits` | 712 | `ff808181a061cdc401a06344dd7a05d7` | `sfits-board` | `fits` |
 | Catwalk | `catwalk` | 1503 | `ff808181a067127101a06ad5c6cf0c0c` | `catwalk-board` | `catwalk` |
 | Cat Lady! | `cat-lady` | 1896 | `ff808181a067127101a06e6e91c314ae` | `cat-lady-board` | `shed` |
+| CATamaran | `catamaran` | 1362 | `ff808181a067127101a08cda63186a82` | `catamaran-board` | `catamaran` |
 
 Notes on the odd ones:
 
@@ -111,7 +112,7 @@ const Board = makeBoard({ id, localKey, storeName });
 const boardUI = attachBoardUI(Board, () => currentScore);
 ```
 
-- Nine **independent** boards, one JSON document each on
+- Ten **independent** boards, one JSON document each on
   `https://api.restful-api.dev/objects`. A score in one can never reach another.
 - **No auth, and deliberately forgeable.** A browser game cannot prove a score.
   Accepted trade — do not "fix" it.
@@ -148,7 +149,11 @@ Empty output means every board still points where it did.
 ## 5. Where the player-facing copy lives
 
 Four slots, and that is all. Kept deliberately short — as of 2026-09-07 the nine
-games total **2,398 characters** of instruction, down from ~13,200.
+games total **2,398 characters** of instruction, down from ~13,200. CATamaran
+adds a fifth slot of its own: a three-card tutorial behind a **How it works**
+button in the overlay, off by default and skippable at every step, because the
+cancellation idea is the one thing in this arcade that play alone does not
+teach. Start never leaves the overlay while the tutorial is open.
 
 | Slot | Where | Budget |
 |---|---|---|
@@ -217,6 +222,22 @@ How it works:
 optionally a different one inside `@media (max-width:640px)` if a portrait shape
 suits the phone better. That is all.
 
+### The landscape hole, and which game falls in it
+
+The shared rule keys on `max-width: 640px`. **A phone turned sideways is about
+844x390 — wider than 640 — so it gets the desktop layout**, which is built for a
+tall window. Nine of the ten games are portrait-friendly and never notice.
+CATamaran is 760x250 and has to be played sideways, and measured at 844x390 it
+put the canvas on screen at 67% and dropped the wave buttons and the verdict
+line off the bottom.
+
+`css/catamaran.css` therefore carries its own
+`@media (orientation: landscape) and (max-height: 600px)` block repeating the
+same one-column technique. That is deliberate: widening the shared rule to catch
+landscape phones would change the layout of nine live games to fix the tenth.
+If a second landscape game ever turns up, that is the moment to promote it into
+`styles.css` — not before.
+
 ### Two mistakes to not repeat
 
 - **Do not hand-measure the chrome.** Six games used to size the stage with
@@ -281,10 +302,11 @@ change otherwise.
 Current versions:
 
 ```
-styles.css v12   board.css v2    arcade.css v1    script.js v9
-leaderboard.js v2                arcade.js v5     carry-wave.js v3
+styles.css v13   board.css v2    arcade.css v1    script.js v9
+leaderboard.js v2                arcade.js v6     carry-wave.js v3
 cats 8/8   hats 3/2   catastrophe 6/6   catstatic 3/5   chonk 3/3
-on-a-roll 3/3   fits 4/3   catwalk 2/2   cat-lady 2/1      (css/js)
+on-a-roll 3/3   fits 4/3   catwalk 2/2   cat-lady 2/1
+catamaran 1/1                                        (css/js)
 ```
 
 When you edit `css/foo.css` or `js/foo.js`, bump `?v=` for that file in
@@ -312,6 +334,8 @@ When you edit `css/foo.css` or `js/foo.js`, bump `?v=` for that file in
 
 - `docs/cat-lady-todo.md` — three unbuilt pageant items.
 - Kelly's phone playtest of Cat Lady! (outstanding across several sessions).
-- A wave-interference game ("Cat Overboard") is in prototype and **has never
-  shipped**. Prototypes live outside the repo, in
-  `~/.claude/projects/-Users-kelly-Desktop-Schrodingers-Cards-Website/prototypes/`.
+- Kelly's phone playtest of CATamaran. It is the only game that wants landscape,
+  so this one matters more than usual.
+- The other nine games are still on the pre-facelift palette and are hardcoded
+  hex throughout — 769 values across `js/`, none reading a CSS variable.
+  CATamaran is the only one wearing the neon palette.

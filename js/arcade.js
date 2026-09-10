@@ -484,8 +484,107 @@
     ctx.restore();
   }
 
+  /* CATamaran. The tile has one job: show the mechanic, which is two waves
+     meeting and cancelling. So the packet coming in from the right and the
+     pink one going out from the left both fade to nothing at the middle, and
+     the boat sits in the flat water they leave. Pink is the player's, here as
+     everywhere else in that game. */
+  function artCatamaran(ctx,W,H){
+    const g=ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,'#070a16'); g.addColorStop(1,'#0d1526');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+
+    const seaY=H*0.62, mid=W*0.5;
+    /* moon */
+    ctx.fillStyle='rgba(233,238,250,.10)';
+    ctx.beginPath(); ctx.arc(W*0.83,H*0.20,H*0.085,0,Math.PI*2); ctx.fill();
+
+    /* One packet. `dir` is which side it came from; the envelope is squared
+       off toward the middle so both die exactly where the boat is. */
+    const packet=(from,lam,amp,col,lw)=>{
+      ctx.strokeStyle=col; ctx.lineWidth=lw; ctx.lineJoin='round';
+      ctx.beginPath();
+      for(let i=0;i<=120;i++){
+        const t=i/120, x=from<0 ? mid-W*0.46*(1-t) : mid+W*0.46*(1-t);
+        /* full height at the outside edge, nothing at the middle */
+        const env=Math.pow(1-t,0.9);
+        const y=seaY-Math.cos((x-mid)/lam*Math.PI*2)*amp*env;
+        i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+      }
+      ctx.stroke();
+    };
+    /* the sea's swell, coming in from the right */
+    packet(1,W*0.13,H*0.115,'#8ec9e8',3.4);
+    /* the answer, going out from the left */
+    packet(-1,W*0.13,H*0.115,'#ff3d8b',3.4);
+
+    /* the flat water they leave between them */
+    ctx.strokeStyle='rgba(233,238,250,.34)'; ctx.lineWidth=2.4;
+    ctx.beginPath(); ctx.moveTo(mid-W*0.075,seaY); ctx.lineTo(mid+W*0.075,seaY); ctx.stroke();
+
+    /* the boat: two pontoons and a deck, the cat amidships in his hat */
+    ctx.save(); ctx.translate(mid,seaY-H*0.045);
+    const hull=(dx,dy,len,dep,fill,line)=>{
+      const h=len/2;
+      ctx.beginPath();
+      ctx.moveTo(dx+h,dy);
+      ctx.quadraticCurveTo(dx+h*0.25,dy+dep*1.05,dx-h*0.55,dy+dep*0.95);
+      ctx.lineTo(dx-h,dy+dep*0.5); ctx.lineTo(dx-h,dy); ctx.closePath();
+      ctx.fillStyle=fill; ctx.fill();
+      ctx.strokeStyle=line; ctx.lineWidth=1.6; ctx.stroke();
+    };
+    hull(-W*0.016,-H*0.052,W*0.20,H*0.035,'#191322','#6b5a7f');
+    ctx.fillStyle='#171120';
+    ctx.beginPath();
+    ctx.moveTo(-W*0.078,-H*0.022); ctx.lineTo(W*0.046,-H*0.022);
+    ctx.lineTo(W*0.078,H*0.022);   ctx.lineTo(-W*0.046,H*0.022);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle='#3b3048'; ctx.lineWidth=1.4; ctx.stroke();
+    hull(W*0.016,H*0.015,W*0.21,H*0.042,'#2a1f36','#9b82b2');
+
+    /* the cat */
+    const R=H*0.062;
+    ctx.fillStyle='#e8a25c'; ctx.strokeStyle='#a86a30'; ctx.lineWidth=R*0.11;
+    ctx.beginPath(); ctx.ellipse(0,-R*0.62,R*0.92,R*1.02,0,0,Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#f9dcb8';
+    ctx.beginPath(); ctx.ellipse(R*0.2,-R*0.48,R*0.42,R*0.6,0.1,0,Math.PI*2); ctx.fill();
+    const hy=-R*1.95;
+    [-1,1].forEach(sd=>{
+      ctx.fillStyle='#f4c089'; ctx.strokeStyle='#a86a30'; ctx.lineWidth=R*0.09;
+      ctx.beginPath();
+      ctx.moveTo(sd*R*0.3,hy-R*0.42); ctx.lineTo(sd*R*0.72,hy-R*1.22);
+      ctx.lineTo(sd*R*0.9,hy-R*0.28); ctx.closePath(); ctx.fill(); ctx.stroke();
+    });
+    ctx.fillStyle='#e8a25c'; ctx.strokeStyle='#a86a30'; ctx.lineWidth=R*0.1;
+    ctx.beginPath(); ctx.ellipse(0,hy,R*0.84,R*0.76,0,0,Math.PI*2); ctx.fill(); ctx.stroke();
+    /* the hat: peaked crown, brim swept down and out to a point each side */
+    ctx.save(); ctx.translate(0,hy-R*0.62); ctx.rotate(-0.07);
+    ctx.beginPath();
+    ctx.moveTo(-R*1.2,-R*0.16);
+    ctx.quadraticCurveTo(-R*0.68,-R*0.55,-R*0.46,-R*0.78);
+    ctx.quadraticCurveTo(0,-R*1.32,R*0.46,-R*0.78);
+    ctx.quadraticCurveTo(R*0.68,-R*0.55,R*1.2,-R*0.16);
+    ctx.quadraticCurveTo(0,R*0.06,-R*1.2,-R*0.16);
+    ctx.closePath();
+    ctx.fillStyle='#16121c'; ctx.fill();
+    ctx.strokeStyle='#8a7c98'; ctx.lineWidth=R*0.07; ctx.stroke();
+    ctx.fillStyle='#ff3d8b';
+    ctx.beginPath(); ctx.ellipse(0,-R*0.7,R*0.19,R*0.17,0,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+    /* the patch */
+    ctx.strokeStyle='#16121c'; ctx.lineWidth=R*0.085; ctx.lineCap='round';
+    ctx.beginPath();
+    ctx.moveTo(R*0.3,hy-R*0.09); ctx.lineTo(-R*0.55,hy-R*0.4);
+    ctx.moveTo(R*0.42,hy-R*0.11); ctx.lineTo(R*0.64,hy-R*0.4);
+    ctx.stroke();
+    ctx.fillStyle='#16121c';
+    ctx.beginPath(); ctx.ellipse(R*0.34,hy-R*0.05,R*0.28,R*0.24,0.1,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+
   const ART={cats:artCats,fits:artFits,hats:artHats,chaos:artChaos,static:artStatic,
-             chonk:artChonk,roll:artRoll,catwalk:artCatwalk,shed:artShed};
+             chonk:artChonk,roll:artRoll,catwalk:artCatwalk,shed:artShed,
+             catamaran:artCatamaran};
   document.querySelectorAll('canvas.tile-art').forEach(cv=>{
     const ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
     ctx.clearRect(0,0,W,H);

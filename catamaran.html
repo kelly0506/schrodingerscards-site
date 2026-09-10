@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CATamaran (a game) | Schrödinger's Cards</title>
+<meta name="description" content="A small browser game from Schrödinger's Cards: the sea sends a swell, you send the same wave upside down, and where the two cross the water goes flat. Keep the cat on his boat.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="css/styles.css?v=13">
+<link rel="stylesheet" href="css/board.css?v=2">
+<link rel="stylesheet" href="css/catamaran.css?v=1">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header" id="site-header">
+  <div class="wrap header-inner">
+    <div class="logo">
+      <!-- The mark is the way in to the games. Deliberately unlabelled to
+           anyone looking at the page; still named for screen readers. -->
+      <a class="logo-mark" href="arcade.html" aria-label="Games">
+        <img src="assets/favicon.svg" width="34" height="34" alt="">
+      </a>
+      <a class="logo-text" href="index.html#top">Schrödinger's <em>Cards</em></a>
+    </div>
+
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html#story">Our Story</a>
+      <a href="index.html#carry">What We Carry</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="index.html#visit">Visit Us</a>
+      <a href="guide.html">Collection Guide</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+
+    <div class="header-actions">
+      <a class="btn btn-ghost" href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">Shop on eBay</a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="main-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="game-main">
+<div class="game-wrap">
+  <header class="game-head">
+    <p class="eyebrow">A small diversion</p>
+    <h1>CATamaran</h1>
+  </header>
+
+  <div class="play">
+    <div class="hud">
+      <div class="stat"><span>Swells</span><strong id="score">0</strong></div>
+      <div class="stat"><span>Moon</span><strong id="moon">New moon</strong></div>
+      <div class="stat"><span>Afloat</span><strong id="afloat">0.0s</strong></div>
+      <div class="hud-spacer"></div>
+      <div class="stat balstat"><span>Cat</span><div class="bal" id="bal"><div class="track"><i></i></div></div></div>
+    </div>
+
+    <div class="stage-wrap">
+      <canvas id="stage" width="760" height="250" tabindex="0" aria-label="Answer each swell with the matching wave"></canvas>
+      <div class="overlay" id="overlay">
+        <div>
+          <h2 id="ov-title">Flatten the sea</h2>
+          <p id="ov-body">The sea sends a swell at the cat, and you send the same wave upside down so the two cancel where they cross. Tap the wave that matches the shape rolling in.</p>
+          <div id="ov-score" hidden>
+            <div class="final" id="final-score">0</div>
+            <div class="final-label">Swells handled</div>
+          </div>
+          <div class="entry" id="entry" hidden>
+            <p id="entry-msg">High score! Enter your initials.</p>
+            <div class="entry-row">
+              <input id="initials" maxlength="3" autocomplete="off" spellcheck="false" autocapitalize="characters" autocorrect="off" inputmode="text" aria-label="Your initials, three characters">
+              <button class="btn btn-sm" id="submit-score" type="button">Enter</button>
+            </div>
+          </div>
+          <div class="board" id="board" hidden>
+            <h3 id="board-title">High scores</h3>
+            <ol id="board-list"></ol>
+          </div>
+          <div class="ov-actions">
+            <button class="btn" id="start">Start</button>
+            <button class="btn btn-ghost" id="how" type="button">How it works</button>
+            <button class="btn btn-ghost" id="see-board" type="button" aria-expanded="false" aria-controls="board">High scores</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pickrow" id="wave"></div>
+    <p class="say" id="say"></p>
+    <p class="rotate">Turn your phone sideways</p>
+  </div>
+</div>
+
+<div class="game-extra">
+  <p class="note">The two waves have to meet over the cat, so tap when the crest reaches the green band. Green means the cancellation comes out exact; amber helps but will not flatten it.</p>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p>&copy; <span id="year"></span> Schrödinger's Cards LLC. Jacksonville, Texas.</p>
+    <div class="footer-links">
+      <a href="gallery.html">Gallery</a>
+      <a href="guide.html">Collection Guide</a>
+      <a href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">eBay</a>
+      <a href="https://www.facebook.com/profile.php?id=61594026205359" target="_blank" rel="noopener">Facebook</a>
+      <a href="mailto:booth151.jtx@gmail.com">Email</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/script.js?v=9"></script>
+<script src="js/leaderboard.js?v=2"></script>
+<script src="js/catamaran.js?v=1"></script>
+</body>
+</html>

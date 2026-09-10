@@ -113,8 +113,12 @@ on a game that is still changing shape gets thrown away.
 
 What this stage is for:
 
-- Making it look like the rest of the site. Tokens from `css/styles.css`, Space
-  Grotesk for headings and Sora for body, the existing dark palette.
+- Making it look like the rest of the site. Tokens from `css/styles.css`:
+  **Anton for headings, Archivo for body, Space Mono for labels**, on the
+  near-black neon palette (hot pink `--accent`, cyan `--accent-2`). This line
+  used to say Space Grotesk and Sora on the old navy theme; that was replaced by
+  the facelift in `c7e08de` and the advice went stale before anyone noticed.
+  Read the tokens, do not trust this sentence.
 - Readability of the play field: does the thing you are meant to watch read
   instantly at a glance, at phone size, in a dark room.
 - Motion and feedback — the small satisfying stuff that a mechanics pass skips.
@@ -145,11 +149,15 @@ Checklist:
 - [ ] **Arcade tile** added to `arcade.html` — `data-art` key, kind + length
       line, title, 1–2 sentence blurb — and a matching `art<Name>` function
       registered in the `ART` map in `js/arcade.js`.
-- [ ] Arcade header count updated ("Nine small games…").
+- [ ] Arcade header count updated ("Ten small games…").
 - [ ] **`?v=` bumped** on every file touched, in every page referencing it.
 - [ ] **Phone fit measured, not eyeballed** (`docs/games.md` §6): at a phone
       width, `canvas.bottom <= innerHeight` and horizontal overflow is 0. The
-      HUD, any meter and the whole play area share one screen.
+      HUD, any meter and the whole play area share one screen. **Measure
+      landscape too** if the board is wide — a sideways phone is ~844x390 and
+      misses the shared `max-width:640px` rule entirely. `resize_window` is
+      silently clamped under automation; measure inside an `<iframe>` sized to
+      the phone, which gets its own viewport for media queries.
 - [ ] Played on a phone.
 - [ ] **Leaderboards unmoved** — `git diff -- js/ | grep -E 'makeBoard|localKey|storeName|ff808181'`
       comes back empty on any change that was not deliberately about scores.
