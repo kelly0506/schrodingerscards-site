@@ -115,7 +115,16 @@ canvas#stage:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
   /* Portrait gives a 3:1 board a very short strip to live in: it is width
      bound at about 14% of the screen. It plays, but sideways is the real
      thing, so say so rather than pretend otherwise. */
-  @media (orientation: portrait){ .rotate{display:block} }
+  @media (orientation: portrait){
+    .rotate{display:block}
+    /* And let the stage box HUG the board. The shared rule hands the stage
+       whatever height is left over, which is right for the nine games whose
+       boards are close to square: they fill it. A 3:1 board in portrait is
+       width bound at 366x120, so it was sitting in the middle of a 366x488
+       bordered panel with 368px of nothing around it, and the overlay
+       stretched over the whole empty thing. Measured, not eyeballed. */
+    .game-wrap .stage-wrap{flex:0 0 auto}
+  }
 }
 
 /* ---- a phone, turned sideways ----

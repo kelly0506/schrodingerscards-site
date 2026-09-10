@@ -306,7 +306,7 @@ styles.css v13   board.css v2    arcade.css v1    script.js v9
 leaderboard.js v2                arcade.js v6     carry-wave.js v3
 cats 8/8   hats 3/2   catastrophe 6/6   catstatic 3/5   chonk 3/3
 on-a-roll 3/3   fits 4/3   catwalk 2/2   cat-lady 2/1
-catamaran 1/1                                        (css/js)
+catamaran 2/1                                        (css/js)
 ```
 
 When you edit `css/foo.css` or `js/foo.js`, bump `?v=` for that file in
