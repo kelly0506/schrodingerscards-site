@@ -117,13 +117,30 @@ canvas#stage:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
      thing, so say so rather than pretend otherwise. */
   @media (orientation: portrait){
     .rotate{display:block}
-    /* And let the stage box HUG the board. The shared rule hands the stage
+    /* And stop the stage box stretching. The shared rule hands the stage
        whatever height is left over, which is right for the nine games whose
        boards are close to square: they fill it. A 3:1 board in portrait is
        width bound at 366x120, so it was sitting in the middle of a 366x488
        bordered panel with 368px of nothing around it, and the overlay
-       stretched over the whole empty thing. Measured, not eyeballed. */
+       stretched over the whole empty thing.
+
+       Hugging the canvas alone clipped the overlay instead: it is pinned to
+       this box, and 120px does not hold a title, three lines and a row of
+       buttons — Start went straight off the bottom. Giving the box a floor
+       big enough for the overlay works, but then it is half empty again for
+       the whole run, which is the original complaint.
+
+       So: the box hugs the board, and the OVERLAY is allowed out of it. It
+       anchors to the top, takes at least the board's height and as much more
+       as its content needs, and sits above the wave buttons on its own
+       z-index. Nothing is clipped, nothing is empty, and covering the
+       controls while it is up is correct anyway — there is no play to do
+       until Start is pressed. */
     .game-wrap .stage-wrap{flex:0 0 auto}
+    .stage-wrap .overlay{
+      inset:auto; top:0; left:0; right:0;
+      height:auto; min-height:100%; z-index:5;
+    }
   }
 }
 
