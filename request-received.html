@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Request Received | Schrödinger's Cards</title>
+<meta name="description" content="Your product request is on its way to Schrödinger's Cards. Here is what happens next.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="css/styles.css?v=13">
+<style>
+/* Page-specific: the site stylesheet has no "what happens next" pattern. */
+.next{max-width:64ch;margin:0;padding:10px 0 4px}   /* left, in line with the heading above it */
+.next h2{
+  font-family:var(--font-mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--text-faint);font-weight:400;margin:0 0 18px
+}
+.steps{list-style:none;counter-reset:step;margin:0;padding:0;display:grid;gap:14px}
+.steps li{
+  counter-increment:step;position:relative;padding-left:46px;
+  color:var(--text-dim);font-size:.96rem;line-height:1.6;text-align:left
+}
+.steps li::before{
+  content:counter(step);position:absolute;left:0;top:-1px;
+  width:30px;height:30px;display:grid;place-items:center;border-radius:50%;
+  border:1px solid var(--accent);color:var(--accent);
+  font-family:var(--font-mono);font-size:.8rem
+}
+.steps b{color:var(--text);font-weight:600}
+.terms{
+  border:1px solid var(--border);border-left:2px solid var(--accent-2);
+  background:var(--surface);padding:18px 20px;margin:28px 0 0;max-width:64ch;
+  text-align:left
+}
+.terms p{margin:0 0 10px;color:var(--text-dim);font-size:.9rem;line-height:1.6}
+.terms p:last-child{margin-bottom:0}
+.terms b{color:var(--text);font-weight:600}
+@media(max-width:560px){
+  .steps li{padding-left:40px;font-size:.92rem}
+  .steps li::before{width:26px;height:26px;font-size:.74rem}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <div class="logo">
+      <a class="logo-mark" href="arcade.html" aria-label="Games">
+        <img src="assets/favicon.svg" width="34" height="34" alt="">
+      </a>
+      <a class="logo-text" href="index.html">Schrödinger's <em>Cards</em></a>
+    </div>
+    <div class="header-actions"><a href="faq.html">FAQ</a></div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="hero-field" aria-hidden="true">
+      <span class="orbit orbit-1"></span>
+      <span class="orbit orbit-2"></span>
+      <span class="card-ghost card-ghost-1"></span>
+      <span class="card-ghost card-ghost-2"></span>
+      <span class="card-ghost card-ghost-3"></span>
+    </div>
+    <div class="wrap hero-inner">
+      <p class="eyebrow">Request Received</p>
+      <h1>Thanks, we have your request.</h1>
+      <p class="hero-sub">Nothing is set aside yet. Here is exactly what happens from here.</p>
+
+      <div class="next">
+        <h2>What happens next</h2>
+        <ol class="steps">
+          <li><b>We reply within 48 hours</b> and tell you what is actually still available.</li>
+          <li><b>We agree on a pickup date.</b> Change it, ask questions, adjust the list. That is what the reply is for.</li>
+          <li><b>You have 72 hours from that date</b> to pay and collect. Need longer? Just tell us and we will add 24 hours.</li>
+          <li><b>Come to <a href="index.html#visit">Booth 151</a>.</b> Give your name and the booth number. Your items will be waiting inside our case, ready to pay for.</li>
+        </ol>
+
+        <div class="terms">
+          <p><b>Prices follow the market and everything is subject to availability.</b> We will quote you in our reply and tell you what is actually still in stock.</p>
+          <p><b>Pickup and payment at Booth 151 only.</b> We do not ship these and we do not take payment in advance. Nothing is held until we have replied and agreed a date with you.</p>
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <a href="index.html" class="btn btn-primary">Back to the Site</a>
+        <a href="faq.html" class="btn btn-outline">Read the FAQ</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p>&copy; <span id="year"></span> Schrödinger's Cards LLC. Jacksonville, Texas.</p>
+    <div class="footer-links">
+      <a href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">eBay</a>
+      <a href="https://www.facebook.com/profile.php?id=61594026205359" target="_blank" rel="noopener">Facebook</a>
+      <a href="mailto:booth151.jtx@gmail.com">Email</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/script.js"></script>
+</body>
+</html>

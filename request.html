@@ -226,12 +226,6 @@ h3{font-family:var(--font-body);font-weight:600;font-size:1rem}
 .tray .btn{margin-left:auto}
 
 /* ---------- Preview dialog ---------- */
-dialog{border:1px solid var(--border-2);background:var(--surface);color:var(--text);border-radius:var(--radius);padding:0;max-width:620px;width:calc(100% - 32px)}
-dialog::backdrop{background:rgba(0,0,0,.72)}
-.dlg-head{padding:20px 24px;border-bottom:1px solid var(--border)}
-.dlg-body{padding:22px 24px;max-height:52vh;overflow:auto}
-.dlg-body pre{font-family:var(--font-mono);font-size:.76rem;line-height:1.7;white-space:pre-wrap;word-break:break-word;color:var(--text-dim);margin:0}
-.dlg-foot{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end}
 
 /* On a phone the filter row wraps to three lines. Sticking that under a
    sticky header and over a fixed tray leaves almost no window to browse
@@ -274,7 +268,7 @@ dialog::backdrop{background:rgba(0,0,0,.72)}
 <body class="has-tray">
 <a class="skip-link" href="#panel1">Skip to products</a>
 
-<div class="mock-banner">Preview &middot; not linked from the site yet &middot; the form is not live, submitting shows a preview of the email instead</div>
+<div class="mock-banner">Not linked from the site yet &middot; this form is live and will send a real request</div>
 
 <header class="site-header">
   <div class="wrap header-inner">
@@ -394,7 +388,7 @@ dialog::backdrop{background:rgba(0,0,0,.72)}
       <form class="form" id="form" action="https://formsubmit.co/booth151.jtx@gmail.com" method="POST">
         <input type="hidden" name="_subject" value="New product request from schrodingerscards.com">
         <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_next" value="https://schrodingerscards.com/thanks.html">
+        <input type="hidden" name="_next" value="https://schrodingerscards.com/request-received.html">
         <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp-field">
         <input type="hidden" name="requested_products" id="requestedProducts">
 
@@ -450,11 +444,6 @@ dialog::backdrop{background:rgba(0,0,0,.72)}
   </div>
 </div>
 
-<dialog id="preview">
-  <div class="dlg-head"><h3>Mockup preview</h3><p style="color:var(--text-faint);font-size:.85rem">This is what would land in your inbox. Nothing was sent.</p></div>
-  <div class="dlg-body"><pre id="previewBody"></pre></div>
-  <div class="dlg-foot"><button class="btn btn-outline" type="button" id="closeDlg">Close</button></div>
-</dialog>
 
 <script>
 /* ============================================================
@@ -831,32 +820,6 @@ byId("pager").addEventListener("click", e => {
   document.querySelector(".controls").scrollIntoView({ block: "start" });
 });
 
-/* MOCKUP GUARD. Delete this whole listener to make the form post for real. */
-const dlg = byId("preview");
-byId("form").addEventListener("submit", e => {
-  e.preventDefault();
-  const f = e.target;
-  const g = n => (f.elements[n]?.value || "").trim();
-  const slim = slimUnits(cart);
-  const lines = [
-    "Name:  " + (g("name")  || "-"),
-    "Email: " + (g("email") || "-"),
-    "Phone: " + (g("phone") || "-"),
-    "Pickup terms acknowledged: " + (f.elements["pickup_acknowledged"].checked ? "Yes" : "No"),
-    "",
-    "REQUESTED PRODUCTS (" + itemsUsed() + " of " + MAX + " items"
-      + (slim ? ", including " + plural(slim, "slim booster") : "") + ")",
-    cart.size ? hidden.value : "  (none selected)",
-    "",
-    "Inquire about specific single(s):",  "  " + (g("inquiry_singles")    || "-"),
-    "Inquire about graded cards:",        "  " + (g("inquiry_graded")     || "-"),
-    "Inquire about products not listed:", "  " + (g("inquiry_not_listed") || "-"),
-    "Notes:",                             "  " + (g("notes")              || "-")
-  ];
-  byId("previewBody").textContent = lines.join("\n");
-  dlg.showModal();
-});
-byId("closeDlg").addEventListener("click", () => dlg.close());
 
 render();
 goto(1);
