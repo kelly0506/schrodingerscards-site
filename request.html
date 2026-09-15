@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Request Products | Schrödinger's Cards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ---------- Reset ---------- */
+*,*::before,*::after{box-sizing:border-box}
+body,h1,h2,h3,p,ul,ol,figure{margin:0}
+ul,ol{padding:0;list-style:none}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer}
+[hidden]{display:none !important}
+
+/* ---------- Tokens (lifted from css/styles.css so this file stands alone) ---------- */
+:root{
+  --bg:#060507; --bg-alt:#0b0a0d; --surface:#0f0d12; --surface-2:#161219;
+  --border:#241f28; --border-2:#332b38;
+  --text:#f6f2f4; --text-dim:#a79fa8; --text-faint:#827a88;
+  --accent:#ff3d8b; --accent-2:#3ee7ff; --on-accent:#12000a;
+  --font-head:'Anton',Impact,system-ui,sans-serif;
+  --font-body:'Archivo',system-ui,sans-serif;
+  --font-mono:'Space Mono',ui-monospace,monospace;
+  --radius:2px;
+  --btn-glow:0 0 0 1px var(--accent),0 6px 22px -10px rgba(255,61,139,.5);
+  --tray-h:74px;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased}
+body.has-tray{padding-bottom:calc(var(--tray-h) + 8px)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+.skip-link{position:absolute;left:-999px;top:0;background:var(--surface);color:var(--text);padding:12px 20px;z-index:1000}
+.skip-link:focus{left:12px;top:12px}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- Type ---------- */
+h1{font-family:var(--font-head);font-weight:400;font-size:clamp(2.1rem,5.4vw,3.4rem);line-height:1.05;letter-spacing:.012em;text-transform:uppercase}
+h2{font-family:var(--font-head);font-weight:600;font-size:clamp(1.4rem,3vw,1.9rem);line-height:1.2;margin-bottom:16px}
+h3{font-family:var(--font-body);font-weight:600;font-size:1rem}
+.eyebrow{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;color:var(--text-faint);margin-bottom:14px}
+.lede{color:var(--text-dim);font-size:1.05rem;max-width:60ch}
+
+/* ---------- Buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 24px;border-radius:var(--radius);font-family:var(--font-head);font-weight:400;font-size:.82rem;letter-spacing:.09em;text-transform:uppercase;transition:transform .15s ease,box-shadow .15s ease,background .15s ease,color .15s ease;border:1px solid transparent;white-space:nowrap}
+.btn-primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.btn-primary:hover:not(:disabled){transform:translateY(-2px);box-shadow:var(--btn-glow)}
+.btn-outline{background:transparent;border-color:var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-cyan{background:transparent;border-color:var(--accent-2);color:var(--accent-2)}
+.btn-cyan:hover{background:var(--accent-2);color:var(--on-accent)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* ---------- Header ---------- */
+.site-header{position:sticky;top:0;z-index:40;background:rgba(6,5,7,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}
+.logo-text{font-family:var(--font-head);font-size:1.05rem;letter-spacing:.02em;text-transform:uppercase}
+.logo-text em{font-style:normal;color:var(--accent)}
+.header-actions a{font-size:.9rem;color:var(--text-dim)}
+.header-actions a:hover{color:var(--accent)}
+.mock-banner{background:linear-gradient(90deg,rgba(62,231,255,.14),rgba(255,61,139,.14));border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-2);text-align:center;padding:9px 16px}
+
+/* ---------- Hero ---------- */
+.hero{padding:34px 0 26px}
+/* The three notices used to be a 68ch column stacked down the left, which
+   left half a desktop window empty above the fold. They are a grid now:
+   two across on a wide screen, one column on a phone. */
+.hero-grid{display:grid;gap:14px;margin-top:20px;align-items:stretch}
+@media(min-width:920px){
+  .hero-grid{grid-template-columns:1fr 1fr}
+  .hero-grid .how{grid-column:1 / -1}
+}
+.notice{display:flex;gap:14px;align-items:flex-start;padding:18px 20px;border:1px solid var(--border-2);border-left:3px solid var(--accent);background:var(--surface);border-radius:var(--radius)}
+.notice svg{flex:none;margin-top:3px;color:var(--accent)}
+.notice p{font-size:.95rem;color:var(--text-dim)}
+.notice p + p{margin-top:9px}
+.notice strong{color:var(--text);font-weight:600}
+
+/* Local-only + eBay escape hatch */
+.local{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:16px 20px;border:1px solid var(--border-2);border-left:3px solid var(--accent-2);background:var(--surface);border-radius:var(--radius)}
+.local p{font-size:.92rem;color:var(--text-dim);flex:1 1 240px;min-width:0}
+.local strong{color:var(--accent-2);font-weight:600}
+
+/* How this works */
+.how{border:1px solid var(--border);background:var(--surface);border-radius:var(--radius);align-self:start}
+.how > summary{cursor:pointer;padding:15px 20px;font-family:var(--font-head);font-size:.84rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text);list-style:none;display:flex;align-items:center;gap:10px}
+.how > summary::-webkit-details-marker{display:none}
+.how > summary::after{content:"+";margin-left:auto;color:var(--accent);font-size:1.1rem}
+.how[open] > summary::after{content:"\2212"}
+.how-body{padding:4px 20px 20px}
+.how ol{counter-reset:s;display:flex;flex-direction:column;gap:13px}
+.how ol li{counter-increment:s;display:flex;gap:13px;font-size:.93rem;color:var(--text-dim)}
+.how ol li::before{content:counter(s);flex:none;display:grid;place-items:center;width:23px;height:23px;border-radius:999px;background:var(--surface-2);border:1px solid var(--border-2);font-family:var(--font-mono);font-size:.7rem;color:var(--accent);margin-top:1px}
+.how ol li strong{color:var(--text);font-weight:600}
+.how-foot{margin-top:16px;padding-top:14px;border-top:1px solid var(--border);font-size:.88rem;color:var(--text-faint)}
+
+/* ---------- Step indicator ---------- */
+.steps{border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg-alt)}
+.steps ol{display:flex;gap:0}
+.steps li{flex:1;display:flex;align-items:center;gap:10px;padding:15px 8px;font-family:var(--font-mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);border-bottom:2px solid transparent;transition:.2s}
+.steps li .num{display:grid;place-items:center;width:22px;height:22px;border-radius:999px;border:1px solid var(--border-2);font-size:.7rem;flex:none}
+.steps li[aria-current="step"]{color:var(--text);border-bottom-color:var(--accent)}
+.steps li[aria-current="step"] .num{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.steps li.done{color:var(--text-dim)}
+.steps li.done .num{border-color:var(--accent);color:var(--accent)}
+.lbl-mini{display:none}
+
+/* ---------- Controls ---------- */
+.controls{position:sticky;top:68px;z-index:30;background:var(--bg-alt);border-bottom:1px solid var(--border);padding:14px 0}
+.controls-inner{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.search{flex:1 1 240px;min-width:0;position:relative}
+.search input{width:100%;padding:11px 14px 11px 38px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:var(--font-body);font-size:.95rem}
+.search input:focus{outline:none;border-color:var(--accent)}
+.search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text-faint)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:9px 15px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-size:.82rem;font-family:var(--font-mono);letter-spacing:.04em;transition:.15s}
+.chip:hover{border-color:var(--border-2);color:var(--text)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.result-count{font-family:var(--font-mono);font-size:.74rem;color:var(--text-faint);letter-spacing:.08em;margin-left:auto}
+
+/* ---------- Grid ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;padding:30px 0 44px}
+.tile{display:flex;flex-direction:column;border:1px solid var(--border);background:var(--surface);border-radius:var(--radius);overflow:hidden;transition:border-color .15s ease}
+.tile:hover{border-color:var(--border-2)}
+.tile.is-picked{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+
+/* Placeholder art. Pure CSS, no external files, nothing that hints at a source. */
+/* Square, because sealed product photographs portrait and a 4:3 tile
+   letterboxes it into a stripe. Square suits both orientations. */
+.thumb{position:relative;aspect-ratio:1/1;background:var(--surface-2);display:grid;place-items:center;border-bottom:1px solid var(--border);overflow:hidden}
+.thumb::before{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.022) 0 10px,transparent 10px 20px);pointer-events:none}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;padding:38px 13px 15px;gap:6px}  /* top padding clears the language chip */
+.ph-art{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center}
+.ph-art img{max-width:88%;max-height:100%;object-fit:contain}
+.ph-art svg{height:100%;width:auto;max-height:104px;color:var(--accent);overflow:visible}
+.ph-form{font-family:var(--font-mono);font-size:.56rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-2)}
+.ph-mark{font-family:var(--font-head);font-size:1.05rem;letter-spacing:.05em;color:var(--text-faint);line-height:1.12;text-transform:uppercase;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.ph-note{font-family:var(--font-mono);font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint);margin-top:3px}
+.lang{position:absolute;top:9px;left:9px;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.12em;padding:3px 8px;border-radius:999px;background:rgba(6,5,7,.82);border:1px solid var(--border-2);color:var(--text-dim);z-index:1}
+.badge-qty{position:absolute;top:9px;right:9px;font-family:var(--font-head);font-size:.74rem;letter-spacing:.06em;padding:3px 9px;border-radius:999px;background:var(--accent);color:var(--on-accent);z-index:1}
+.tile-body{padding:14px;display:flex;flex-direction:column;gap:8px;flex:1}
+.tile-name{font-size:.92rem;font-weight:600;line-height:1.34}
+.tile-detail{font-family:var(--font-mono);font-size:.7rem;color:var(--text-faint);letter-spacing:.03em;line-height:1.5;flex:1}
+.tile.is-sold .thumb img{opacity:.38;filter:saturate(.5)}
+.tile.is-sold .thumb .ph{opacity:.3}   /* the placeholder recedes too, so the banner stays readable over it */
+.badge-sold{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-5deg);z-index:2;font-family:var(--font-head);font-size:.95rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text);background:rgba(6,5,7,.74);border:1px solid var(--accent);border-radius:var(--radius);padding:7px 15px;white-space:nowrap}
+.sold-note{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint);border:1px dashed var(--border-2);border-radius:var(--radius);padding:11px 12px;text-align:center;margin:0}
+.slim-tag{display:inline-block;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-2);border:1px solid rgba(62,231,255,.32);border-radius:999px;padding:2px 8px;align-self:flex-start}
+.pick{width:100%;padding:10px;border-radius:var(--radius);border:1px solid var(--border);background:transparent;color:var(--text);font-family:var(--font-head);font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;transition:.15s}
+.pick:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.pick:disabled{opacity:.35;cursor:not-allowed}
+.empty{grid-column:1/-1;text-align:center;padding:50px 20px;color:var(--text-faint);font-family:var(--font-mono);font-size:.82rem;letter-spacing:.08em}
+
+/* ---------- Quantity stepper ---------- */
+.qty{display:flex;align-items:center;border:1px solid var(--accent);border-radius:var(--radius);overflow:hidden}
+.qty button{flex:none;width:38px;height:38px;display:grid;place-items:center;background:transparent;border:0;color:var(--accent);font-size:1.15rem;line-height:1;transition:.15s}
+.qty button:hover:not(:disabled){background:var(--accent);color:var(--on-accent)}
+.qty button:disabled{opacity:.3;cursor:not-allowed}
+.qty .n{flex:1;text-align:center;font-family:var(--font-head);font-size:.95rem;letter-spacing:.06em;color:var(--text)}
+.qty.sm button{width:30px;height:30px;font-size:1rem}
+.qty.sm{flex:none;width:104px}
+
+/* ---------- Review list ---------- */
+.picked-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.picked-row{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--border);background:var(--surface);border-radius:var(--radius)}
+.picked-row .t{flex:1;font-size:.9rem;min-width:0}
+.picked-row .t small{display:block;font-family:var(--font-mono);font-size:.66rem;color:var(--text-faint);font-weight:400}
+.rm{background:transparent;border:1px solid var(--border);color:var(--text-faint);border-radius:999px;width:26px;height:26px;line-height:1;flex:none;display:grid;place-items:center;font-size:1rem}
+.rm:hover{border-color:var(--accent);color:var(--accent)}
+.picked-empty{padding:22px;border:1px dashed var(--border-2);border-radius:var(--radius);color:var(--text-faint);font-family:var(--font-mono);font-size:.78rem;letter-spacing:.06em;text-align:center;margin-bottom:14px;line-height:1.7}
+.review-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.review-total{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint)}
+.review-total b{color:var(--accent);font-weight:400}
+.slim-note{font-size:.84rem;color:var(--text-faint);margin-bottom:22px}
+.slim-note b{color:var(--accent-2);font-weight:400}
+
+/* ---------- Form ---------- */
+.section{padding:40px 0}
+.section-alt{background:var(--bg-alt);border-top:1px solid var(--border)}
+.form{display:flex;flex-direction:column;gap:14px;padding:28px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface)}
+.form label{font-family:var(--font-head);font-size:.82rem;color:var(--text-dim)}
+.form .req{color:var(--accent)}
+.form .opt{color:var(--text-faint);font-family:var(--font-body);font-size:.8rem;text-transform:none;letter-spacing:0}
+.form input,.form textarea{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg-alt);color:var(--text);font-family:var(--font-body);font-size:.95rem;resize:vertical}
+.form input:focus,.form textarea:focus{outline:none;border-color:var(--accent)}
+.row2{display:grid;gap:14px}
+@media(min-width:640px){.row2{grid-template-columns:1fr 1fr}}
+.hp-field{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.opt-head{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-faint);margin:14px 0 -4px;padding-top:14px;border-top:1px solid var(--border)}
+.form-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.form-actions .btn-primary{flex:1 1 auto}
+.fine{font-size:.82rem;color:var(--text-faint)}
+.agree{display:flex;gap:11px;align-items:flex-start;padding:15px 16px;border:1px solid var(--border-2);background:var(--bg-alt);border-radius:var(--radius);margin-top:6px}
+.agree input{width:18px;height:18px;flex:none;margin-top:2px;accent-color:var(--accent)}
+.agree span{font-size:.88rem;color:var(--text-dim);line-height:1.55}
+
+/* ---------- Tray ---------- */
+.tray{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(11,10,13,.96);backdrop-filter:blur(12px);border-top:1px solid var(--border-2);height:var(--tray-h)}
+.tray-inner{display:flex;align-items:center;gap:16px;height:100%}
+.tray-count{font-family:var(--font-head);font-size:1.05rem;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.tray-count b{color:var(--accent);font-weight:400}
+.tray-hint{font-family:var(--font-mono);font-size:.68rem;color:var(--text-faint);letter-spacing:.06em;flex:1;min-width:0}
+.tray .btn{margin-left:auto}
+
+/* ---------- Preview dialog ---------- */
+dialog{border:1px solid var(--border-2);background:var(--surface);color:var(--text);border-radius:var(--radius);padding:0;max-width:620px;width:calc(100% - 32px)}
+dialog::backdrop{background:rgba(0,0,0,.72)}
+.dlg-head{padding:20px 24px;border-bottom:1px solid var(--border)}
+.dlg-body{padding:22px 24px;max-height:52vh;overflow:auto}
+.dlg-body pre{font-family:var(--font-mono);font-size:.76rem;line-height:1.7;white-space:pre-wrap;word-break:break-word;color:var(--text-dim);margin:0}
+.dlg-foot{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end}
+
+/* On a phone the filter row wraps to three lines. Sticking that under a
+   sticky header and over a fixed tray leaves almost no window to browse
+   through, so below 700px it scrolls away like normal content. */
+@media(max-width:699px){
+  .controls{position:static}
+  .chips{width:100%}
+  .chip{flex:1 1 auto;text-align:center}
+  .result-count{margin-left:0;width:100%}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+  .tile-body{padding:11px}
+  .ph-mark{font-size:.92rem}
+  .steps li{justify-content:center;font-size:.66rem}
+  .lbl-full{display:none}
+  .lbl-mini{display:inline}
+  .tray-hint{display:none}
+  .tray .btn{padding:13px 18px}
+  .local .btn{width:100%}
+}
+</style>
+</head>
+<body class="has-tray">
+<a class="skip-link" href="#panel1">Skip to products</a>
+
+<div class="mock-banner">Preview &middot; not linked from the site yet &middot; the form is not live, submitting shows a preview of the email instead</div>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <div class="logo"><a class="logo-text" href="index.html">Schrödinger's <em>Cards</em></a></div>
+    <div class="header-actions"><a href="index.html">Back to site</a></div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Sealed Pokémon &middot; Booth 151, Treasure Cove Mall</p>
+    <h1>Request Products</h1>
+    <p class="lede" id="lede">Here is what we have on the table right now. Pick up to six items, tell us how to reach you, and we will get back to you.</p>
+
+    <div class="hero-grid">
+    <div class="local">
+      <p><strong>Pickup only, at <a href="index.html#visit" style="color:var(--accent-2);text-decoration:underline">Booth 151</a>.</strong> We do not ship these and we do not take payment in advance. Everything on this page is paid for and collected in person at Treasure Cove Mall in Jacksonville, Texas.</p>
+      <a class="btn btn-cyan" href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">Shop eBay Instead &rarr;</a>
+    </div>
+
+    <div class="notice">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5v.01"/></svg>
+      <div>
+        <p><strong>A request is not a reservation.</strong> Sending this does not hold anything or guarantee we can fill it. Stock moves at the booth and some of these are down to the last one. We will tell you what is actually available when we reply.</p>
+        <p>Not local, or after Magic: The Gathering? None of that is on this page, but our eBay store ships nationwide.</p>
+      </div>
+    </div>
+
+    <details class="how" id="how">
+      <summary>How this works</summary>
+      <div class="how-body">
+        <ol>
+          <li><strong>You send this request.</strong> Nothing is set aside yet.</li>
+          <li><strong>We reply within 48 hours</strong> and tell you what is actually still available.</li>
+          <li><strong>We agree on a pickup date.</strong> Change it, ask questions, adjust the list. That is what the reply is for.</li>
+          <li><strong>You have 72 hours from that date</strong> to pay and collect. Need longer? Just tell us and we will add 24 hours.</li>
+          <li><strong>Come to <a href="index.html#visit" style="color:var(--accent)">Booth 151</a>.</strong> Give your name and the booth number. Your items will be waiting inside our case, ready to pay for.</li>
+        </ol>
+        <p class="how-foot">Payment happens at Treasure Cove, in person. There is no prepay option. We cannot promise to hold items past that window unless we hear from you. <a href="faq.html" style="color:var(--accent)">Read the full FAQ &rarr;</a></p>
+      </div>
+    </details>
+    </div>
+  </div>
+</section>
+
+<nav class="steps" aria-label="Progress">
+  <ol class="wrap">
+    <li id="stepTab1" aria-current="step"><span class="num">1</span><span class="lbl-full">Choose Products</span><span class="lbl-mini">Choose</span></li>
+    <li id="stepTab2"><span class="num">2</span><span class="lbl-full">Your Details</span><span class="lbl-mini">Details</span></li>
+  </ol>
+</nav>
+
+<!-- ============ STEP 1 ============ -->
+<div id="panel1">
+  <div class="controls">
+    <div class="wrap controls-inner">
+      <div class="search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+        <label class="vh" for="q">Search products</label>
+        <input id="q" type="search" placeholder="Search by set or product name" autocomplete="off">
+      </div>
+      <div class="chips" role="group" aria-label="Filter by language">
+        <button class="chip" type="button" data-filter="lang" data-value="all" aria-pressed="true">All</button>
+        <button class="chip" type="button" data-filter="lang" data-value="EN" aria-pressed="false">English</button>
+        <button class="chip" type="button" data-filter="lang" data-value="CN" aria-pressed="false">Chinese</button>
+      </div>
+      <div class="chips" role="group" aria-label="Filter by format">
+        <button class="chip" type="button" data-filter="type" data-value="all" aria-pressed="true">Any format</button>
+        <button class="chip" type="button" data-filter="type" data-value="Pack" aria-pressed="false">Packs</button>
+        <button class="chip" type="button" data-filter="type" data-value="Box" aria-pressed="false">Boxes</button>
+        <button class="chip" type="button" data-filter="type" data-value="Set" aria-pressed="false">Gift Sets</button>
+      </div>
+      <div class="chips" role="group" aria-label="Filter by size">
+        <button class="chip" type="button" data-filter="size" data-value="all" aria-pressed="true">Any size</button>
+        <button class="chip" type="button" data-filter="size" data-value="Slim" aria-pressed="false">Slim</button>
+        <button class="chip" type="button" data-filter="size" data-value="Standard" aria-pressed="false">Standard</button>
+        <button class="chip" type="button" data-filter="size" data-value="Jumbo" aria-pressed="false">Jumbo</button>
+      </div>
+      <p class="result-count" id="count" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <main>
+    <div class="wrap"><ul class="grid" id="grid"></ul></div>
+  </main>
+</div>
+
+<!-- ============ STEP 2 ============ -->
+<div id="panel2" hidden>
+  <section class="section">
+    <div class="wrap">
+      <div class="review-head">
+        <h2 style="margin:0">What You Are Requesting</h2>
+        <p class="review-total"><b id="reviewN">0</b> of 6 items</p>
+      </div>
+      <div id="pickedWrap"></div>
+      <p class="slim-note" id="slimNote" hidden></p>
+      <button class="btn btn-outline" type="button" data-goto="1">&larr; Back to products</button>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="wrap">
+      <h2>How Do We Reach You?</h2>
+      <form class="form" id="form" action="https://formsubmit.co/booth151.jtx@gmail.com" method="POST">
+        <input type="hidden" name="_subject" value="New product request from schrodingerscards.com">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_next" value="https://schrodingerscards.com/thanks.html">
+        <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp-field">
+        <input type="hidden" name="requested_products" id="requestedProducts">
+
+        <div class="row2">
+          <div>
+            <label for="name">Name <span class="req">*</span></label>
+            <input type="text" id="name" name="name" required autocomplete="name">
+          </div>
+          <div>
+            <label for="email">Email <span class="req">*</span></label>
+            <input type="email" id="email" name="email" required autocomplete="email">
+          </div>
+        </div>
+
+        <label for="phone">Phone <span class="opt">(optional, if you would rather we text)</span></label>
+        <input type="tel" id="phone" name="phone" autocomplete="tel">
+
+        <p class="opt-head">Anything else? All optional.</p>
+
+        <label for="singles">Inquire about specific single(s)</label>
+        <textarea id="singles" name="inquiry_singles" rows="3" placeholder="Card name, set, number if you have it"></textarea>
+
+        <label for="graded">Inquire about graded cards</label>
+        <textarea id="graded" name="inquiry_graded" rows="3" placeholder="What you are after, and any grade or grader you prefer"></textarea>
+
+        <label for="notlisted">Inquire about products not listed</label>
+        <textarea id="notlisted" name="inquiry_not_listed" rows="3" placeholder="Sealed product, other languages, other games"></textarea>
+
+        <label for="notes">Notes for us</label>
+        <textarea id="notes" name="notes" rows="3" placeholder="Anything that helps us help you"></textarea>
+
+        <label class="agree">
+          <input type="checkbox" name="pickup_acknowledged" value="Yes" required>
+          <span>I understand this is <strong>pickup and payment at Booth 151 only</strong>, that nothing is held until we agree on a date, and that I will have 72 hours from that date to collect.</span>
+        </label>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline" data-goto="1">&larr; Back</button>
+          <button type="submit" class="btn btn-primary">Send Request</button>
+        </div>
+        <p class="fine">Prices follow the market and everything here is subject to availability. We will quote you in our reply and tell you what is actually still in stock.</p>
+        <p class="fine">We only use your details to answer this request. Nothing is reserved until we reply and confirm.</p>
+      </form>
+    </div>
+  </section>
+</div>
+
+<div class="tray" id="tray">
+  <div class="wrap tray-inner">
+    <p class="tray-count"><b id="trayN">0</b> of 6 items</p>
+    <p class="tray-hint" id="trayHint">Add up to six items in total</p>
+    <button class="btn btn-primary" type="button" data-goto="2">Next: Your Details</button>
+  </div>
+</div>
+
+<dialog id="preview">
+  <div class="dlg-head"><h3>Mockup preview</h3><p style="color:var(--text-faint);font-size:.85rem">This is what would land in your inbox. Nothing was sent.</p></div>
+  <div class="dlg-body"><pre id="previewBody"></pre></div>
+  <div class="dlg-foot"><button class="btn btn-outline" type="button" id="closeDlg">Close</button></div>
+</dialog>
+
+<script>
+/* ============================================================
+   Products: the in-stock rows from the Website Stock - Feed tab.
+   Names and contents only. No prices, no quantities, and nothing about
+   where any of it is sourced. `img` is the eventual path under
+   assets/products/; while it is null the tile draws a placeholder, so
+   dropping real photos in later is a one-field change per product.
+
+   `logo` is the set's own logo, used as the stand-in when there is no
+   photograph -- or when a photograph fails to load. Only the English sets
+   have a published logo; the Chinese ones fall back to a drawn silhouette
+   of the format, which covers every product.
+
+   `soldOut:true` is the "Out of Stock" tag. It is deliberately NOT the
+   same thing as dropping a product from this list: an out-of-stock
+   product keeps its tile and its photo so people can still see it is a
+   line we carry, but it cannot be added to a request. Removing a row
+   entirely is what "In Hand = N" means.
+
+   MAX caps TOTAL ITEMS, not distinct products. `slim:true` marks the
+   5-card slim boosters, which are small enough that SLIM_PER_ITEM of
+   them together count as a single item. The flag is set per product
+   rather than sniffed from the name, because "Slim Booster BOX" is a
+   whole box and must count as one full item.
+   ============================================================ */
+const MAX = 6;
+const SLIM_PER_ITEM = 5;
+
+const PRODUCTS = [
+ {sku:"63",  lang:"EN", type:"Pack", name:"English Surging Sparks Booster Pack", detail:"1 Booster, 10 Cards", img:"assets/products/63.webp", logo:"assets/sets/surging-sparks.webp"},
+ {sku:"78",  lang:"EN", type:"Pack", name:"English White Flare Booster Pack", detail:"1 Booster, 10 Cards", img:"assets/products/78.webp", logo:"assets/sets/white-flare.webp"},
+ {sku:"79",  lang:"EN", type:"Pack", name:"English Black Bolt Booster Pack", detail:"1 Booster, 10 Cards", img:"assets/products/79.webp", logo:"assets/sets/black-bolt.webp"},
+ {sku:"121", lang:"EN", type:"Pack", name:"English Chaos Rising Booster Pack", detail:"1 Booster, 10 Cards", img:"assets/products/121.webp", logo:"assets/sets/chaos-rising.webp"},
+ {sku:"122", lang:"EN", type:"Pack", name:"English Destined Rivals Booster Pack", detail:"1 Booster, 10 Cards", img:"assets/products/122.webp", logo:"assets/sets/destined-rivals.webp"},
+ {sku:"123", lang:"EN", type:"Pack", name:"English Journey Together Booster Pack", detail:"1 Booster, 10 Cards", img:"assets/products/123.webp", logo:"assets/sets/journey-together.webp"},
+ {sku:"124", lang:"EN", type:"Pack", name:"English Twilight Masquerade Booster Pack", detail:"1 Booster, 10 Cards", img:"assets/products/124.webp", logo:"assets/sets/twilight-masquerade.webp"},
+ {sku:"125", lang:"EN", type:"Pack", name:"English Pitch Black Booster Pack", detail:"1 Booster, 10 Cards", img:"assets/products/125.webp", logo:"assets/sets/pitch-black.webp"},
+ {sku:"131", lang:"EN", type:"Pack", name:"English Perfect Order Booster Pack", detail:"1 Booster, 10 Cards", img:"assets/products/131.webp", logo:"assets/sets/perfect-order.webp"},
+ {sku:"126", lang:"EN", type:"Set",  name:"English Pitch Black Slowpoke Blister Pack", detail:"1 Booster, 10 Cards + 1 Slowpoke Promo Card + 1 Coin", img:"assets/products/126.webp", logo:"assets/sets/pitch-black.webp"},
+ {sku:"140", lang:"EN", type:"Set",  name:"English First Partner Illustration Collection Series 2", detail:"1 Promo Booster (3 of 9 Illustration Rare Promos) + 2 Boosters, 10 Cards per Booster + 1 Sticker Sheet", img:"assets/products/140.webp"},
+ {sku:"146", lang:"EN", type:"Set",  name:"English First Partner Illustration Collection Series 3", detail:"1 Promo Booster (3 of 9 Illustration Rare Promos) + 2 Boosters, 10 Cards per Booster + 1 Sticker Sheet", img:"assets/products/146.webp"},
+
+ {sku:"59",   lang:"CN", type:"Box",  name:"Chinese Chasing Glory Together Slim Booster Box", detail:"15 Boosters, 5 Cards per Booster", img:"assets/products/59.webp"},
+ {sku:"155",  lang:"CN", type:"Pack", name:"Chinese Chasing Glory Together Slim Booster Pack", detail:"1 Booster, 5 Cards", img:"assets/products/155.webp", slim:true},
+ {sku:"149",  lang:"CN", type:"Box",  name:"Chinese Stellar Crystal Slim Booster Box", detail:"15 Boosters, 5 Cards per Booster", img:"assets/products/149.webp"},
+ {sku:"160",  lang:"CN", type:"Pack", name:"Chinese Stellar Crystal Slim Booster Pack", detail:"1 Booster, 5 Cards", img:"assets/products/160.webp", slim:true},
+ {sku:"161",  lang:"CN", type:"Box",  name:"Chinese Brilliant Fantasy Slim Booster Box", detail:"15 Boosters, 5 Cards per Booster", img:"assets/products/161.webp"},
+ {sku:"162",  lang:"CN", type:"Pack", name:"Chinese Brilliant Fantasy Slim Booster Pack", detail:"1 Booster, 5 Cards", img:"assets/products/162.webp", slim:true},
+ {sku:"158",  lang:"CN", type:"Box",  name:"Chinese Brilliant Fantasy Jumbo Booster Box", detail:"6 Boosters, 20 Cards per Booster", img:"assets/products/158.webp"},
+ {sku:"159",  lang:"CN", type:"Pack", name:"Chinese Brilliant Fantasy Jumbo Booster Pack", detail:"1 Booster, 20 Cards", img:"assets/products/159.webp"},
+ {sku:"165",  lang:"CN", type:"Box",  name:"Chinese Sharp Blade Awakening Slim Booster Box", detail:"15 Boosters, 5 Cards per Booster", img:"assets/products/165.webp"},
+ {sku:"166",  lang:"CN", type:"Pack", name:"Chinese Sharp Blade Awakening Slim Booster Pack", detail:"1 Booster, 5 Cards", img:"assets/products/166.webp", slim:true},
+ {sku:"156",  lang:"CN", type:"Box",  name:"Chinese Sharp Blade Awakening Jumbo Booster Box", detail:"6 Boosters, 20 Cards per Booster", img:"assets/products/156.webp"},
+ {sku:"157",  lang:"CN", type:"Pack", name:"Chinese Sharp Blade Awakening Jumbo Booster Pack", detail:"1 Booster, 20 Cards", img:"assets/products/157.webp"},
+ {sku:"39",   lang:"CN", type:"Box",  name:"Chinese Black Crystal Blazing Slim Booster Box", detail:"15 Boosters, 5 Cards per Booster", img:"assets/products/39.webp"},
+ {sku:"167",  lang:"CN", type:"Pack", name:"Chinese Black Crystal Blazing Slim Booster Pack", detail:"1 Booster, 5 Cards", img:"assets/products/167.webp", slim:true},
+ {sku:"168",  lang:"CN", type:"Box",  name:"Chinese Mystic & Void Slim Booster Box", detail:"15 Boosters, 5 Cards per Booster", img:"assets/products/168.webp"},
+ {sku:"169",  lang:"CN", type:"Pack", name:"Chinese Mystic & Void Slim Booster Pack", detail:"1 Booster, 5 Cards", img:"assets/products/169.webp", slim:true},
+ {sku:"153A", lang:"CN", type:"Box",  name:"Chinese Primordial Arts Venusaur Jumbo Booster Box", detail:"6 Boosters, 25 Cards per Booster", img:"assets/products/153A.webp"},
+ {sku:"153B", lang:"CN", type:"Box",  name:"Chinese Primordial Arts Blastoise Jumbo Booster Box", detail:"6 Boosters, 25 Cards per Booster", img:"assets/products/153B.webp"},
+ {sku:"154A", lang:"CN", type:"Pack", name:"Chinese Primordial Arts Venusaur Jumbo Booster Pack", detail:"1 Booster, 25 Cards", img:"assets/products/154A.webp"},
+ {sku:"154B", lang:"CN", type:"Pack", name:"Chinese Primordial Arts Blastoise Jumbo Booster Pack", detail:"1 Booster, 25 Cards", img:"assets/products/154B.webp"},
+ {sku:"135",  lang:"CN", type:"Box",  name:"Chinese Gem Box Volume 4 Booster Box", detail:"18 Boosters, 4 Cards per Booster", img:"assets/products/135.webp"},
+ {sku:"132",  lang:"CN", type:"Pack", name:"Chinese Gem Box Volume 4 Booster Pack", detail:"1 Booster, 4 Cards", img:"assets/products/132.webp", slim:true},
+ {sku:"163",  lang:"CN", type:"Box",  name:"Chinese Gem Box Volume 5 Booster Box", detail:"18 Boosters, 4 Cards per Booster", img:"assets/products/163.webp", soldOut:true},
+ {sku:"164",  lang:"CN", type:"Pack", name:"Chinese Gem Box Volume 5 Booster Pack", detail:"1 Booster, 4 Cards", img:"assets/products/164.webp", slim:true, soldOut:true},
+ {sku:"150",  lang:"CN", type:"Box",  name:"Chinese Gem Box Volume 6 Booster Box", detail:"18 Boosters, 4 Cards per Booster", img:"assets/products/150.webp"},
+ {sku:"152",  lang:"CN", type:"Pack", name:"Chinese Gem Box Volume 6 Booster Pack", detail:"1 Booster, 4 Cards", img:"assets/products/152.webp", slim:true},
+ {sku:"133",  lang:"CN", type:"Pack", name:"Chinese Vivid Portrayals Slim Booster Pack", detail:"1 Booster, 5 Cards", img:"assets/products/133.webp", slim:true},
+ {sku:"170",  lang:"CN", type:"Set",  name:"Chinese Pikachu V-Union Gift Box", detail:"4 Boosters, 5 Cards per Booster + 1 Pikachu V-Union 4-Card Jumbo Set + 1 Display Stand", img:"assets/products/170.webp"},
+ {sku:"171",  lang:"CN", type:"Set",  name:"Chinese 30th Anniversary Special Art Card Set Vol. 1", detail:"1 Booster, 5 Cards + 1 Special Illustration Rare Promo Card + 1 Acrylic Magnetic Display Case", img:"assets/products/171.webp"},
+ {sku:"172",  lang:"CN", type:"Set",  name:"Chinese 30th Anniversary Special Art Card Set Vol. 2", detail:"1 Booster, 5 Cards + 1 of 9 First Partner Special Illustration Foil Cards + 1 Acrylic Magnetic Display Frame", img:"assets/products/172.webp"},
+ {sku:"173",  lang:"CN", type:"Set",  name:"Chinese 30th Anniversary Special Art Card Set Vol. 3", detail:"1 Booster, 5 Cards + 1 of 9 First Partner Special Illustration Foil Cards + 1 Acrylic Magnetic Display Frame", img:"assets/products/173.webp"}
+];
+
+/* sku -> quantity. Insertion order is the order shown on the review list. */
+const cart = new Map();
+let step = 1, fLang = "all", fType = "all", fSize = "all", q = "";
+
+const byId = id => document.getElementById(id);
+const grid = byId("grid"), pickedWrap = byId("pickedWrap"), hidden = byId("requestedProducts");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const find = sku => PRODUCTS.find(p => p.sku === sku);
+const plural = (n, w) => n + " " + w + (n === 1 ? "" : "s");
+
+/* Slim boosters are pooled across products, so 3 of one and 2 of another
+   still add up to a single item rather than two. */
+function slimUnits(m){ let n = 0; for (const [s, v] of m) if (find(s).slim) n += v; return n; }
+function itemsUsed(m = cart){
+  let other = 0;
+  for (const [s, v] of m) if (!find(s).slim) other += v;
+  return other + Math.ceil(slimUnits(m) / SLIM_PER_ITEM);
+}
+function fits(sku, n){
+  const t = new Map(cart);
+  if (n <= 0) t.delete(sku); else t.set(sku, n);
+  return itemsUsed(t) <= MAX;
+}
+const canAdd = sku => !find(sku).soldOut && fits(sku, (cart.get(sku) || 0) + 1);
+
+/* Placeholder wordmark: the distinctive part of the name with the format
+   words stripped out, since the tile already says the format underneath.
+   Wraps rather than truncating, and CSS clamps it to three lines. */
+function mark(p){
+  const s = p.name
+    .replace(/^Chinese\s+/i, "")
+    .replace(/Gem Box/gi, "GEMBOXTOKEN")    /* "Gem Box" is the line name, shield it from the Box strip */
+    .replace(/First Partner Illustration Collection Series/i, "First Partner Series")
+    .replace(/30th Anniversary Special Art Card Set/i, "30th Anniversary")
+    .replace(/\s*-\s*\d+\s+Boosters\b/i, "")
+    .replace(/\bEnglish\b/gi, "")
+    .replace(/\b(Slim|Jumbo|Sealed|Standard)\b/gi, "")
+    .replace(/\b(Booster|Blister|Gift|Display|Metal|Storage)\b/gi, "")
+    .replace(/\b(Box|Pack|Tin)\b/gi, "")
+    .replace(/\s+-\s+/g, " ")          /* separator dashes only; keeps V-Union intact */
+    .replace(/GEMBOXTOKEN/g, "Gem Box")
+    .replace(/\s{2,}/g, " ").trim();
+  return s || "Pokémon";
+}
+
+function setQty(sku, n){
+  if (find(sku).soldOut) n = 0;          /* belt and braces: never carts a sold-out line */
+  n = Math.min(Math.max(0, Math.round(n)), MAX * SLIM_PER_ITEM);
+  while (n > 0 && !fits(sku, n)) n--;      /* walk down to the largest value that fits */
+  if (n <= 0) cart.delete(sku); else cart.set(sku, n);
+  render();
+}
+
+function stepper(sku, qty, small){
+  const blocked = !canAdd(sku);
+  return `<div class="qty${small ? " sm" : ""}">
+    <button type="button" data-dec="${esc(sku)}" aria-label="Fewer">&minus;</button>
+    <span class="n" aria-live="polite">${qty}</span>
+    <button type="button" data-inc="${esc(sku)}" aria-label="More"${blocked ? " disabled" : ""}>+</button>
+  </div>`;
+}
+
+/* Slim and Jumbo are written into the product name, so the name is where the
+   size comes from. Unlike the item-count rule, nothing here depends on telling
+   a Slim BOX from a Slim PACK -- that is the format filter's job -- so reading
+   the qualifier off the name is safe. */
+function sizeOf(p){
+  if (/\bSlim\b/i.test(p.name)) return "Slim";
+  if (/\bJumbo\b/i.test(p.name)) return "Jumbo";
+  return "Standard";
+}
+
+function matches(p){
+  if (fLang !== "all" && p.lang !== fLang) return false;
+  if (fType !== "all" && p.type !== fType) return false;
+  if (fSize !== "all" && sizeOf(p) !== fSize) return false;
+  if (q && !(p.name + " " + p.detail).toLowerCase().includes(q)) return false;
+  return true;
+}
+
+/* ---- Stand-in artwork -------------------------------------------------
+   Used when a product has no photograph yet, and also when a photograph
+   fails to load, so a broken file never leaves an empty square.
+
+   The set's own logo where there is one, otherwise a drawn silhouette of
+   the format. Only the English sets have a published logo; every product
+   has a format, so the silhouette is what guarantees full coverage.
+
+   The silhouette is chosen from `type` first and only then from the name,
+   because the name alone would misread "Slim Booster Box" as a pack. */
+const SHAPES = {
+  "pack":       '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" aria-hidden="true"><rect x="28" y="12" width="44" height="76" rx="2" fill="currentColor" fill-opacity=".07"/><path d="M28 21h44M28 79h44" stroke-opacity=".62"/><path d="M38 27 33 73" stroke-opacity=".3" stroke-width="1.8"/></svg>',
+  "pack-slim":  '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" aria-hidden="true"><rect x="35" y="10" width="30" height="80" rx="2" fill="currentColor" fill-opacity=".07"/><path d="M35 18h30M35 82h30" stroke-opacity=".62"/><path d="M42 24 39 76" stroke-opacity=".3" stroke-width="1.8"/></svg>',
+  "pack-jumbo": '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" aria-hidden="true"><rect x="18" y="18" width="64" height="64" rx="2" fill="currentColor" fill-opacity=".07"/><path d="M18 26h64M18 74h64" stroke-opacity=".62"/><path d="M31 32 26 68" stroke-opacity=".3" stroke-width="1.8"/></svg>',
+  "box":        '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" aria-hidden="true"><path d="M26 38v48h44V38z" fill="currentColor" fill-opacity=".07"/><path d="M26 38l14-13h44L70 38z" fill="currentColor" fill-opacity=".13"/><path d="M70 38l14-13v48L70 86z" fill="currentColor" fill-opacity=".03"/></svg>',
+  "blister":    '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" aria-hidden="true"><rect x="27" y="14" width="46" height="72" rx="3" fill="currentColor" fill-opacity=".07"/><circle cx="50" cy="23" r="3.6"/><rect x="34" y="33" width="32" height="45" rx="2" stroke-opacity=".5"/></svg>',
+  "collection": '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" aria-hidden="true"><rect x="14" y="28" width="72" height="48" rx="2" fill="currentColor" fill-opacity=".07"/><path d="M14 44h72" stroke-opacity=".62"/><path d="M50 28v16" stroke-opacity=".4"/></svg>'
+};
+
+function shapeOf(p){
+  if (p.type === "Box") return "box";
+  if (p.type === "Set") return /blister/i.test(p.name) ? "blister" : "collection";
+  if (/\bSlim\b/i.test(p.name)) return "pack-slim";
+  if (/\bJumbo\b/i.test(p.name)) return "pack-jumbo";
+  return "pack";
+}
+
+const FORM_WORDS = {
+  "pack": "Booster pack", "pack-slim": "Slim pack", "pack-jumbo": "Jumbo pack",
+  "box": "Sealed box", "blister": "Blister pack", "collection": "Collection"
+};
+
+function standIn(p){
+  const shape = shapeOf(p);
+  /* With a logo the set is already named, so repeating it as text would just
+     crowd the tile. The silhouette says nothing about which set it is, so
+     there the wordmark earns its place. */
+  const head = p.logo ? "" : `<div class="ph-mark">${esc(mark(p))}</div>`;
+  const art = p.logo
+    ? `<img src="${esc(p.logo)}" alt="${esc(p.name)}" loading="lazy">`
+    : SHAPES[shape];
+  return `<div class="ph">
+      <div>${head}</div>
+      <div class="ph-art">${art}</div>
+      <div class="ph-form">${FORM_WORDS[shape]}</div>
+    </div>`;
+}
+
+/* A photo that 404s or is corrupt swaps itself out for the stand-in rather
+   than leaving a blank square. */
+function swapToStandIn(img){
+  const p = find(img.dataset.sku);
+  if (p) img.outerHTML = standIn(p);
+}
+window.swapToStandIn = swapToStandIn;
+
+function renderGrid(){
+  const list = PRODUCTS.filter(matches);
+
+  grid.innerHTML = list.length ? list.map(p => {
+    const qty = cart.get(p.sku) || 0;
+    const room = canAdd(p.sku);
+    const art = p.img
+      ? `<img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy" data-sku="${esc(p.sku)}" onerror="swapToStandIn(this)">`
+      : standIn(p);
+    const action = p.soldOut
+      ? `<p class="sold-note">Sold out</p>`
+      : qty
+        ? stepper(p.sku, qty)
+        : `<button class="pick" type="button" data-add="${esc(p.sku)}"${room ? "" : " disabled"}>${room ? "Add to request" : "No room left"}</button>`;
+    return `<li class="tile${qty ? " is-picked" : ""}${p.soldOut ? " is-sold" : ""}">
+      <div class="thumb">
+        <span class="lang">${p.lang === "EN" ? "English" : "Chinese"}</span>
+        ${qty ? `<span class="badge-qty">&times;${qty}</span>` : ""}
+        ${p.soldOut ? `<span class="badge-sold">Sold out</span>` : ""}
+        ${art}
+      </div>
+      <div class="tile-body">
+        <h3 class="tile-name">${esc(p.name)}</h3>
+        <p class="tile-detail">${esc(p.detail)}</p>
+        ${p.slim ? `<span class="slim-tag">${SLIM_PER_ITEM} count as 1 item</span>` : ""}
+        ${action}
+      </div>
+    </li>`;
+  }).join("") : `<li class="empty">Nothing matches that. Try clearing a filter.</li>`;
+
+  byId("count").textContent = `${list.length} of ${PRODUCTS.length} shown`;
+}
+
+function renderReview(){
+  const used = itemsUsed(), slim = slimUnits(cart);
+  byId("trayN").textContent = used;
+  byId("reviewN").textContent = used;
+  byId("trayHint").textContent = used >= MAX
+    ? "That is the limit. Lower one to make room for another."
+    : `You can add ${plural(MAX - used, "more item")}`;
+
+  const note = byId("slimNote");
+  note.hidden = slim === 0;
+  if (slim) note.innerHTML = `<b>${plural(slim, "slim booster")}</b> in this request, which counts as
+    ${plural(Math.ceil(slim / SLIM_PER_ITEM), "item")}. Slim boosters are small and we stock plenty,
+    so every ${SLIM_PER_ITEM} of them together count as one.`;
+
+  pickedWrap.innerHTML = cart.size
+    ? `<ul class="picked-list">` + [...cart].map(([sku, qty]) => {
+        const p = find(sku);
+        return `<li class="picked-row">
+          <span class="t">${esc(p.name)}<small>${esc(p.detail)}${p.slim ? " &middot; " + SLIM_PER_ITEM + " count as 1 item" : ""}</small></span>
+          ${stepper(sku, qty, true)}
+          <button class="rm" type="button" data-rm="${esc(sku)}" aria-label="Remove ${esc(p.name)}">&times;</button>
+        </li>`;
+      }).join("") + `</ul>`
+    : `<p class="picked-empty">No products selected.<br>You can still send a request using the inquiry fields below.</p>`;
+
+  hidden.value = cart.size
+    ? [...cart].map(([sku, qty]) => `${qty} x ${find(sku).name} [${sku}]`).join("\n")
+    : "";
+}
+
+function render(){ renderGrid(); renderReview(); }
+
+function goto(n){
+  step = n;
+  byId("panel1").hidden = n !== 1;
+  byId("panel2").hidden = n !== 2;
+  byId("tray").hidden = n !== 1;
+  document.body.classList.toggle("has-tray", n === 1);
+
+  byId("stepTab1").setAttribute("aria-current", n === 1 ? "step" : "false");
+  byId("stepTab2").setAttribute("aria-current", n === 2 ? "step" : "false");
+  byId("stepTab1").classList.toggle("done", n === 2);
+
+  /* The pickup terms matter most right before sending, so open them on step 2. */
+  if (n === 2) byId("how").open = true;
+
+  byId("lede").textContent = n === 1
+    ? "Here is what we have on the table right now. Pick up to six items, tell us how to reach you, and we will get back to you."
+    : "Check the list over, then tell us how to reach you. You can go back and change your picks at any point before you send.";
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* ---------- Events ---------- */
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-add],[data-inc],[data-dec],[data-rm],[data-goto]");
+  if (!t || t.disabled) return;
+  if (t.dataset.add)  return setQty(t.dataset.add, 1);
+  if (t.dataset.inc)  return setQty(t.dataset.inc, (cart.get(t.dataset.inc) || 0) + 1);
+  if (t.dataset.dec)  return setQty(t.dataset.dec, (cart.get(t.dataset.dec) || 0) - 1);
+  if (t.dataset.rm)   return setQty(t.dataset.rm, 0);
+  if (t.dataset.goto) return goto(Number(t.dataset.goto));
+});
+
+document.querySelectorAll(".chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    const { filter, value } = chip.dataset;
+    if (filter === "lang") fLang = value;
+    else if (filter === "type") fType = value;
+    else fSize = value;
+    document.querySelectorAll(`.chip[data-filter="${filter}"]`)
+      .forEach(c => c.setAttribute("aria-pressed", String(c.dataset.value === value)));
+    renderGrid();
+  });
+});
+
+byId("q").addEventListener("input", e => { q = e.target.value.trim().toLowerCase(); renderGrid(); });
+
+/* MOCKUP GUARD. Delete this whole listener to make the form post for real. */
+const dlg = byId("preview");
+byId("form").addEventListener("submit", e => {
+  e.preventDefault();
+  const f = e.target;
+  const g = n => (f.elements[n]?.value || "").trim();
+  const slim = slimUnits(cart);
+  const lines = [
+    "Name:  " + (g("name")  || "-"),
+    "Email: " + (g("email") || "-"),
+    "Phone: " + (g("phone") || "-"),
+    "Pickup terms acknowledged: " + (f.elements["pickup_acknowledged"].checked ? "Yes" : "No"),
+    "",
+    "REQUESTED PRODUCTS (" + itemsUsed() + " of " + MAX + " items"
+      + (slim ? ", including " + plural(slim, "slim booster") : "") + ")",
+    cart.size ? hidden.value : "  (none selected)",
+    "",
+    "Inquire about specific single(s):",  "  " + (g("inquiry_singles")    || "-"),
+    "Inquire about graded cards:",        "  " + (g("inquiry_graded")     || "-"),
+    "Inquire about products not listed:", "  " + (g("inquiry_not_listed") || "-"),
+    "Notes:",                             "  " + (g("notes")              || "-")
+  ];
+  byId("previewBody").textContent = lines.join("\n");
+  dlg.showModal();
+});
+byId("closeDlg").addEventListener("click", () => dlg.close());
+
+render();
+goto(1);
+</script>
+</body>
+</html>

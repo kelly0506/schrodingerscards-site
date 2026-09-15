@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>FAQ | Schrödinger's Cards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+body,h1,h2,h3,p,ul,ol{margin:0}
+ul,ol{padding:0;list-style:none}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer}
+:root{
+  --bg:#060507; --bg-alt:#0b0a0d; --surface:#0f0d12; --surface-2:#161219;
+  --border:#241f28; --border-2:#332b38;
+  --text:#f6f2f4; --text-dim:#a79fa8; --text-faint:#827a88;
+  --accent:#ff3d8b; --accent-2:#3ee7ff; --on-accent:#12000a;
+  --font-head:'Anton',Impact,system-ui,sans-serif;
+  --font-body:'Archivo',system-ui,sans-serif;
+  --font-mono:'Space Mono',ui-monospace,monospace;
+  --radius:2px;
+  --btn-glow:0 0 0 1px var(--accent),0 6px 22px -10px rgba(255,61,139,.5);
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:300;line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+.skip-link{position:absolute;left:-999px}.skip-link:focus{left:12px;top:12px;background:var(--surface);padding:12px 20px;z-index:1000}
+
+h1{font-family:var(--font-head);font-weight:400;font-size:clamp(2.1rem,5.4vw,3.4rem);line-height:1.05;text-transform:uppercase}
+h2{font-family:var(--font-head);font-weight:600;font-size:clamp(1.25rem,2.6vw,1.6rem);text-transform:uppercase;letter-spacing:.03em}
+.eyebrow{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;color:var(--text-faint);margin-bottom:14px}
+.lede{color:var(--text-dim);font-size:1.05rem;max-width:62ch;margin-top:14px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 24px;border-radius:var(--radius);font-family:var(--font-head);font-size:.82rem;letter-spacing:.09em;text-transform:uppercase;border:1px solid transparent;transition:.15s}
+.btn-primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:var(--btn-glow)}
+.btn-outline{background:transparent;border-color:var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+
+.site-header{position:sticky;top:0;z-index:40;background:rgba(6,5,7,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}
+.logo-text{font-family:var(--font-head);font-size:1.05rem;text-transform:uppercase}
+.logo-text em{font-style:normal;color:var(--accent)}
+.header-actions a{font-size:.9rem;color:var(--text-dim)}.header-actions a:hover{color:var(--accent)}
+.mock-banner{background:linear-gradient(90deg,rgba(62,231,255,.14),rgba(255,61,139,.14));border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-2);text-align:center;padding:9px 16px}
+
+.hero{padding:40px 0 28px}
+.jump{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.jump a{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.06em;padding:8px 14px;border:1px solid var(--border);border-radius:999px;color:var(--text-dim);transition:.15s}
+.jump a:hover{border-color:var(--accent);color:var(--accent)}
+
+.cat{padding:34px 0;border-top:1px solid var(--border)}
+.cat:nth-child(even){background:var(--bg-alt)}
+.cat h2{margin-bottom:6px}
+.cat-sub{color:var(--text-faint);font-size:.9rem;margin-bottom:22px}
+.qa{border:1px solid var(--border);background:var(--surface);border-radius:var(--radius);margin-bottom:9px;max-width:82ch}
+.qa > summary{cursor:pointer;padding:16px 20px;font-weight:600;font-size:.98rem;list-style:none;display:flex;gap:14px;align-items:flex-start;color:var(--text)}
+.qa > summary::-webkit-details-marker{display:none}
+.qa > summary::after{content:"+";margin-left:auto;color:var(--accent);font-size:1.15rem;line-height:1;flex:none}
+.qa[open] > summary::after{content:"\2212"}
+.qa[open] > summary{border-bottom:1px solid var(--border)}
+.qa-body{padding:16px 20px 19px;color:var(--text-dim);font-size:.94rem}
+.qa-body p + p{margin-top:11px}
+.qa-body strong{color:var(--text);font-weight:600}
+.qa-body a{color:var(--accent)}
+.qa-body ol{counter-reset:s;display:flex;flex-direction:column;gap:11px;margin-top:6px}
+.qa-body ol li{counter-increment:s;display:flex;gap:12px}
+.qa-body ol li::before{content:counter(s);flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:999px;background:var(--surface-2);border:1px solid var(--border-2);font-family:var(--font-mono);font-size:.68rem;color:var(--accent);margin-top:2px}
+.qa-body ul.tick{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.qa-body ul.tick li{display:flex;gap:11px}
+.qa-body ul.tick li::before{content:"\2022";color:var(--accent);flex:none}
+
+.todo{border-left-color:var(--accent-2) !important;border-left-width:3px !important}
+.flag{display:inline-block;font-family:var(--font-mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--on-accent);background:var(--accent-2);border-radius:999px;padding:3px 9px;margin-left:10px;flex:none;align-self:center}
+
+.cta{padding:44px 0;border-top:1px solid var(--border);text-align:center}
+.cta h2{margin-bottom:12px}
+.cta p{color:var(--text-dim);max-width:52ch;margin:0 auto 22px}
+.cta-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+address{font-style:normal;color:var(--text-dim)}
+.site-footer{border-top:1px solid var(--border);padding:26px 0;color:var(--text-faint);font-size:.85rem;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+@media(max-width:560px){.qa > summary{font-size:.92rem;padding:14px 16px}.qa-body{padding:14px 16px 17px}}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#faq">Skip to questions</a>
+<div class="mock-banner">Preview &middot; not linked from the site yet &middot; draft copy for review</div>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <div class="logo"><a class="logo-text" href="index.html">Schrödinger's <em>Cards</em></a></div>
+    <div class="header-actions"><a href="request.html">Request Products</a></div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Booth 151 &middot; Treasure Cove Mall &middot; Jacksonville, TX</p>
+    <h1>Questions &amp; Answers</h1>
+    <p class="lede">How requests work, how pickup works, and what all the Chinese sealed product actually is. If your question is not here, just ask.</p>
+    <nav class="jump" aria-label="Jump to a section">
+      <a href="#requests">Requests</a>
+      <a href="#pickup">Pickup &amp; Holding</a>
+      <a href="#payment">Payment</a>
+      <a href="#visit">Finding Us</a>
+      <a href="#stock">What We Carry</a>
+      <a href="#chinese">Chinese Product</a>
+      <a href="#other">Singles &amp; Graded</a>
+      <a href="#selling">Selling &amp; Collections</a>
+    </nav>
+  </div>
+</section>
+
+<main id="faq">
+
+<!-- ============ REQUESTS ============ -->
+<section class="cat" id="requests">
+  <div class="wrap">
+    <h2>Requests</h2>
+    <p class="cat-sub">Using the request form.</p>
+
+    <details class="qa" open>
+      <summary>How does the request process work?</summary>
+      <div class="qa-body">
+        <ol>
+          <li><strong>You send the request.</strong> Nothing is set aside yet.</li>
+          <li><strong>We reply within 48 hours</strong> and tell you what is actually still available.</li>
+          <li><strong>We agree on a pickup date.</strong> Change it, ask questions, adjust the list. That is what the reply is for.</li>
+          <li><strong>You have 72 hours from that date</strong> to pay and collect. Need longer? Just tell us and we will add 24 hours.</li>
+          <li><strong>Come to <a href="index.html#visit">Booth 151</a>.</strong> Give your name and the booth number. Your items will be waiting inside our case, ready to pay for.</li>
+        </ol>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Does sending a request reserve my items?</summary>
+      <div class="qa-body">
+        <p><strong>No.</strong> A request tells us what you are after. It does not hold anything and it does not guarantee we can fill it.</p>
+        <p>We sell at a physical booth, so stock moves without warning and a fair amount of what we carry is down to the last one or two. Nothing is actually set aside until we have replied and agreed a pickup date with you.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>How quickly will you get back to me?</summary>
+      <div class="qa-body">
+        <p>Within <strong>48 hours</strong>. We will confirm what is still on the shelf, flag anything that has sold, and suggest a pickup window.</p>
+        <p>If you have not heard from us in two days, something went wrong on our end. Email us again and we will sort it out.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Why can I only request six items?</summary>
+      <div class="qa-body">
+        <p>We are a small family-run booth, not a warehouse. Six keeps requests to a size we can actually pull, set aside, and hold for you without taking the shelf apart.</p>
+        <p>If you want more than that, say so in the notes and we will work something out.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>What counts as one item?</summary>
+      <div class="qa-body">
+        <p>Most things count as one each. A booster box is one item, a gift set is one item, an English booster pack is one item.</p>
+        <p><strong>Slim boosters are the exception.</strong> They are the small Chinese packs, four or five cards each, and we stock plenty of them. <strong>Every five slim boosters together count as one item</strong>, pooled across the whole request rather than per product. So three Chasing Glory and two Stellar Crystal is one item, not two.</p>
+        <p>The request page does the math for you and shows a running total.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Can I change or cancel my request after sending it?</summary>
+      <div class="qa-body">
+        <p>Yes, and there is no penalty for it. Just reply to our email. Adding, removing, swapping, or calling the whole thing off is all fine.</p>
+        <p>We would much rather you tell us than leave items sitting in the case.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Can I ask about something that is not on the list?</summary>
+      <div class="qa-body">
+        <p>Please do. The request form has three boxes for exactly that: specific singles, graded cards, and products not listed.</p>
+        <p>Our booth stock is wider than the request page, which only covers sealed Pokémon. We also work with a distributor, so if it is something we can order in, we will tell you.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ============ PICKUP ============ -->
+<section class="cat" id="pickup">
+  <div class="wrap">
+    <h2>Pickup &amp; Holding</h2>
+    <p class="cat-sub">Collecting at the booth.</p>
+
+    <details class="qa">
+      <summary>How long will you hold my items?</summary>
+      <div class="qa-body">
+        <p><strong>72 hours from the pickup date we agree on.</strong> Not from when you send the request, from the date we settle on together in the reply.</p>
+        <p>Need a bit longer? Tell us before the window closes and we will add <strong>24 hours</strong>. We cannot promise to hold things past that without hearing from you, because we only have one of most of them and other people are asking.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>What if I miss the pickup window?</summary>
+      <div class="qa-body">
+        <p>The items go back out on the shelf, and you have not lost anything. You paid nothing, so there is nothing to refund and no hard feelings.</p>
+        <p>Message us and we will check whether it is still there. Often it is.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>How do I actually collect at the booth?</summary>
+      <div class="qa-body">
+        <p>Go to <a href="index.html#visit"><strong>Booth 151</strong></a> and tell the front counter your name and the booth number. Your items will be waiting inside our case.</p>
+        <p>You do not need to print anything or show the email, though having it on your phone never hurts.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Do you ship?</summary>
+      <div class="qa-body">
+        <p><strong>Not through the request form.</strong> Everything on that page is pickup only at Treasure Cove Mall in Jacksonville, Texas.</p>
+        <p>If you are not local, our <a href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">eBay store</a> ships nationwide. That is also where our Magic: The Gathering goes, since none of it is on the request page.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Can someone else pick up for me?</summary>
+      <div class="qa-body">
+        <p><strong>Yes, anyone can collect it.</strong> We do not need to know in advance who is coming.</p>
+        <p>One thing matters: they must give <strong>the name of the person who placed the order</strong>. That is what we write on the tag and what the front counter matches against. Send a friend who gives their own name and nothing will line up.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ============ PAYMENT ============ -->
+<section class="cat" id="payment">
+  <div class="wrap">
+    <h2>Payment</h2>
+    <p class="cat-sub">How and when you pay.</p>
+
+    <details class="qa">
+      <summary>When do I pay?</summary>
+      <div class="qa-body">
+        <p><strong>In person, at the booth, when you collect.</strong> Never before.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Can I pay in advance to make sure I get it?</summary>
+      <div class="qa-body">
+        <p><strong>No. We do not offer prepayment and we will never ask you for card details by email.</strong></p>
+        <p>Two reasons. It protects you, because you are not sending money to a booth you have not stood in front of. And it protects us from having to chase refunds when something sells before you arrive.</p>
+        <p>If anyone claiming to be us asks you to pay up front, it is not us.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>What payment methods do you take?</summary>
+      <div class="qa-body">
+        <p><strong>Cash and all major credit cards.</strong></p>
+        <p>Payment is taken at Treasure Cove's front counter rather than by us directly, so the mall's terms apply.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Are prices on the request page?</summary>
+      <div class="qa-body">
+        <p>No, deliberately. Sealed prices move with the market and we would rather quote you something accurate in our reply than leave a stale number on a page.</p>
+        <p>Ask and we will tell you. There is no haggling game here.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ============ VISIT ============ -->
+<section class="cat" id="visit">
+  <div class="wrap">
+    <h2>Finding Us</h2>
+    <p class="cat-sub">Where we are and when.</p>
+
+    <details class="qa">
+      <summary>Where exactly are you?</summary>
+      <div class="qa-body">
+        <p><strong>Booth 151</strong>, inside Treasure Cove Mall.</p>
+        <address>Treasure Cove Mall<br>118 E Commerce St<br>Jacksonville, TX 75766</address>
+        <p>Our <a href="gallery.html">gallery</a> has photos of the booth and the case if you want to see it before you drive over. It is an antiques and collectibles mall with dozens of vendors, so it is a browsing-friendly place rather than a card shop. We are on the first floor near the front, just left of the entrance and the checkout counter.</p>
+        <p><a href="https://www.google.com/maps/dir/?api=1&amp;destination=Treasure+Cove+Mall%2C+118+E+Commerce+St%2C+Jacksonville%2C+TX+75766" target="_blank" rel="noopener">Get directions &rarr;</a></p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>What are your opening hours?</summary>
+      <div class="qa-body">
+        <p><strong>Tuesday to Saturday, 10am to 5pm. Closed Sunday and Monday.</strong> <a href="index.html#visit">Map and directions &rarr;</a></p>
+        <p>Those are Treasure Cove's hours, not ours separately. The booth sits inside the mall, so if the mall is open you can collect, and if it is shut nobody can let you in. Worth a quick check around holidays, when mall hours sometimes shift.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Will you be there when I come?</summary>
+      <div class="qa-body">
+        <p>Not necessarily, and you do not need us to be. Treasure Cove staff the front counter for all vendors, so your items can be collected and paid for whenever the mall is open.</p>
+        <p>If you would rather meet us in person, say so in your request and we will try to line it up.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Is it worth just browsing the booth in person?</summary>
+      <div class="qa-body">
+        <p>Yes, and honestly it is the better way to shop with us. The <a href="request.html">request page</a> only lists sealed Pokémon. The case itself also holds singles, graded cards, Magic, sports, and a rotating pile of things that never make it onto a list.</p>
+        <p>It is also a family-friendly spot. Kids are welcome to look through the cheap singles boxes.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ============ STOCK ============ -->
+<section class="cat" id="stock">
+  <div class="wrap">
+    <h2>What We Carry</h2>
+    <p class="cat-sub">Stock, formats, and what the request page covers.</p>
+
+    <details class="qa">
+      <summary>What do you actually stock?</summary>
+      <div class="qa-body">
+        <p>Pokémon is the core of it: sealed product in English and Simplified Chinese, singles from a dollar upward, vintage from the Base Set era onward, and graded slabs.</p>
+        <p>Alongside that we carry Magic: The Gathering singles and sealed, plus sports cards and a smaller amount of Yu-Gi-Oh and other games. There is a fuller breakdown under <a href="index.html#carry">what we carry</a>.</p>
+        <p>The request page is <strong>sealed Pokémon only</strong>. It is the part of our stock that is stable enough to list.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Why is there no Magic: The Gathering on the request page?</summary>
+      <div class="qa-body">
+        <p>Our Magic stock is mostly singles, which move far too quickly to keep a list accurate.</p>
+        <p>For Magic, either browse the case in person or check our <a href="https://www.ebay.com/usr/nottheorphans" target="_blank" rel="noopener">eBay store</a>, which ships nationwide. You can also use the "products not listed" box on the request form and tell us what you are hunting.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>What is the difference between a slim booster and a jumbo booster?</summary>
+      <div class="qa-body">
+        <p>It is a Chinese format thing, and it trips people up constantly.</p>
+        <ul class="tick">
+          <li><strong>Slim boosters</strong> hold four or five cards. Roughly half the thickness of an English pack. Boxes of these run 15 to 18 packs.</li>
+          <li><strong>Jumbo boosters</strong> hold 20 to 25 cards in a single pack. Boxes run six packs, so a jumbo box is fewer, fatter openings.</li>
+        </ul>
+        <p>For comparison, an English booster pack is 10 cards. Every listing on the request page spells out how many boosters and how many cards per booster.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>What is a Gem Box?</summary>
+      <div class="qa-body">
+        <p>Gem Box Volumes are Chinese all-foil reprint sets. <strong>Every card in every pack is a shiny</strong>, which makes them a very different opening experience from a normal booster where most of the pack is filler.</p>
+        <p>They come 18 packs to a box, four cards per pack. We usually have Gem Box Volume 4, 5 and 6 around in some combination.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ============ CHINESE ============ -->
+<section class="cat" id="chinese">
+  <div class="wrap">
+    <h2>Chinese Product</h2>
+    <p class="cat-sub">The part people ask about most.</p>
+
+    <details class="qa">
+      <summary>Are the Chinese cards real Pokémon cards?</summary>
+      <div class="qa-body">
+        <p><strong>Yes.</strong> These are official Pokémon releases printed for the Chinese market, not counterfeits and not proxies. They carry the same licensing as any other Pokémon card, just in a different language and distribution region.</p>
+        <p>They are not officially distributed in the United States, which is exactly why they are interesting and why you do not see them in big box stores.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>How are they different from English cards?</summary>
+      <div class="qa-body">
+        <p>The card stock feels different, the foiling is noticeably brighter, and the set structure does not map one-to-one onto English releases. Chinese sets often recombine cards from several English sets, and some have artwork that never got an English printing at all.</p>
+        <p>Print runs are also much smaller, which is part of the appeal for collectors.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Can I play with them in a tournament?</summary>
+      <div class="qa-body">
+        <p>Treat them as collector and casual play cards unless you have checked. Event rules vary by organizer and by format, and some require cards in the local language or ask you to carry a translation for anything that is not.</p>
+        <p><strong>Ask your tournament organizer before you build around them.</strong> We would rather tell you that than sell you a deck you cannot register.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Why should I buy Chinese product instead of English?</summary>
+      <div class="qa-body">
+        <p>Honestly, sometimes you should not. If you are chasing a specific English card, buy English.</p>
+        <p>Where Chinese product wins is cards per dollar and novelty. A jumbo pack gives you 25 cards in one opening. Gem Box boxes are all foil. And the artwork variants genuinely are things your friends will not have seen. It is a different kind of fun, not a cheaper version of the same one.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ============ OTHER ============ -->
+<section class="cat" id="other">
+  <div class="wrap">
+    <h2>Singles &amp; Graded</h2>
+    <p class="cat-sub">Everything the request page does not cover.</p>
+
+    <details class="qa">
+      <summary>Can I ask you to find a specific single?</summary>
+      <div class="qa-body">
+        <p>Yes. Use the "specific singles" box on the request form. Give us the card name, the set, and the collector number if you have it, since a lot of cards share a name across a dozen printings.</p>
+        <p>We will check the case first, then tell you honestly whether it is something we can source.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Do you carry graded cards?</summary>
+      <div class="qa-body">
+        <p>Yes, slabs rotate through the case regularly. They are not listed on the request page because the stock turns over too fast to keep accurate.</p>
+        <p>Use the "graded cards" box on the request form and tell us what you are after, including any grade or grading company you prefer.</p>
+      </div>
+    </details>
+
+
+    <details class="qa">
+      <summary>Do you grade cards?</summary>
+      <div class="qa-body">
+        <p><strong>No, and no card shop can.</strong> Grading is done by professional third-party companies who authenticate the card, assign a numeric grade, and seal it in a tamper-evident slab. The main ones are <strong>PSA</strong>, <strong>CGC</strong> and <strong>Beckett</strong>. You submit to them directly.</p>
+        <p>What we can do is tell you whether a card looks worth submitting at all. That is a cheaper question and usually the more useful one, because grading costs money per card plus shipping both ways, and on most cards it costs more than the grade adds.</p>
+        <p>We sell graded cards. We just do not grade them, and you should be wary of anyone who tells you they do it in-house.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>I am new to this. Where do I start?</summary>
+      <div class="qa-body">
+        <p>Come stand at the case. Genuinely, that is the answer. Tell us what you like and what you want to spend, and we will point you at something rather than upsell you.</p>
+        <p>If you want to read first, our <a href="guide.html">collection guide</a> walks through how sets and rarities work without assuming you already know.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ============ SELLING ============ -->
+<section class="cat" id="selling">
+  <div class="wrap">
+    <h2>Selling &amp; Collections</h2>
+    <p class="cat-sub">Bringing cards to us, and finding out what you have.</p>
+
+    <details class="qa">
+      <summary>Do you buy cards and collections?</summary>
+      <div class="qa-body">
+        <p>Yes. Singles, sealed product, bulk, and whole collections. A shoebox someone found in a closet is genuinely one of our favorite things to be handed.</p>
+        <p>Start with the <a href="index.html#contact">contact form</a> rather than the request form, and tell us roughly what you have. Photos help more than descriptions.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>I inherited a box of cards and have no idea what any of it is. Can you help?</summary>
+      <div class="qa-body">
+        <p>Yes, and you do not need to know anything first. Bring it in or send photos and we will walk you through what is in there.</p>
+        <p>We will also tell you when the answer is "not much". Most collections from the late nineties are worth far less than people hope, and a few are worth far more. You deserve an accurate number and we will do our best to get you one.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>What should I do before bringing a collection in?</summary>
+      <div class="qa-body">
+        <p>Mostly nothing, and that is deliberate. The common instinct is to tidy things up, and tidying is what usually destroys value.</p>
+        <ul class="tick">
+          <li><strong>Do not clean or wipe the cards.</strong> Even a soft cloth leaves micro-scratches on foil, and a wiped card can drop a full grade.</li>
+          <li><strong>Do not trim, flatten, or press anything.</strong> A trimmed card is worth close to nothing and is treated as altered.</li>
+          <li><strong>Do not throw away boxes, wrappers, or packaging.</strong> Sometimes the packaging is the valuable part.</li>
+          <li><strong>Leave cards in whatever sleeves or binders they are already in.</strong> Moving them around is where corners get dinged.</li>
+          <li><strong>If you want to sort, sort by set, not by what looks shiny.</strong> Shiny is a poor predictor of value.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>How do you work out what a collection is worth?</summary>
+      <div class="qa-body">
+        <p>Condition and scarcity do most of the work, and the card's name does less than people expect. The same card can be worth a dollar or several hundred depending on centering, edges, surface, and whether it is an early print or a later reprint.</p>
+        <p>We price against <strong>recently completed sales</strong>, not asking prices. What somebody is asking for a card online is not evidence of anything. We are happy to show you what we are looking at.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Will you buy the whole collection or just the good bits?</summary>
+      <div class="qa-body">
+        <p>Usually the whole lot, and we will say up front if that is not the case. Cherry-picking the best cards leaves you holding the part that is hardest to sell, which is not much of a favor.</p>
+        <p>If there is something in there we are not the right buyer for, we will tell you where you would do better.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Do you charge to look at a collection?</summary>
+      <div class="qa-body">
+        <p>No. Ask and we will tell you what we think, whether or not you end up selling to us.</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>Should I sell to you, or sell it myself?</summary>
+      <div class="qa-body">
+        <p>We are the buyer, so we are not a neutral party here and we will not pretend otherwise.</p>
+        <p>What we will do is tell you what we see and what it has been selling for. Our <a href="guide.html">collection guide</a> covers how condition and rarity drive value, which is the part that decides this. Selling to a shop is faster, certain, and pays less than a good private sale. Selling it yourself pays more and costs you time, fees, and the risk of a bad buyer. For a big single card you will often do better listing it yourself, and we will say so.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+</main>
+
+<section class="cta">
+  <div class="wrap">
+    <h2>Still Stuck?</h2>
+    <p>If your question is not here, just ask. We would rather answer it than have you guess.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="request.html">Request Products</a>
+      <a class="btn btn-outline" href="index.html#contact">Send Us a Message</a>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap" style="display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;width:100%">
+    <span>&copy; 2026 Schrödinger's Cards LLC. Jacksonville, Texas.</span>
+    <span>Booth 151 &middot; Treasure Cove Mall</span>
+  </div>
+</footer>
+</body>
+</html>

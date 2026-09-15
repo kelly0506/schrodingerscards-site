@@ -2,3 +2,13 @@ node_modules/
 scripts/node_modules/
 scripts/package-lock.json
 .DS_Store
+
+# Full-size product photos kept locally for re-processing; the site only ships the 800px tiles.
+assets/products/_full/
+
+# Local preview copies built for an Artifact; not part of the site.
+.preview/
+
+# Working notes: names the distributor and links the working spreadsheets.
+# GitHub Pages serves everything in the repo, so this must stay local.
+docs/feed-todo.md
