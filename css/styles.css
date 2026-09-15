@@ -622,6 +622,22 @@ h2 {
   background-repeat: no-repeat;
 }
 .contact-form select option { background: var(--bg-alt); color: var(--text); }
+
+/* Chrome paints autofilled fields with its own near-white background, which
+   overrides an author background rule. An inset shadow is the only thing that
+   covers it, and the long transition stops it flashing back on re-render. */
+.contact-form input:-webkit-autofill,
+.contact-form input:-webkit-autofill:hover,
+.contact-form input:-webkit-autofill:focus,
+.contact-form input:-webkit-autofill:active,
+.contact-form textarea:-webkit-autofill,
+.contact-form select:-webkit-autofill {
+  -webkit-text-fill-color: var(--text);
+  -webkit-box-shadow: 0 0 0 1000px var(--bg-alt) inset;
+  box-shadow: 0 0 0 1000px var(--bg-alt) inset;
+  caret-color: var(--text);
+  transition: background-color 600000s 0s, color 600000s 0s;
+}
 .contact-form input:focus, .contact-form textarea:focus, .contact-form select:focus {
   outline: none;
   border-color: var(--accent);

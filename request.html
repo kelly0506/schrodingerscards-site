@@ -206,6 +206,25 @@ h3{font-family:var(--font-body);font-weight:600;font-size:1rem}
 .form .opt{color:var(--text-faint);font-family:var(--font-body);font-size:.8rem;text-transform:none;letter-spacing:0}
 .form input,.form textarea{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg-alt);color:var(--text);font-family:var(--font-body);font-size:.95rem;resize:vertical}
 .form input:focus,.form textarea:focus{outline:none;border-color:var(--accent)}
+/* Chrome paints autofilled fields with its own near-white background, which
+   beats an author background rule. The inset shadow is the only thing that
+   covers it, and the long transition stops it flashing back on re-render. */
+.form input:-webkit-autofill,
+.form input:-webkit-autofill:hover,
+.form input:-webkit-autofill:focus,
+.form input:-webkit-autofill:active,
+.form textarea:-webkit-autofill,
+.search input:-webkit-autofill{
+  -webkit-text-fill-color:var(--text);
+  -webkit-box-shadow:0 0 0 1000px var(--bg-alt) inset;
+  box-shadow:0 0 0 1000px var(--bg-alt) inset;
+  caret-color:var(--text);
+  transition:background-color 600000s 0s,color 600000s 0s
+}
+.search input:-webkit-autofill{
+  -webkit-box-shadow:0 0 0 1000px var(--surface) inset;
+  box-shadow:0 0 0 1000px var(--surface) inset
+}
 .row2{display:grid;gap:14px}
 @media(min-width:640px){.row2{grid-template-columns:1fr 1fr}}
 .hp-field{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
@@ -465,10 +484,14 @@ h3{font-family:var(--font-body);font-weight:600;font-size:1rem}
    entirely is what "In Hand = N" means.
 
    MAX caps TOTAL ITEMS, not distinct products. `slim:true` marks the
-   5-card slim boosters, which are small enough that SLIM_PER_ITEM of
-   them together count as a single item. The flag is set per product
-   rather than sniffed from the name, because "Slim Booster BOX" is a
-   whole box and must count as one full item.
+   small 4 and 5 card slim boosters, of which SLIM_PER_ITEM of the SAME
+   set count as one item. The allowance is per product and is never
+   pooled across products: five of one set is one item, and three of one
+   plus two of another is two items, because those are two different
+   things to pull and bag at the booth.
+
+   The flag is set per product rather than sniffed from the name, because
+   "Slim Booster BOX" is a whole box and must count as one full item.
    ============================================================ */
 const MAX = 6;
 const SLIM_PER_ITEM = 5;
@@ -531,13 +554,17 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":
 const find = sku => PRODUCTS.find(p => p.sku === sku);
 const plural = (n, w) => n + " " + w + (n === 1 ? "" : "s");
 
-/* Slim boosters are pooled across products, so 3 of one and 2 of another
-   still add up to a single item rather than two. */
+/* Total slim boosters in the request. Only used for the wording of the note;
+   the item maths below deliberately does not go through it. */
 function slimUnits(m){ let n = 0; for (const [s, v] of m) if (find(s).slim) n += v; return n; }
+
 function itemsUsed(m = cart){
-  let other = 0;
-  for (const [s, v] of m) if (!find(s).slim) other += v;
-  return other + Math.ceil(slimUnits(m) / SLIM_PER_ITEM);
+  let n = 0;
+  for (const [s, v] of m) {
+    const p = find(s);
+    n += p.slim ? Math.ceil(v / SLIM_PER_ITEM) : v;   /* rounded up, per set */
+  }
+  return n;
 }
 function fits(sku, n){
   const t = new Map(cart);
@@ -712,7 +739,7 @@ function renderGrid(){
       <div class="tile-body">
         <h3 class="tile-name">${esc(p.name)}</h3>
         <p class="tile-detail">${esc(p.detail)}</p>
-        ${p.slim ? `<span class="slim-tag">${SLIM_PER_ITEM} count as 1 item</span>` : ""}
+        ${p.slim ? `<span class="slim-tag">${SLIM_PER_ITEM} of this set count as 1 item</span>` : ""}
         ${action}
       </div>
     </li>`;
@@ -736,15 +763,19 @@ function renderReview(){
 
   const note = byId("slimNote");
   note.hidden = slim === 0;
-  if (slim) note.innerHTML = `<b>${plural(slim, "slim booster")}</b> in this request, which counts as
-    ${plural(Math.ceil(slim / SLIM_PER_ITEM), "item")}. Slim boosters are small and we stock plenty,
-    so every ${SLIM_PER_ITEM} of them together count as one.`;
+  if (slim) {
+    const slimItems = [...cart].reduce((t, [sku, qty]) =>
+      t + (find(sku).slim ? Math.ceil(qty / SLIM_PER_ITEM) : 0), 0);
+    note.innerHTML = `<b>${plural(slim, "slim booster")}</b> in this request, which counts as
+      ${plural(slimItems, "item")}. Up to ${SLIM_PER_ITEM} slim boosters
+      <b>of the same set</b> count as one item.`;
+  }
 
   pickedWrap.innerHTML = cart.size
     ? `<ul class="picked-list">` + [...cart].map(([sku, qty]) => {
         const p = find(sku);
         return `<li class="picked-row">
-          <span class="t">${esc(p.name)}<small>${esc(p.detail)}${p.slim ? " &middot; " + SLIM_PER_ITEM + " count as 1 item" : ""}</small></span>
+          <span class="t">${esc(p.name)}<small>${esc(p.detail)}${p.slim ? " &middot; " + SLIM_PER_ITEM + " of this set count as 1 item" : ""}</small></span>
           ${stepper(sku, qty, true)}
           <button class="rm" type="button" data-rm="${esc(sku)}" aria-label="Remove ${esc(p.name)}">&times;</button>
         </li>`;
