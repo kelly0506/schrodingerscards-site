@@ -120,6 +120,24 @@ h3{font-family:var(--font-body);font-weight:600;font-size:1rem}
 .chip{padding:9px 15px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-size:.82rem;font-family:var(--font-mono);letter-spacing:.04em;transition:.15s}
 .chip:hover{border-color:var(--border-2);color:var(--text)}
 .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.perpage{display:flex;align-items:center;gap:8px;margin-left:auto}
+.perpage label{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint)}
+.perpage select{
+  background:var(--surface);color:var(--text);border:1px solid var(--border-2);
+  border-radius:var(--radius);font-family:var(--font-mono);font-size:.78rem;
+  padding:7px 9px;cursor:pointer
+}
+.perpage select:focus-visible{outline:2px solid var(--accent-2);outline-offset:1px}
+.pager{display:flex;flex-wrap:wrap;gap:7px;align-items:center;justify-content:center;padding:6px 0 4px}
+.pager button{
+  min-width:38px;height:38px;padding:0 11px;background:transparent;color:var(--text-dim);
+  border:1px solid var(--border-2);border-radius:var(--radius);cursor:pointer;
+  font-family:var(--font-mono);font-size:.8rem;transition:.15s
+}
+.pager button:hover:not(:disabled):not([aria-current]){background:#17131b;color:var(--text)}
+.pager button[aria-current="page"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:700}
+.pager button:disabled{opacity:.32;cursor:not-allowed}
+.pager .gap{color:var(--text-faint);font-family:var(--font-mono);font-size:.8rem;padding:0 2px}
 .result-count{font-family:var(--font-mono);font-size:.74rem;color:var(--text-faint);letter-spacing:.08em;margin-left:auto}
 
 /* ---------- Grid ---------- */
@@ -222,7 +240,25 @@ dialog::backdrop{background:rgba(0,0,0,.72)}
   .controls{position:static}
   .chips{width:100%}
   .chip{flex:1 1 auto;text-align:center}
-  .result-count{margin-left:0;width:100%}
+  .perpage{display:flex;align-items:center;gap:8px;margin-left:auto}
+.perpage label{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint)}
+.perpage select{
+  background:var(--surface);color:var(--text);border:1px solid var(--border-2);
+  border-radius:var(--radius);font-family:var(--font-mono);font-size:.78rem;
+  padding:7px 9px;cursor:pointer
+}
+.perpage select:focus-visible{outline:2px solid var(--accent-2);outline-offset:1px}
+.pager{display:flex;flex-wrap:wrap;gap:7px;align-items:center;justify-content:center;padding:6px 0 4px}
+.pager button{
+  min-width:38px;height:38px;padding:0 11px;background:transparent;color:var(--text-dim);
+  border:1px solid var(--border-2);border-radius:var(--radius);cursor:pointer;
+  font-family:var(--font-mono);font-size:.8rem;transition:.15s
+}
+.pager button:hover:not(:disabled):not([aria-current]){background:#17131b;color:var(--text)}
+.pager button[aria-current="page"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:700}
+.pager button:disabled{opacity:.32;cursor:not-allowed}
+.pager .gap{color:var(--text-faint);font-family:var(--font-mono);font-size:.8rem;padding:0 2px}
+.result-count{margin-left:0;width:100%}
   .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
   .tile-body{padding:11px}
   .ph-mark{font-size:.92rem}
@@ -317,12 +353,24 @@ dialog::backdrop{background:rgba(0,0,0,.72)}
         <button class="chip" type="button" data-filter="size" data-value="Standard" aria-pressed="false">Standard</button>
         <button class="chip" type="button" data-filter="size" data-value="Jumbo" aria-pressed="false">Jumbo</button>
       </div>
+      <div class="perpage">
+        <label for="per">Show</label>
+        <select id="per">
+          <option value="10" selected>10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="all">All</option>
+        </select>
+      </div>
       <p class="result-count" id="count" aria-live="polite"></p>
     </div>
   </div>
 
   <main>
-    <div class="wrap"><ul class="grid" id="grid"></ul></div>
+    <div class="wrap">
+      <ul class="grid" id="grid"></ul>
+      <nav class="pager" id="pager" aria-label="Product pages" hidden></nav>
+    </div>
   </main>
 </div>
 
@@ -486,6 +534,7 @@ const PRODUCTS = [
 /* sku -> quantity. Insertion order is the order shown on the review list. */
 const cart = new Map();
 let step = 1, fLang = "all", fType = "all", fSize = "all", q = "";
+let perPage = 10, page = 1;
 
 const byId = id => document.getElementById(id);
 const grid = byId("grid"), pickedWrap = byId("pickedWrap"), hidden = byId("requestedProducts");
@@ -619,8 +668,39 @@ function swapToStandIn(img){
 }
 window.swapToStandIn = swapToStandIn;
 
+/* Page numbers with a gap in the middle once there are more than seven pages,
+   so the row never grows wider than the grid it sits under. */
+function pageNumbers(current, last){
+  if (last <= 7) return Array.from({length: last}, (_, i) => i + 1);
+  const out = [1];
+  const from = Math.max(2, current - 1), to = Math.min(last - 1, current + 1);
+  if (from > 2) out.push("gap");
+  for (let i = from; i <= to; i++) out.push(i);
+  if (to < last - 1) out.push("gap");
+  out.push(last);
+  return out;
+}
+
+function renderPager(last){
+  const pager = byId("pager");
+  if (last <= 1){ pager.hidden = true; pager.innerHTML = ""; return; }
+  pager.hidden = false;
+  pager.innerHTML =
+    `<button type="button" data-page="${page - 1}"${page === 1 ? " disabled" : ""}>&larr; Prev</button>` +
+    pageNumbers(page, last).map(n => n === "gap"
+      ? `<span class="gap">&hellip;</span>`
+      : `<button type="button" data-page="${n}"${n === page ? ' aria-current="page"' : ""}>${n}</button>`
+    ).join("") +
+    `<button type="button" data-page="${page + 1}"${page === last ? " disabled" : ""}>Next &rarr;</button>`;
+}
+
 function renderGrid(){
-  const list = PRODUCTS.filter(matches);
+  const all = PRODUCTS.filter(matches);
+  const size = perPage === "all" ? Math.max(all.length, 1) : perPage;
+  const last = Math.max(1, Math.ceil(all.length / size));
+  if (page > last) page = last;
+  const start = (page - 1) * size;
+  const list = all.slice(start, start + size);
 
   grid.innerHTML = list.length ? list.map(p => {
     const qty = cart.get(p.sku) || 0;
@@ -649,7 +729,12 @@ function renderGrid(){
     </li>`;
   }).join("") : `<li class="empty">Nothing matches that. Try clearing a filter.</li>`;
 
-  byId("count").textContent = `${list.length} of ${PRODUCTS.length} shown`;
+  renderPager(last);
+  byId("count").textContent = all.length === 0
+    ? `0 of ${PRODUCTS.length} shown`
+    : last === 1
+      ? `${all.length} of ${PRODUCTS.length} shown`
+      : `${start + 1}\u2013${start + list.length} of ${all.length} shown`;
 }
 
 function renderReview(){
@@ -722,13 +807,29 @@ document.querySelectorAll(".chip").forEach(chip => {
     if (filter === "lang") fLang = value;
     else if (filter === "type") fType = value;
     else fSize = value;
+    page = 1;
     document.querySelectorAll(`.chip[data-filter="${filter}"]`)
       .forEach(c => c.setAttribute("aria-pressed", String(c.dataset.value === value)));
     renderGrid();
   });
 });
 
-byId("q").addEventListener("input", e => { q = e.target.value.trim().toLowerCase(); renderGrid(); });
+byId("q").addEventListener("input", e => { q = e.target.value.trim().toLowerCase(); page = 1; renderGrid(); });
+
+byId("per").addEventListener("change", e => {
+  perPage = e.target.value === "all" ? "all" : Number(e.target.value);
+  page = 1;
+  renderGrid();
+});
+
+byId("pager").addEventListener("click", e => {
+  const b = e.target.closest("button[data-page]");
+  if (!b || b.disabled) return;
+  page = Number(b.dataset.page);
+  renderGrid();
+  /* Land at the top of the grid, not wherever the old page happened to end. */
+  document.querySelector(".controls").scrollIntoView({ block: "start" });
+});
 
 /* MOCKUP GUARD. Delete this whole listener to make the form post for real. */
 const dlg = byId("preview");

@@ -83,6 +83,65 @@ h2{font-family:var(--font-head);font-weight:600;font-size:clamp(1.25rem,2.6vw,1.
 address{font-style:normal;color:var(--text-dim)}
 .site-footer{border-top:1px solid var(--border);padding:26px 0;color:var(--text-faint);font-size:.85rem;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
 @media(max-width:560px){.qa > summary{font-size:.92rem;padding:14px 16px}.qa-body{padding:14px 16px 17px}}
+
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---- collapsible sections ---- */
+.cat{padding:0;border-top:1px solid var(--border)}
+.cat-fold{padding:0}
+.cat-head{
+  cursor:pointer;list-style:none;display:flex;align-items:center;gap:16px;
+  padding:22px 0;position:relative
+}
+.cat-head::-webkit-details-marker{display:none}
+.cat-head-text{flex:1;min-width:0}
+.cat-head h2{margin:0 0 3px;font-size:1.5rem;line-height:1.1}
+.cat-head .cat-sub{display:block;color:var(--text-faint);font-size:.88rem;margin:0}
+.cat-count{
+  font-family:var(--font-mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-faint);border:1px solid var(--border-2);border-radius:999px;
+  padding:4px 10px;white-space:nowrap;flex:none
+}
+.cat-head::after{
+  content:"";flex:none;width:9px;height:9px;border-right:2px solid var(--accent);
+  border-bottom:2px solid var(--accent);transform:rotate(45deg) translateY(-2px);
+  transition:transform .18s ease
+}
+.cat-fold[open] > .cat-head::after{transform:rotate(-135deg) translateY(-2px)}
+.cat-head:hover h2{color:var(--accent)}
+.cat-head:focus-visible{outline:2px solid var(--accent-2);outline-offset:3px}
+.cat-body{padding:0 0 26px}
+.cat.is-hidden{display:none}
+.qa.is-hidden{display:none}
+
+/* ---- search ---- */
+.faq-search{
+  display:flex;align-items:center;gap:10px;margin:22px 0 0;max-width:460px;
+  border:1px solid var(--border-2);border-radius:var(--radius);
+  background:var(--surface);padding:0 12px
+}
+.faq-search:focus-within{border-color:var(--accent)}
+.faq-search svg{color:var(--text-faint);flex:none}
+.faq-search input{
+  flex:1;background:transparent;border:0;color:var(--text);
+  font-family:var(--font-body);font-size:.95rem;padding:11px 0;min-width:0
+}
+.faq-search input:focus{outline:none}
+.faq-search input::-webkit-search-cancel-button{display:none}
+.faq-search button{
+  background:transparent;border:0;color:var(--text-faint);font-size:1.2rem;
+  line-height:1;cursor:pointer;padding:4px 2px
+}
+.faq-search button:hover{color:var(--text)}
+.faq-result{
+  font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-faint);margin:10px 0 0;min-height:1em
+}
+.faq-empty{
+  border:1px dashed var(--border-2);border-radius:var(--radius);
+  padding:26px 20px;text-align:center;color:var(--text-faint);margin:26px 0
+}
+mark{background:rgba(255,61,139,.26);color:var(--text);border-radius:2px;padding:0 2px}
 </style>
 </head>
 <body>
@@ -111,6 +170,14 @@ address{font-style:normal;color:var(--text-dim)}
       <a href="#other">Singles &amp; Graded</a>
       <a href="#selling">Selling &amp; Collections</a>
     </nav>
+
+    <div class="faq-search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+      <label class="vh" for="faqq">Search the questions</label>
+      <input id="faqq" type="search" placeholder="Search the questions" autocomplete="off">
+      <button type="button" id="faqClear" hidden aria-label="Clear search">&times;</button>
+    </div>
+    <p class="faq-result" id="faqResult" role="status" aria-live="polite"></p>
   </div>
 </section>
 
@@ -119,10 +186,12 @@ address{font-style:normal;color:var(--text-dim)}
 <!-- ============ REQUESTS ============ -->
 <section class="cat" id="requests">
   <div class="wrap">
-    <h2>Requests</h2>
-    <p class="cat-sub">Using the request form.</p>
-
-    <details class="qa" open>
+    <details class="cat-fold">
+      <summary class="cat-head">
+        <span class="cat-head-text"><h2>Requests</h2><span class="cat-sub">Using the request form.</span></span>
+        <span class="cat-count">7 questions</span>
+      </summary>
+      <div class="cat-body"><details class="qa">
       <summary>How does the request process work?</summary>
       <div class="qa-body">
         <ol>
@@ -183,16 +252,20 @@ address{font-style:normal;color:var(--text-dim)}
         <p>Our booth stock is wider than the request page, which only covers sealed Pokémon. We also work with a distributor, so if it is something we can order in, we will tell you.</p>
       </div>
     </details>
+      </div>
+    </details>
   </div>
 </section>
 
 <!-- ============ PICKUP ============ -->
 <section class="cat" id="pickup">
   <div class="wrap">
-    <h2>Pickup &amp; Holding</h2>
-    <p class="cat-sub">Collecting at the booth.</p>
-
-    <details class="qa">
+    <details class="cat-fold">
+      <summary class="cat-head">
+        <span class="cat-head-text"><h2>Pickup &amp; Holding</h2><span class="cat-sub">Collecting at the booth.</span></span>
+        <span class="cat-count">5 questions</span>
+      </summary>
+      <div class="cat-body"><details class="qa">
       <summary>How long will you hold my items?</summary>
       <div class="qa-body">
         <p><strong>72 hours from the pickup date we agree on.</strong> Not from when you send the request, from the date we settle on together in the reply.</p>
@@ -231,16 +304,20 @@ address{font-style:normal;color:var(--text-dim)}
         <p>One thing matters: they must give <strong>the name of the person who placed the order</strong>. That is what we write on the tag and what the front counter matches against. Send a friend who gives their own name and nothing will line up.</p>
       </div>
     </details>
+      </div>
+    </details>
   </div>
 </section>
 
 <!-- ============ PAYMENT ============ -->
 <section class="cat" id="payment">
   <div class="wrap">
-    <h2>Payment</h2>
-    <p class="cat-sub">How and when you pay.</p>
-
-    <details class="qa">
+    <details class="cat-fold">
+      <summary class="cat-head">
+        <span class="cat-head-text"><h2>Payment</h2><span class="cat-sub">How and when you pay.</span></span>
+        <span class="cat-count">4 questions</span>
+      </summary>
+      <div class="cat-body"><details class="qa">
       <summary>When do I pay?</summary>
       <div class="qa-body">
         <p><strong>In person, at the booth, when you collect.</strong> Never before.</p>
@@ -271,16 +348,20 @@ address{font-style:normal;color:var(--text-dim)}
         <p>Ask and we will tell you. There is no haggling game here.</p>
       </div>
     </details>
+      </div>
+    </details>
   </div>
 </section>
 
 <!-- ============ VISIT ============ -->
 <section class="cat" id="visit">
   <div class="wrap">
-    <h2>Finding Us</h2>
-    <p class="cat-sub">Where we are and when.</p>
-
-    <details class="qa">
+    <details class="cat-fold">
+      <summary class="cat-head">
+        <span class="cat-head-text"><h2>Finding Us</h2><span class="cat-sub">Where we are and when.</span></span>
+        <span class="cat-count">4 questions</span>
+      </summary>
+      <div class="cat-body"><details class="qa">
       <summary>Where exactly are you?</summary>
       <div class="qa-body">
         <p><strong>Booth 151</strong>, inside Treasure Cove Mall.</p>
@@ -313,16 +394,20 @@ address{font-style:normal;color:var(--text-dim)}
         <p>It is also a family-friendly spot. Kids are welcome to look through the cheap singles boxes.</p>
       </div>
     </details>
+      </div>
+    </details>
   </div>
 </section>
 
 <!-- ============ STOCK ============ -->
 <section class="cat" id="stock">
   <div class="wrap">
-    <h2>What We Carry</h2>
-    <p class="cat-sub">Stock, formats, and what the request page covers.</p>
-
-    <details class="qa">
+    <details class="cat-fold">
+      <summary class="cat-head">
+        <span class="cat-head-text"><h2>What We Carry</h2><span class="cat-sub">Stock, formats, and what the request page covers.</span></span>
+        <span class="cat-count">4 questions</span>
+      </summary>
+      <div class="cat-body"><details class="qa">
       <summary>What do you actually stock?</summary>
       <div class="qa-body">
         <p>Pokémon is the core of it: sealed product in English and Simplified Chinese, singles from a dollar upward, vintage from the Base Set era onward, and graded slabs.</p>
@@ -358,16 +443,20 @@ address{font-style:normal;color:var(--text-dim)}
         <p>They come 18 packs to a box, four cards per pack. We usually have Gem Box Volume 4, 5 and 6 around in some combination.</p>
       </div>
     </details>
+      </div>
+    </details>
   </div>
 </section>
 
 <!-- ============ CHINESE ============ -->
 <section class="cat" id="chinese">
   <div class="wrap">
-    <h2>Chinese Product</h2>
-    <p class="cat-sub">The part people ask about most.</p>
-
-    <details class="qa">
+    <details class="cat-fold">
+      <summary class="cat-head">
+        <span class="cat-head-text"><h2>Chinese Product</h2><span class="cat-sub">The part people ask about most.</span></span>
+        <span class="cat-count">4 questions</span>
+      </summary>
+      <div class="cat-body"><details class="qa">
       <summary>Are the Chinese cards real Pokémon cards?</summary>
       <div class="qa-body">
         <p><strong>Yes.</strong> These are official Pokémon releases printed for the Chinese market, not counterfeits and not proxies. They carry the same licensing as any other Pokémon card, just in a different language and distribution region.</p>
@@ -398,16 +487,20 @@ address{font-style:normal;color:var(--text-dim)}
         <p>Where Chinese product wins is cards per dollar and novelty. A jumbo pack gives you 25 cards in one opening. Gem Box boxes are all foil. And the artwork variants genuinely are things your friends will not have seen. It is a different kind of fun, not a cheaper version of the same one.</p>
       </div>
     </details>
+      </div>
+    </details>
   </div>
 </section>
 
 <!-- ============ OTHER ============ -->
 <section class="cat" id="other">
   <div class="wrap">
-    <h2>Singles &amp; Graded</h2>
-    <p class="cat-sub">Everything the request page does not cover.</p>
-
-    <details class="qa">
+    <details class="cat-fold">
+      <summary class="cat-head">
+        <span class="cat-head-text"><h2>Singles &amp; Graded</h2><span class="cat-sub">Everything the request page does not cover.</span></span>
+        <span class="cat-count">4 questions</span>
+      </summary>
+      <div class="cat-body"><details class="qa">
       <summary>Can I ask you to find a specific single?</summary>
       <div class="qa-body">
         <p>Yes. Use the "specific singles" box on the request form. Give us the card name, the set, and the collector number if you have it, since a lot of cards share a name across a dozen printings.</p>
@@ -440,16 +533,20 @@ address{font-style:normal;color:var(--text-dim)}
         <p>If you want to read first, our <a href="guide.html">collection guide</a> walks through how sets and rarities work without assuming you already know.</p>
       </div>
     </details>
+      </div>
+    </details>
   </div>
 </section>
 
 <!-- ============ SELLING ============ -->
 <section class="cat" id="selling">
   <div class="wrap">
-    <h2>Selling &amp; Collections</h2>
-    <p class="cat-sub">Bringing cards to us, and finding out what you have.</p>
-
-    <details class="qa">
+    <details class="cat-fold">
+      <summary class="cat-head">
+        <span class="cat-head-text"><h2>Selling &amp; Collections</h2><span class="cat-sub">Bringing cards to us, and finding out what you have.</span></span>
+        <span class="cat-count">7 questions</span>
+      </summary>
+      <div class="cat-body"><details class="qa">
       <summary>Do you buy cards and collections?</summary>
       <div class="qa-body">
         <p>Yes. Singles, sealed product, bulk, and whole collections. A shoebox someone found in a closet is genuinely one of our favorite things to be handed.</p>
@@ -509,6 +606,8 @@ address{font-style:normal;color:var(--text-dim)}
         <p>What we will do is tell you what we see and what it has been selling for. Our <a href="guide.html">collection guide</a> covers how condition and rarity drive value, which is the part that decides this. Selling to a shop is faster, certain, and pays less than a good private sale. Selling it yourself pays more and costs you time, fees, and the risk of a bad buyer. For a big single card you will often do better listing it yourself, and we will say so.</p>
       </div>
     </details>
+      </div>
+    </details>
   </div>
 </section>
 
@@ -531,5 +630,93 @@ address{font-style:normal;color:var(--text-dim)}
     <span>Booth 151 &middot; Treasure Cove Mall</span>
   </div>
 </footer>
+
+<script>
+(function(){
+  const input   = document.getElementById("faqq");
+  const clear   = document.getElementById("faqClear");
+  const result  = document.getElementById("faqResult");
+  const cats    = [...document.querySelectorAll(".cat")];
+  const qas     = [...document.querySelectorAll(".qa")];
+  const total   = qas.length;
+
+  /* Keep the original text so repeated searches never highlight a highlight. */
+  qas.forEach(qa => {
+    const sum = qa.querySelector("summary");
+    qa.dataset.q = sum.textContent;
+    qa.dataset.text = (sum.textContent + " " + qa.querySelector(".qa-body").textContent).toLowerCase();
+    sum.dataset.plain = sum.innerHTML;
+  });
+
+  const empty = document.createElement("p");
+  empty.className = "faq-empty";
+  empty.textContent = "No question matches that. Try a shorter word, or just ask us.";
+  empty.hidden = true;
+  document.getElementById("faq").appendChild(empty);
+
+  const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  function highlight(qa, term){
+    const sum = qa.querySelector("summary");
+    if (!term) { sum.innerHTML = sum.dataset.plain; return; }
+    const re = new RegExp("(" + escRe(term) + ")", "ig");
+    sum.innerHTML = qa.dataset.q.replace(re, "<mark>$1</mark>");
+  }
+
+  function run(){
+    const term = input.value.trim().toLowerCase();
+    clear.hidden = !term;
+
+    if (!term){
+      qas.forEach(qa => { qa.classList.remove("is-hidden"); qa.open = false; highlight(qa, ""); });
+      cats.forEach(c => {
+        c.classList.remove("is-hidden");
+        c.querySelector(".cat-fold").open = false;
+      });
+      result.textContent = "";
+      empty.hidden = true;
+      return;
+    }
+
+    let hits = 0;
+    cats.forEach(cat => {
+      const mine = [...cat.querySelectorAll(".qa")];
+      let found = 0;
+      mine.forEach(qa => {
+        const match = qa.dataset.text.includes(term);
+        qa.classList.toggle("is-hidden", !match);
+        /* Open the answer straight away: when someone has searched, the answer
+           is the thing they came for, and one match does not need a second click. */
+        qa.open = match;
+        highlight(qa, match ? term : "");
+        if (match) found++;
+      });
+      hits += found;
+      cat.classList.toggle("is-hidden", found === 0);
+      cat.querySelector(".cat-fold").open = found > 0;
+    });
+
+    result.textContent = hits === 1 ? "1 question matches" : hits + " questions match";
+    empty.hidden = hits > 0;
+  }
+
+  input.addEventListener("input", run);
+  clear.addEventListener("click", () => { input.value = ""; run(); input.focus(); });
+  input.addEventListener("keydown", e => { if (e.key === "Escape"){ input.value = ""; run(); } });
+
+  /* A jump link should open the section it points at, otherwise it scrolls to a
+     closed header and looks broken. */
+  function openTarget(){
+    const id = location.hash.slice(1);
+    if (!id) return;
+    const cat = document.getElementById(id);
+    const fold = cat && cat.querySelector(".cat-fold");
+    if (fold){ fold.open = true; cat.scrollIntoView({block:"start"}); }
+  }
+  document.querySelectorAll(".jump a").forEach(a => a.addEventListener("click", () => setTimeout(openTarget, 0)));
+  window.addEventListener("hashchange", openTarget);
+  openTarget();
+})();
+</script>
 </body>
 </html>
